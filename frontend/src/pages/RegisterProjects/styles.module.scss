@@ -1,0 +1,35 @@
+.registerProject{
+    padding: 0 4rem;
+    height: calc(100vh - 15rem);
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: center;
+
+    form{
+
+        width: 40%;
+
+        h1 {
+            margin-top: 3rem;
+            margin-bottom: 1.5rem;
+        }
+
+        fieldset {
+            display: flex;
+            flex-direction: column;
+            padding: 1rem;
+
+            .field {
+                margin-bottom: 1rem;
+                button {
+                    margin-bottom: 1rem;
+                }
+            }
+        }
+    }
+
+    Button {
+        margin-top: 1rem;
+    }
+}

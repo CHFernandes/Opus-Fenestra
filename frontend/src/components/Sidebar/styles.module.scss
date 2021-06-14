@@ -1,0 +1,88 @@
+.sidebarNav {
+    background: var(--white);
+    width: 14rem;
+    height: 100vh;
+    display: flex;
+    justify-content: center;
+    position: fixed;
+    top: 0;
+    transition: 350ms;
+    z-index: 10;
+}
+
+.sidebarWrap {
+    width: 100%;
+}
+
+.linkWrapper {
+    margin-left: 2rem;
+    font-size: 2rem;
+    height: 6rem;
+    display: flex;
+    justify-content: flex-start;
+    align-items: center;
+}
+
+.sidebarLink {
+    display: flex;
+    color: var(--gray-800);
+    justify-content: space-between;
+    align-items: center;
+    padding: 1rem;
+    list-style: none;
+    height: 4rem;
+    text-decoration: none;
+    font-size: 1rem;
+    width: 100%;
+
+    &:hover {
+        background: var(--gray-100);
+        border-left: 4px solid var(--primary);
+        cursor: pointer;
+    }
+
+    div {
+        display: inline-flex;
+        flex-direction: row;
+        align-content: center;
+        justify-content: space-between;
+
+        span {
+            margin: auto;
+            margin-left: 1rem;
+        }
+    }
+
+    .arrowDrop {
+        justify-content: flex-end;
+        width: 100%;
+    }
+}
+
+.dropdown {
+    background: var(--white);
+    height: 6rem;
+    display: flex;
+    align-items: center;
+    text-decoration: none;
+    color: var(--gray-800);
+    font-size: 1rem;
+
+    &:hover {
+        background: var(--primary);
+        cursor: pointer;
+
+        span {
+            color: var(--white);
+        }
+    }
+
+    button {
+        padding-left: 3rem;
+    }
+
+    span {
+        margin-left: 1rem;
+        margin: auto;
+    }
+}
