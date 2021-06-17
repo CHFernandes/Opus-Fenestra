@@ -54,25 +54,20 @@ export default function RegisterCriteria() {
     }, []);
 
     function handleInputChange(event: ChangeEvent<HTMLInputElement>){
+        resetValidation();
         const { name, value } = event.target;
+        handleValidation( name, value );
         setFormData({ ...formData, [name]: value});
     }
 
     async function handleSubmit(event: FormEvent){
         event.preventDefault();
 
-        resetValidation();
-
-        const { description, weight, unityType, bestValue, worstValue } = formData;
-
-        const isValid = handleValidation(Number(weight));
-
-        if (!isValid) {
-            setErrors({
-                weight: true
-            });
+        if (errors.weight) {
             return;
         }
+
+        const { description, weight, unityType, bestValue, worstValue } = formData;
 
         const data: FormData = {
             description: description,
@@ -106,11 +101,15 @@ export default function RegisterCriteria() {
         });
     }
 
-    function handleValidation(weight: number) {
-        if(weight > 0) {
-            return true;
+    function handleValidation(field: string, data: string) {
+        if(field === 'weight') {
+            const weight = Number(data);
+            if (weight < 0) {
+                setErrors({
+                    weight: true,
+                });
+            }
         }
-        return false;
     }
     return (
         <div className={styles.registerCriteria}>

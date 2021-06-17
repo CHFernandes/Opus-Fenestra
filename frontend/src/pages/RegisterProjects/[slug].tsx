@@ -67,31 +67,33 @@ export default function RegisterProjects() {
     }, []);
 
     function handleInputChange(event: ChangeEvent<HTMLInputElement>){
+        resetValidation();
         const { name, value } = event.target;
+        handleValidation( name, value );
         setFormData({ ...formData, [name]: value});
     }
 
     const handleStartDateChange = (date: Date | null) => {
+        resetValidation();
+        handleValidation( 'plannedStartDate', date );
         setFormData({ ...formData, plannedStartDate: date});
-      };
+    };
 
-      const handleEndDateChange = (date: Date | null) => {
+    const handleEndDateChange = (date: Date | null) => {
+        resetValidation();
+        handleValidation( 'plannedEndDate', date);
         setFormData({ ...formData, plannedEndDate: date});
-      };
+    };
 
     async function handleSubmit(event: FormEvent){
         event.preventDefault();
 
-        resetValidation();
+        if (errors.completion || errors.plannedEndDate) {
+            return;
+        }
 
         const { name, description, completion, plannedStartDate, plannedEndDate } = formData;
-
-        const isValid = await handleValidation(Number(completion), plannedStartDate, plannedEndDate);
-
-        if (!isValid || plannedStartDate >= plannedEndDate || Number(completion) < 0) {
-            return;
-        } else {
-
+        
             const data: FormData = {
                 name,
                 description,
@@ -119,7 +121,6 @@ export default function RegisterProjects() {
             } catch (err) {
                 alert(err.message);
             }
-        }
     }
 
     function resetValidation() {
@@ -130,20 +131,30 @@ export default function RegisterProjects() {
         });
     }
 
-    async function handleValidation(completion: number, plannedStartDate: Date, plannedEndDate: Date) {
-        if(completion < 0) {
-            setErrors({...errors, completion: true});
+    async function handleValidation(field: string, value: string | Date) {
+        if(field === 'completion') {
+            const completion = Number(value);
+            if(completion < 0) {
+                setErrors({...errors, completion: true});
+            }
         }
 
-        if(plannedEndDate.getTime() <= plannedStartDate.getTime()) {
-            setErrors({...errors, plannedEndDate: true});
+        if(field === 'plannedStartDate') {
+            const plannedStartDate = new Date(value);
+            const plannedEndDate = formData.plannedEndDate;
+            if(plannedEndDate.getTime() <= plannedStartDate.getTime()) {
+                setErrors({...errors, plannedEndDate: true});
+            }
         }
 
-
-        if ( !!errors.completion || !!errors.plannedEndDate) {
-            return false;
+        if(field === 'plannedEndDate') {
+            const plannedStartDate = formData.plannedStartDate;
+            const plannedEndDate = new Date(value);
+            if(plannedEndDate.getTime() <= plannedStartDate.getTime()) {
+                setErrors({...errors, plannedEndDate: true});
+            }
         }
-        return true;
+
     }
     return (
         <div className={styles.registerProject}>
