@@ -29,8 +29,29 @@ export default function RegisterCriteria() {
         worstValue: '',
     });
 
+    const [valid, setValid] = useState(true);
+
     const [errors, setErrors] = useState({
-        weight: false,
+        description: {
+            valid: true,
+            message: '',
+        },
+        weight: {
+            valid: true,
+            message: '',
+        },
+        unityType: {
+            valid: true,
+            message: '',
+        },
+        bestValue: {
+            valid: true,
+            message: '',
+        },
+        worstValue: {
+            valid: true,
+            message: '',
+        },
     });
 
     useEffect(() => {
@@ -46,6 +67,7 @@ export default function RegisterCriteria() {
                 worstValue: dataParsed.worstValue,
             };
             setFormData(criterion);
+            resetValidation();
         }
 
         if (!isNaN(Number(slug)) && Number(slug) > -1) {
@@ -53,20 +75,69 @@ export default function RegisterCriteria() {
         }
     }, []);
 
+    useEffect(() => {
+        if (errors.description.valid &&
+            errors.weight.valid &&
+            errors.unityType.valid &&
+            errors.bestValue.valid &&
+            errors.worstValue.valid) {
+                setValid(true);
+                return;
+        }
+        setValid(false);
+        return;
+
+    }, [errors]);
+
     function handleInputChange(event: ChangeEvent<HTMLInputElement>){
-        resetValidation();
         const { name, value } = event.target;
         handleValidation( name, value );
         setFormData({ ...formData, [name]: value});
     }
 
-    async function handleSubmit(event: FormEvent){
+    function handleSubmit(event: FormEvent){
         event.preventDefault();
 
-        if (errors.weight) {
-            return;
-        }
+        handleLazyValidation();
 
+        if (!!formData.description && !!formData.weight && !!formData.unityType && !!formData.bestValue && !!formData.worstValue) {
+            handlePost();
+        }
+    }
+
+    function handleLazyValidation () {
+        if (!formData.description) {
+            setErrors(previousErrors => ({
+                ...previousErrors,
+                description: {valid: false, message:'Obrigatório'
+            }}));
+        }
+        if (!formData.weight) {
+            setErrors(previousErrors => ({
+                ...previousErrors,
+                weight: {valid: false, message:'Obrigatório'
+            }}));
+        }
+        if (!formData.unityType) {
+            setErrors(previousErrors => ({
+                ...previousErrors,
+                unityType: {valid: false, message:'Obrigatório'
+            }}));
+        }
+        if (!formData.bestValue) {
+            setErrors(previousErrors => ({
+                ...previousErrors,
+                bestValue: {valid: false, message:'Obrigatório'
+            }}));
+        }
+        if (!formData.worstValue) {
+            setErrors(previousErrors => ({
+                ...previousErrors,
+                worstValue: {valid: false, message:'Obrigatório'
+            }}));
+        }
+    }
+    async function handlePost() {
         const { description, weight, unityType, bestValue, worstValue } = formData;
 
         const data: FormData = {
@@ -92,23 +163,84 @@ export default function RegisterCriteria() {
         } catch (err) {
             alert(err.message);
         }
-        
     }
 
     function resetValidation() {
         setErrors({
-            weight: false
+            description: {
+                valid: true,
+                message: '',
+            },
+            weight: {
+                valid: true,
+                message: '',
+            },
+            unityType: {
+                valid: true,
+                message: '',
+            },
+            bestValue: {
+                valid: true,
+                message: '',
+            },
+            worstValue: {
+                valid: true,
+                message: '',
+            },
         });
     }
 
-    function handleValidation(field: string, data: string) {
-        if(field === 'weight') {
-            const weight = Number(data);
-            if (weight < 0) {
-                setErrors({
-                    weight: true,
-                });
+    function handleValidation(field: string, data: string ) {
+        if(field === 'description'){
+            if (!data) {
+                setErrors({...errors, description: {valid: false, message:'Obrigatório'}});
+                return;
             }
+            setErrors({...errors, description: {valid: true, message:''}});
+            return;
+        }
+
+        if(field === 'weight') {
+            if (!data) {
+                setErrors({...errors, weight: {valid: false, message:'Obrigatório'}});
+                return;
+            }
+
+            const weight = Number(data);
+
+            if (weight < 1) {
+                setErrors({...errors, weight: {valid: false, message:'Insira um número válido acima de 0'}});
+                return;
+            }
+            setErrors({...errors, weight: {valid: true, message:''}});
+            return;
+        }
+
+        if(field === 'unityType'){
+            if (!data) {
+                setErrors({...errors, unityType: {valid: false, message:'Obrigatório'}});
+                return;
+            }
+            setErrors({...errors, unityType: {valid: true, message:''}});
+            return;
+        }
+
+        if(field === 'bestValue'){
+            if (!data) {
+                setErrors({...errors, bestValue: {valid: false, message:'Obrigatório'}});
+                return;
+            }
+            setErrors({...errors, bestValue: {valid: true, message:''}});
+            return;
+        }
+
+        if(field === 'worstValue'){
+            if (!data) {
+                setErrors({...errors, worstValue: {valid: false, message:'Obrigatório'}});
+                return;
+            }
+            setErrors({...errors, worstValue: {valid: true, message:''}});
+            return;
         }
     }
     return (
@@ -129,7 +261,6 @@ export default function RegisterCriteria() {
                     
                     <div className={styles.field}>
                         <TextField
-                            required
                             name='description'
                             type='text'
                             label='Descrição do critério'
@@ -137,14 +268,13 @@ export default function RegisterCriteria() {
                             onChange={handleInputChange}
                             fullWidth
                             value={formData.description}
+                            error={!errors.description.valid}
+                            helperText={!errors.description.valid && errors.description.message}
                         />
                     </div>
 
                     <div className={styles.field}>
                         <TextField
-                            required
-                            error={!!errors.weight}
-                            helperText={!!errors.weight ? 'Insira um peso válido acima de 0' : ''}
                             name='weight'
                             type='number'
                             label='Peso do critério na avaliação'
@@ -152,12 +282,13 @@ export default function RegisterCriteria() {
                             onChange={handleInputChange}
                             fullWidth
                             value={formData.weight}
+                            error={!errors.weight.valid}
+                            helperText={!errors.weight.valid && errors.weight.message}
                         />
                     </div>
 
                     <div className={styles.field}>
                         <TextField
-                            required
                             name='unityType'
                             type='text'
                             label='Tipo de unidade'
@@ -165,12 +296,13 @@ export default function RegisterCriteria() {
                             onChange={handleInputChange}
                             fullWidth
                             value={formData.unityType}
+                            error={!errors.unityType.valid}
+                            helperText={!errors.unityType.valid && errors.unityType.message}
                         />
                     </div>
 
                     <div className={styles.field}>
                         <TextField
-                            required
                             name='bestValue'
                             type='number'
                             label='Valor Mais Esperado'
@@ -178,12 +310,13 @@ export default function RegisterCriteria() {
                             onChange={handleInputChange}
                             fullWidth
                             value={formData.bestValue}
+                            error={!errors.bestValue.valid}
+                            helperText={!errors.bestValue.valid && errors.bestValue.message}
                         />
                     </div>
 
                     <div className={styles.field}>
                         <TextField
-                            required
                             name='worstValue'
                             type='number'
                             label='Valor Menos Esperado'
@@ -191,6 +324,8 @@ export default function RegisterCriteria() {
                             onChange={handleInputChange}
                             fullWidth
                             value={formData.worstValue}
+                            error={!errors.worstValue.valid}
+                            helperText={!errors.worstValue.valid && errors.worstValue.message}
                         />
                     </div>
                 </fieldset>
@@ -201,6 +336,7 @@ export default function RegisterCriteria() {
                     size='large'
                     startIcon={<MI.Save />}
                     type="submit"
+                    disabled={!valid}
                 >
                     { 
                         Number(slug) > -1 ? (
