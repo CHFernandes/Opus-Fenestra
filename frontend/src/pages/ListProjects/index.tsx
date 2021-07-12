@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useRouter } from 'next/router';
 
 import { Button, IconButton } from '@material-ui/core';
-import { DataGrid, GridColDef} from "@material-ui/data-grid";
+import { DataGrid, GridColDef} from '@material-ui/data-grid';
 import * as MI from '@material-ui/icons';
 
 import { format } from 'date-fns';
@@ -22,7 +22,7 @@ type Project = {
 }
 
 
-export default function ListProjects() {
+export default function ListProjects(): JSX.Element  {
     const [project, setProjects] = useState<Project[]>([]);
 
     useEffect(() => {
@@ -74,7 +74,7 @@ export default function ListProjects() {
             field: 'completion',
             headerName: 'Completude',
             flex: 1.5,
-            renderCell: (params) => {
+            renderCell: function getCell (params) {
                 return(
                     <>
                         {params.row.completion ? (
@@ -104,7 +104,7 @@ export default function ListProjects() {
             align: 'center',
             flex: 1,
             disableClickEventBubbling: true,
-            renderCell: (params) => {
+            renderCell: function getCell (params) {
               const onClickEdit = () => {
                 return handleEdit(params.row.id);
               };

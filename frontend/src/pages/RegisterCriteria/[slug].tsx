@@ -17,7 +17,7 @@ type FormData = {
     worstValue: number;
 }
 
-export default function RegisterCriteria() {
+export default function RegisterCriteria(): JSX.Element {
     const router = useRouter();
     const { slug } = router.query;
 

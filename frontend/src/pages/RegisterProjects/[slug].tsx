@@ -24,7 +24,7 @@ type FormData = {
     plannedEndDate: string;
 }
 
-export default function RegisterProjects() {
+export default function RegisterProjects(): JSX.Element {
     const router = useRouter();
     const { slug } = router.query;
 
@@ -71,7 +71,7 @@ export default function RegisterProjects() {
                 id: data.idProject,
                 name: data.name,
                 description: data.description,
-                completion: !!data.completion ? data.completion : 0,
+                completion: data.completion ? data.completion : 0,
                 plannedStartDate: new Date(data.plannedStartDate),
                 plannedEndDate: new Date(data.plannedEndDate)
             };
@@ -122,7 +122,7 @@ export default function RegisterProjects() {
         if (!!formData.name && !!formData.description) {
             handlePost();
         }
-    };
+    }
 
     function handleLazyValidation () {
         if (!formData.name) {
@@ -159,7 +159,7 @@ export default function RegisterProjects() {
                 await api.put(`projects/${slug}`, data);
 
                 alert('Projeto atualizado com sucesso');
-                router.push('/ListProjects')
+                router.push('/ListProjects');
             } else {
                 await api.post('projects', data);
 

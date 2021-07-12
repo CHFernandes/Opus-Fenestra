@@ -9,7 +9,7 @@ class ProjectsService {
         this.projectsRepository = getCustomRepository(ProjectsRepository);
     }
 
-    async create(name: string, description: string, plannedStartDateAsString: string, plannedEndDateAsString: string) {
+    async create(name: string, description: string, plannedStartDateAsString: string, plannedEndDateAsString: string): Promise<Project> {
         const plannedStartDate = new Date(plannedStartDateAsString);
         const plannedEndDate = new Date(plannedEndDateAsString);
         const completion = 0;
@@ -35,34 +35,34 @@ class ProjectsService {
         return project;
     }
 
-    async list() {
+    async list(): Promise<Project[]> {
         const list = await this.projectsRepository.find();
         return list;
     }
 
-    async findById(idProject: number) {
+    async findById(idProject: number): Promise<Project> {
         const project = await this.projectsRepository.findOne({
             where: {idProject},
         });
 
         if(!project) {
-            throw new Error(`Project doesn't exist`);
+            throw new Error('Project doesn\'t exist');
         }
 
         return project;
     }
 
-    async updateById (idProject: number, name: string, completionString: string, description: string, plannedStartDateAsString: string, plannedEndDateAsString: string) {
+    async updateById (idProject: number, name: string, completionString: string, description: string, plannedStartDateAsString: string, plannedEndDateAsString: string): Promise<Project>{
         const project = await this.projectsRepository.findOne({
             where: {idProject},
-        })
+        });
 
         const plannedStartDate = new Date(plannedStartDateAsString);
         const plannedEndDate = new Date(plannedEndDateAsString);
         const completion = Number(completionString);
 
         if (!project) {
-            throw new Error(`Project doesn't exist`);
+            throw new Error('Project doesn\'t exist');
         }
 
         if(plannedStartDate.getTime() > plannedEndDate.getTime()) {
@@ -88,13 +88,13 @@ class ProjectsService {
         return updatedCriterion;
     }
 
-    async deleteById (idProject: number) {
+    async deleteById (idProject: number): Promise<Project[]> {
         const criterion = await this.projectsRepository.findOne({
             where: {idProject},
-        })
+        });
 
         if (!criterion) {
-            throw new Error(`Project doesn't exist`);
+            throw new Error('Project doesn\'t exist');
         }
 
         await this.projectsRepository.delete(idProject);

@@ -10,7 +10,7 @@ import { useSidebar } from '../../contexts/SidebarContext';
 
 import styles from './styles.module.scss';
 
-export function Header() {
+export function Header(): JSX.Element {
     const { toggleSidebar } = useSidebar();
 
     const currentDate = format(new Date(), 'EEEEEE, d MMMM', {

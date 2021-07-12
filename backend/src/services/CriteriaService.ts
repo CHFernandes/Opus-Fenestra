@@ -9,7 +9,7 @@ class CriteriaService {
         this.criteriaRepository = getCustomRepository(CriteriaRepository);
     }
 
-    async create(description: string, weight: number, unityType: string, bestValue: number, worstValue: number) {
+    async create(description: string, weight: number, unityType: string, bestValue: number, worstValue: number): Promise<Criterion> {
         const criterion = this.criteriaRepository.create({
             description,
             weight,
@@ -23,30 +23,30 @@ class CriteriaService {
         return criterion;
     }
 
-    async list() {
+    async list(): Promise<Criterion[]> {
         const list = await this.criteriaRepository.find();
         return list;
     }
 
-    async findById(idCriteria: number) {
+    async findById(idCriteria: number): Promise<Criterion> {
         const criterion = await this.criteriaRepository.findOne({
             where: {idCriteria},
         });
 
         if(!criterion) {
-            throw new Error(`Criterion doesn't exist`);
+            throw new Error('Criterion doesn\'t exist');
         }
 
         return criterion;
     }
 
-    async updateById (idCriteria: number, description: string, weight: number, unityType: string, bestValue: number, worstValue: number) {
+    async updateById (idCriteria: number, description: string, weight: number, unityType: string, bestValue: number, worstValue: number): Promise<Criterion> {
         const criterion = await this.criteriaRepository.findOne({
             where: {idCriteria},
-        })
+        });
 
         if (!criterion) {
-            throw new Error(`Criterion doesn't exist`);
+            throw new Error('Criterion doesn\'t exist');
         }
 
         criterion.description = description;
@@ -60,13 +60,13 @@ class CriteriaService {
         return updatedCriterion;
     }
 
-    async deleteById (idCriteria: number) {
+    async deleteById (idCriteria: number): Promise<Criterion[]> {
         const criterion = await this.criteriaRepository.findOne({
             where: {idCriteria},
-        })
+        });
 
         if (!criterion) {
-            throw new Error(`Criterion doesn't exist`);
+            throw new Error('Criterion doesn\'t exist');
         }
 
         await this.criteriaRepository.delete(idCriteria);

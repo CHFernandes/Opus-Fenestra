@@ -4,4 +4,4 @@ import { Project } from '../entities/Project';
 @EntityRepository(Project)
 class ProjectsRepository extends Repository<Project> {}
 
-export { ProjectsRepository }
+export { ProjectsRepository };

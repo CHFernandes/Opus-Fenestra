@@ -1,14 +1,15 @@
-import React from "react";
-import Head from 'next/head'
+import React from 'react';
+import Head from 'next/head';
+import { AppProps } from 'next/app';
 
 import { Header } from '../components/Header';
 import { Sidebar } from '../components/Sidebar';
 import { SidebarContextProvider } from '../contexts/SidebarContext';
 
-import '../styles/global.scss'
+import '../styles/global.scss';
 import styles from '../styles/app.module.scss';
 
-function MyApp({ Component, pageProps }) {
+function MyApp({ Component, pageProps }: AppProps): JSX.Element {
   return (
     <>
     <Head>
@@ -30,4 +31,4 @@ function MyApp({ Component, pageProps }) {
   );
 }
 
-export default MyApp
+export default MyApp;

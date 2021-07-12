@@ -1,8 +1,8 @@
 import React, { useState, useEffect } from 'react';
-import { useRouter } from 'next/router'
+import { useRouter } from 'next/router';
 
 import { Button, IconButton } from '@material-ui/core';
-import { DataGrid, GridColDef} from "@material-ui/data-grid";
+import { DataGrid, GridColDef} from '@material-ui/data-grid';
 
 import * as MI from '@material-ui/icons';
 
@@ -21,7 +21,7 @@ type Criterion = {
 }
 
 
-export default function ListCriteria() {
+export default function ListCriteria(): JSX.Element  {
     const [criteria, setCriteria] = useState<Criterion[]>([]);
 
     useEffect(() => {
@@ -87,7 +87,7 @@ export default function ListCriteria() {
             align: 'center',
             flex: 1,
             disableClickEventBubbling: true,
-            renderCell: (params) => {
+            renderCell: function getCell (params) {
               const onClickEdit = () => {
                 return handleEdit(params.row.id);
               };

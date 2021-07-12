@@ -72,7 +72,7 @@ class CriteriaController {
         const {id} = request.params;
         try {
             const listing = await singletonCriteria.getInstance().deleteById(Number(id));
-            return response.json(listing)
+            return response.json(listing);
         } catch (err) {
             return response.status(400).json({
                 message: err.message,
@@ -81,4 +81,4 @@ class CriteriaController {
     }
 }
 
-export { CriteriaController }
+export { CriteriaController };

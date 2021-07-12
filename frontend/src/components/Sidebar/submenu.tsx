@@ -1,20 +1,35 @@
 import React, { useState } from 'react';
-import { useRouter } from 'next/router'
+import { useRouter } from 'next/router';
 
 import { Button } from '@material-ui/core';
 
 import styles from './styles.module.scss';
 
+type subMenuProps = {
+    item: navItem;
+}
+
+type navItem = {
+    title: string;
+    path: string,
+    icon: JSX.Element;
+    iconClosed: JSX.Element;
+    iconOpened: JSX.Element;
+    subNav: subnavItem[];
+};
+
 type subnavItem = {
     title: string;
-    icon: string;
+    icon: JSX.Element;
     path: string;
 };
 
-export default function Submenu ({ item }) {
+export default function Submenu ({ item }: subMenuProps): JSX.Element {
     const router = useRouter();
 
     const [subnav, setSubnav] = useState(false);
+
+    console.log(item);
   
     function toggleSubnav() {
         setSubnav(!subnav);
@@ -55,4 +70,4 @@ export default function Submenu ({ item }) {
             }
       </>
     );
-};
+}
