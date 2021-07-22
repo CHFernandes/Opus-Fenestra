@@ -8,6 +8,8 @@ import * as MI from '@material-ui/icons';
 import { format } from 'date-fns';
 import ptBR from 'date-fns/locale/pt-BR';
 
+import { DeleteConfirmation } from '../../components/DeleteConfirmation';
+
 import { api } from '../../services/api';
 import styles from './styles.module.scss';
 
@@ -137,6 +139,13 @@ export default function ListProjects(): JSX.Element  {
     }
 
     async function handleDelete (id: number) {
+
+        const response = await DeleteConfirmation();
+
+        if(!response){
+            return;
+        }
+
         const idCriteria = String(id);
         const { data }  = await api.delete(`/projects/${idCriteria}`);
         if (data) {

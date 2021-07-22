@@ -6,6 +6,8 @@ import { DataGrid, GridColDef} from '@material-ui/data-grid';
 
 import * as MI from '@material-ui/icons';
 
+import { DeleteConfirmation } from '../../components/DeleteConfirmation';
+
 import { api } from '../../services/api';
 import styles from './styles.module.scss';
 
@@ -120,6 +122,13 @@ export default function ListCriteria(): JSX.Element  {
     }
 
     async function handleDelete (id: number) {
+
+        const response = await DeleteConfirmation();
+
+        if(!response){
+            return;
+        }
+
         const idCriteria = String(id);
         const { data }  = await api.delete(`/criteria/${idCriteria}`);
         if (data) {
