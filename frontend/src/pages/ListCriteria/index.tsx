@@ -130,7 +130,17 @@ export default function ListCriteria(): JSX.Element  {
         }
 
         const idCriteria = String(id);
-        const { data }  = await api.delete(`/criteria/${idCriteria}`);
+        const responseDeletion = await api.delete(`/criteria/${idCriteria}`);
+
+        if (!responseDeletion.data) {
+            alert('Erro durante a exclusão');
+            return;
+        }
+
+        alert('Critério Excluído');
+
+        const { data } = await api.get('criteria');
+
         if (data) {
             const criteria = data.map((criterion: Criterion) => {
                 return {
@@ -143,7 +153,6 @@ export default function ListCriteria(): JSX.Element  {
                 };
             });
             setCriteria(criteria);
-            alert('Critério Excluído');
         }
 
     }

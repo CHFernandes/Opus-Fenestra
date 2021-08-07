@@ -147,7 +147,17 @@ export default function ListProjects(): JSX.Element  {
         }
 
         const idCriteria = String(id);
-        const { data }  = await api.delete(`/projects/${idCriteria}`);
+        const responseDeletion = await api.delete(`/projects/${idCriteria}`);
+
+        if (!responseDeletion.data) {
+            alert('Erro durante a exclusão');
+            return;
+        }
+
+        alert('Critério Excluído');
+
+        const { data } = await api.get('projects');
+        
         if (data) {
             const projects = data.map((project: Project) => {
                 return {

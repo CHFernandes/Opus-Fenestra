@@ -28,8 +28,6 @@ export default function Submenu ({ item }: subMenuProps): JSX.Element {
     const router = useRouter();
 
     const [subnav, setSubnav] = useState(false);
-
-    console.log(item);
   
     function toggleSubnav() {
         setSubnav(!subnav);

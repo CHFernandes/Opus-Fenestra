@@ -88,7 +88,7 @@ class ProjectsService {
         return updatedCriterion;
     }
 
-    async deleteById (idProject: number): Promise<Project[]> {
+    async deleteById (idProject: number): Promise<boolean> {
         const criterion = await this.projectsRepository.findOne({
             where: {idProject},
         });
@@ -99,8 +99,7 @@ class ProjectsService {
 
         await this.projectsRepository.delete(idProject);
 
-        const list = await this.projectsRepository.find();
-        return list;
+        return true;
     }
 }
 

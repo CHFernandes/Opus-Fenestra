@@ -60,7 +60,7 @@ class CriteriaService {
         return updatedCriterion;
     }
 
-    async deleteById (idCriteria: number): Promise<Criterion[]> {
+    async deleteById (idCriteria: number): Promise<boolean> {
         const criterion = await this.criteriaRepository.findOne({
             where: {idCriteria},
         });
@@ -71,8 +71,7 @@ class CriteriaService {
 
         await this.criteriaRepository.delete(idCriteria);
 
-        const list = await this.criteriaRepository.find();
-        return list;
+        return true;
     }
 }
 
