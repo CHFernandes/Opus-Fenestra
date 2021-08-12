@@ -1,8 +1,8 @@
 import React from 'react';
-import ListCriteria from './ListCriteria';
+import Login from './Login';
 
 export default function Home(): JSX.Element {
   return (
-    <ListCriteria />
+    <Login />
   );
 }
