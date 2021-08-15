@@ -97,7 +97,7 @@ export default function Login(): JSX.Element {
                 </form>
             </div>
             <div className={styles.footerWrapper}>
-                <Link href='/dashboard'>
+                <Link href='/RegisterOrganizationWizard'>
                     <a>Sua empresa não tem uma conta? Crie aqui!</a>
                 </Link>
             </div>

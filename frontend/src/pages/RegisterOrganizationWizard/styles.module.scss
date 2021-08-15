@@ -1,0 +1,53 @@
+.wizardWrapper{
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    position: relative;
+
+    .stepperWrapper{
+        width: 100%;
+    }
+
+    .stepWrapper {
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        width: 100%;
+        margin-top: 1rem;
+
+        .stepTitle {
+            align-self: center;
+        }
+
+        .formFields{
+            width: 75%;
+            align-self: center;
+
+            .field{
+                margin-top: 1.5rem;
+            }
+        }
+
+        .dataList {
+            align-self: center;
+            color: #000;
+            
+            margin-top: 1rem;
+            margin-bottom: 1rem;
+
+            li {
+                background: var(--white);
+                margin-top: 0.25rem;
+            }
+        }
+
+        .buttonWrapper{
+            display: flex;
+            flex-direction: row;
+            justify-content: space-around;
+            margin-top: 1.5rem;
+        }
+    }
+}
