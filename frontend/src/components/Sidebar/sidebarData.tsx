@@ -7,6 +7,21 @@ const openedIcon = <MI.ExpandLess />;
 
 export const SidebarData = [
     {
+      title: 'Organização',
+      path: '/#',
+      icon: <MI.Business />,
+      iconClosed: closedIcon,
+      iconOpened: openedIcon,
+
+      subNav: [
+        {
+          title: 'Dashboard',
+          path: '/Dashboard',
+          icon: <MI.Dashboard />
+        },
+      ]
+    },
+    {
       title: 'Projetos',
       path: '/#',
       icon: <MI.Assignment />,

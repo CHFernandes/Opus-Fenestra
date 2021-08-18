@@ -1,0 +1,47 @@
+.dashboardWrapper {
+    padding: 0 4rem;
+    height: calc(100vh - 15rem);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+
+    .dashboardHeader {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        flex-direction: column;
+
+        h1 {
+            margin-top: 1rem;
+            margin-bottom: 1rem;
+        }
+
+        h2 {
+            margin-bottom: 1rem;
+        }
+    }
+
+    .cardRoot {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        width: 40%;
+
+        .contentWrapper {
+            margin-bottom: 2rem;
+
+            .titleWrapper {
+                display: flex;
+                flex-direction: row;
+
+                .title{
+                    margin-left: 0.5rem;
+                }
+            }
+
+            &:last-child {
+                margin-bottom: 0;
+            }
+        }
+    }
+}
