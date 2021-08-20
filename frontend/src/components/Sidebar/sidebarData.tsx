@@ -19,6 +19,16 @@ export const SidebarData = [
           path: '/Dashboard',
           icon: <MI.Dashboard />
         },
+        {
+          title: 'Listagem de usuários',
+          path: '/ListPersons',
+          icon: <MI.List />
+        },
+        {
+          title: 'Registrar usuários',
+          path: '/RegisterPersons/-1',
+          icon: <MI.Person />
+        },
       ]
     },
     {

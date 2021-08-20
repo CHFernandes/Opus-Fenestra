@@ -1,0 +1,37 @@
+.registerPerson{
+    padding: 0 4rem;
+    height: calc(100vh - 15rem);
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: center;
+
+    form{
+
+        width: 60%;
+
+        fieldset {
+            display: flex;
+            flex-direction: column;
+            padding: 1rem;
+
+            .formFields{
+
+                .field {
+                    margin-bottom: 1rem;
+                    display: block;
+                    width: 100%;
+
+                    label {
+                        margin-left: 0.25rem;
+                    }
+                }
+            }
+
+        }
+    }
+
+    Button {
+        margin-top: 1rem;
+    }
+}
