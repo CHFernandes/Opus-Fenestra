@@ -1,4 +1,4 @@
-import React, { ChangeEvent, FormEvent, useState, useEffect, useContext } from 'react';
+import React, { useState, useEffect, useContext } from 'react';
 import { useRouter } from 'next/router';
 
 import { Button, TextField } from '@material-ui/core';
@@ -68,7 +68,6 @@ export default function RegisterPersons(): JSX.Element{
         }
 
         if (!isNaN(Number(slug)) && Number(slug) > -1) {
-            console.log('pegando dados');
             getPerson();
         }
     }, []);
