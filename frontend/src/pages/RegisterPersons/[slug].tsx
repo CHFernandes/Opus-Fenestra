@@ -22,7 +22,7 @@ export default function RegisterPersons(): JSX.Element{
     const router = useRouter();
     const { slug } = router.query;
 
-    const startingform = {
+    const startingForm = {
         name: '',
         user: '',
         email: '',
@@ -30,11 +30,11 @@ export default function RegisterPersons(): JSX.Element{
         confirmPassword: '',
     };
 
-    const [form, setForm] = useState<UserForm>(startingform);
+    const [form, setForm] = useState<UserForm>(startingForm);
 
     const { handleSubmit, control, getValues, setValue} = useForm<UserForm>({
         mode: 'all',
-        defaultValues: startingform,
+        defaultValues: startingForm,
     });
 
     useEffect(() => {

@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useContext } from 'react';
 import { useRouter } from 'next/router';
 
 import { Button, InputAdornment, TextField } from '@material-ui/core';
@@ -14,6 +14,7 @@ import { api } from '../../services/api';
 
 import styles from './styles.module.scss';
 import { Controller, useForm } from 'react-hook-form';
+import { AuthContext } from '../../contexts/AuthContext';
 
 type FormData = {
     id?: number;
@@ -25,6 +26,7 @@ type FormData = {
 }
 
 export default function RegisterProjects(): JSX.Element {
+    const { isAuthenticated } = useContext(AuthContext);
     const router = useRouter();
     const { slug } = router.query;
 
@@ -80,6 +82,11 @@ export default function RegisterProjects(): JSX.Element {
                 plannedEndDate: standardEndDate
             };
             setFormData(project);
+        }
+
+        if (!isAuthenticated) {
+            router.push('/');
+            return;
         }
 
         if (!isNaN(Number(slug)) && Number(slug) > -1) {

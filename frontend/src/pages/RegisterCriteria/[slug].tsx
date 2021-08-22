@@ -1,11 +1,13 @@
-import React, { ChangeEvent, FormEvent, useState, useEffect } from 'react';
+import React, { useState, useEffect, useContext } from 'react';
 import { useRouter } from 'next/router';
 
 import { Button, TextField } from '@material-ui/core';
+import { useForm, Controller } from 'react-hook-form';
 import * as MI from '@material-ui/icons';
 
 import { api } from '../../services/api';
 import styles from './styles.module.scss';
+import { AuthContext } from '../../contexts/AuthContext';
 
 
 type FormData = {
@@ -18,56 +20,52 @@ type FormData = {
 }
 
 export default function RegisterCriteria(): JSX.Element {
+    const { isAuthenticated } = useContext(AuthContext);
     const router = useRouter();
     const { slug } = router.query;
 
-    const [formData, setFormData] = useState({
+    const startingForm = {
         description: '',
-        weight: '',
+        weight: undefined,
         unityType: '',
-        bestValue: '',
-        worstValue: '',
-    });
+        bestValue: undefined,
+        worstValue: undefined,
+    };
 
-    const [valid, setValid] = useState(true);
+    const [formData, setFormData] = useState<FormData>(startingForm);
 
-    const [errors, setErrors] = useState({
-        description: {
-            valid: true,
-            message: '',
-        },
-        weight: {
-            valid: true,
-            message: '',
-        },
-        unityType: {
-            valid: true,
-            message: '',
-        },
-        bestValue: {
-            valid: true,
-            message: '',
-        },
-        worstValue: {
-            valid: true,
-            message: '',
-        },
+    const { handleSubmit, control, setValue} = useForm<FormData>({
+        mode: 'all',
+        defaultValues: startingForm,
     });
 
     useEffect(() => {
         async function getCriterion() {
-            const { data } = await api.get(`/criteria/${slug}`);
-            const dataParsed = data;
+            // const { data } = await api.get(`/criteria/${slug}`);
+            // const dataParsed = data;
+            // const criterion = {
+            //     id: dataParsed.idCriteria,
+            //     description: dataParsed.description,
+            //     weight: dataParsed.weight,
+            //     unityType: dataParsed.unityType,
+            //     bestValue: dataParsed.bestValue,
+            //     worstValue: dataParsed.worstValue,
+            // };
+
             const criterion = {
-                id: dataParsed.idCriteria,
-                description: dataParsed.description,
-                weight: dataParsed.weight,
-                unityType: dataParsed.unityType,
-                bestValue: dataParsed.bestValue,
-                worstValue: dataParsed.worstValue,
+                id: 36,
+                description: 'descrita',
+                weight: 6,
+                unityType: 'Escala de 10',
+                bestValue: 10,
+                worstValue: 0,
             };
             setFormData(criterion);
-            resetValidation();
+        }
+
+        if (!isAuthenticated) {
+            router.push('/');
+            return;
         }
 
         if (!isNaN(Number(slug)) && Number(slug) > -1) {
@@ -76,71 +74,20 @@ export default function RegisterCriteria(): JSX.Element {
     }, []);
 
     useEffect(() => {
-        if (errors.description.valid &&
-            errors.weight.valid &&
-            errors.unityType.valid &&
-            errors.bestValue.valid &&
-            errors.worstValue.valid) {
-                setValid(true);
-                return;
-        }
-        setValid(false);
-        return;
+        const { description, weight, unityType, bestValue, worstValue} = formData;
 
-    }, [errors]);
+        setValue('description', description);
+        setValue('weight', weight);
+        setValue('unityType', unityType);
+        setValue('bestValue', bestValue);
+        setValue('worstValue', worstValue);
 
-    function handleInputChange(event: ChangeEvent<HTMLInputElement>){
-        const { name, value } = event.target;
-        handleValidation( name, value );
-        setFormData({ ...formData, [name]: value});
-    }
+    }, [formData]);
 
-    function handleSubmit(event: FormEvent){
-        event.preventDefault();
+    async function onSubmit(data: FormData) {
+        const { description, weight, unityType, bestValue, worstValue } = data;
 
-        handleLazyValidation();
-
-        if (!!formData.description && !!formData.weight && !!formData.unityType && !!formData.bestValue && !!formData.worstValue) {
-            handlePost();
-        }
-    }
-
-    function handleLazyValidation () {
-        if (!formData.description) {
-            setErrors(previousErrors => ({
-                ...previousErrors,
-                description: {valid: false, message:'Obrigatório'
-            }}));
-        }
-        if (!formData.weight) {
-            setErrors(previousErrors => ({
-                ...previousErrors,
-                weight: {valid: false, message:'Obrigatório'
-            }}));
-        }
-        if (!formData.unityType) {
-            setErrors(previousErrors => ({
-                ...previousErrors,
-                unityType: {valid: false, message:'Obrigatório'
-            }}));
-        }
-        if (!formData.bestValue) {
-            setErrors(previousErrors => ({
-                ...previousErrors,
-                bestValue: {valid: false, message:'Obrigatório'
-            }}));
-        }
-        if (!formData.worstValue) {
-            setErrors(previousErrors => ({
-                ...previousErrors,
-                worstValue: {valid: false, message:'Obrigatório'
-            }}));
-        }
-    }
-    async function handlePost() {
-        const { description, weight, unityType, bestValue, worstValue } = formData;
-
-        const data: FormData = {
+        const requestData: FormData = {
             description: description,
             weight: Number(weight),
             unityType: unityType,
@@ -150,12 +97,12 @@ export default function RegisterCriteria(): JSX.Element {
 
         try {
             if (Number(slug) > -1) {
-                await api.put(`criteria/${slug}`, data);
+                await api.put(`criteria/${slug}`, requestData);
 
                 alert('Critério atualizado com sucesso');
                 router.push('/ListCriteria');
             } else {
-                await api.post('criteria', data);
+                await api.post('criteria', requestData);
 
                 alert('Critério criado com sucesso');
                 router.push('/ListCriteria');
@@ -165,87 +112,9 @@ export default function RegisterCriteria(): JSX.Element {
         }
     }
 
-    function resetValidation() {
-        setErrors({
-            description: {
-                valid: true,
-                message: '',
-            },
-            weight: {
-                valid: true,
-                message: '',
-            },
-            unityType: {
-                valid: true,
-                message: '',
-            },
-            bestValue: {
-                valid: true,
-                message: '',
-            },
-            worstValue: {
-                valid: true,
-                message: '',
-            },
-        });
-    }
-
-    function handleValidation(field: string, data: string ) {
-        if(field === 'description'){
-            if (!data) {
-                setErrors({...errors, description: {valid: false, message:'Obrigatório'}});
-                return;
-            }
-            setErrors({...errors, description: {valid: true, message:''}});
-            return;
-        }
-
-        if(field === 'weight') {
-            if (!data) {
-                setErrors({...errors, weight: {valid: false, message:'Obrigatório'}});
-                return;
-            }
-
-            const weight = Number(data);
-
-            if (weight < 1) {
-                setErrors({...errors, weight: {valid: false, message:'Insira um número válido acima de 0'}});
-                return;
-            }
-            setErrors({...errors, weight: {valid: true, message:''}});
-            return;
-        }
-
-        if(field === 'unityType'){
-            if (!data) {
-                setErrors({...errors, unityType: {valid: false, message:'Obrigatório'}});
-                return;
-            }
-            setErrors({...errors, unityType: {valid: true, message:''}});
-            return;
-        }
-
-        if(field === 'bestValue'){
-            if (!data) {
-                setErrors({...errors, bestValue: {valid: false, message:'Obrigatório'}});
-                return;
-            }
-            setErrors({...errors, bestValue: {valid: true, message:''}});
-            return;
-        }
-
-        if(field === 'worstValue'){
-            if (!data) {
-                setErrors({...errors, worstValue: {valid: false, message:'Obrigatório'}});
-                return;
-            }
-            setErrors({...errors, worstValue: {valid: true, message:''}});
-            return;
-        }
-    }
     return (
         <div className={styles.registerCriteria}>
-            <form onSubmit={handleSubmit}>
+            <form onSubmit={handleSubmit(onSubmit)}>
                 { 
                     Number(slug) > -1 ? (
                         <h1>Atualização do critério de avaliação</h1>
@@ -260,72 +129,117 @@ export default function RegisterCriteria(): JSX.Element {
                     </legend>
                     
                     <div className={styles.field}>
-                        <TextField
+                        <Controller 
                             name='description'
-                            type='text'
-                            label='Descrição do critério'
-                            variant='outlined'
-                            onChange={handleInputChange}
-                            fullWidth
-                            value={formData.description}
-                            error={!errors.description.valid}
-                            helperText={!errors.description.valid && errors.description.message}
+                            control={control}
+                            defaultValue=''
+                            rules={{ required: 'Campo obrigatório' }}
+                            render={ ({ field: { onChange, onBlur, value}, fieldState: { error } }) => (
+                                <TextField
+                                    type='text'
+                                    label='Descrição do critério'
+                                    variant='outlined'
+                                    onBlur={onBlur}
+                                    onChange={onChange}
+                                    fullWidth
+                                    value={value}
+                                    error={!!error}
+                                    helperText={!!error && error.message}
+                                />
+                            ) }
                         />
                     </div>
 
                     <div className={styles.field}>
-                        <TextField
+                        <Controller 
                             name='weight'
-                            type='number'
-                            label='Peso do critério na avaliação'
-                            variant='outlined'
-                            onChange={handleInputChange}
-                            fullWidth
-                            value={formData.weight}
-                            error={!errors.weight.valid}
-                            helperText={!errors.weight.valid && errors.weight.message}
+                            control={control}
+                            defaultValue={undefined}
+                            rules={{ 
+                                required: 'Campo obrigatório',
+                                validate: { isValuePositive: (value) => {
+                                    return 0 < value || 'Insira um peso acima de 0';
+                                } }
+                            }}
+                            render={ ({ field: { onChange, onBlur, value}, fieldState: { error } }) => (
+                                <TextField
+                                    type='number'
+                                    label='Peso do critério na avaliação'
+                                    variant='outlined'
+                                    onBlur={onBlur}
+                                    onChange={onChange}
+                                    fullWidth
+                                    value={value}
+                                    error={!!error}
+                                    helperText={!!error && error.message}
+                                />
+                            ) }
                         />
                     </div>
 
                     <div className={styles.field}>
-                        <TextField
+                        <Controller 
                             name='unityType'
-                            type='text'
-                            label='Tipo de unidade'
-                            variant='outlined'
-                            onChange={handleInputChange}
-                            fullWidth
-                            value={formData.unityType}
-                            error={!errors.unityType.valid}
-                            helperText={!errors.unityType.valid && errors.unityType.message}
+                            control={control}
+                            defaultValue=''
+                            rules={{ required: 'Campo obrigatório' }}
+                            render={ ({ field: { onChange, onBlur, value}, fieldState: { error } }) => (
+                                <TextField
+                                    type='text'
+                                    label='Tipo de unidade'
+                                    variant='outlined'
+                                    onBlur={onBlur}
+                                    onChange={onChange}
+                                    fullWidth
+                                    value={value}
+                                    error={!!error}
+                                    helperText={!!error && error.message}
+                                />
+                            ) }
                         />
                     </div>
 
                     <div className={styles.field}>
-                        <TextField
+                        <Controller 
                             name='bestValue'
-                            type='number'
-                            label='Valor Mais Esperado'
-                            variant='outlined'
-                            onChange={handleInputChange}
-                            fullWidth
-                            value={formData.bestValue}
-                            error={!errors.bestValue.valid}
-                            helperText={!errors.bestValue.valid && errors.bestValue.message}
+                            control={control}
+                            defaultValue={undefined}
+                            rules={{ required: 'Campo obrigatório' }}
+                            render={ ({ field: { onChange, onBlur, value}, fieldState: { error } }) => (
+                                <TextField
+                                    type='number'
+                                    label='Valor Mais Esperado'
+                                    variant='outlined'
+                                    onBlur={onBlur}
+                                    onChange={onChange}
+                                    fullWidth
+                                    value={value}
+                                    error={!!error}
+                                    helperText={!!error && error.message}
+                                />
+                            ) }
                         />
                     </div>
 
                     <div className={styles.field}>
-                        <TextField
+                        <Controller 
                             name='worstValue'
-                            type='number'
-                            label='Valor Menos Esperado'
-                            variant='outlined'
-                            onChange={handleInputChange}
-                            fullWidth
-                            value={formData.worstValue}
-                            error={!errors.worstValue.valid}
-                            helperText={!errors.worstValue.valid && errors.worstValue.message}
+                            control={control}
+                            defaultValue={undefined}
+                            rules={{ required: 'Campo obrigatório' }}
+                            render={ ({ field: { onChange, onBlur, value}, fieldState: { error } }) => (
+                                <TextField
+                                    type='number'
+                                    label='Valor Menos Esperado'
+                                    variant='outlined'
+                                    onBlur={onBlur}
+                                    onChange={onChange}
+                                    fullWidth
+                                    value={value}
+                                    error={!!error}
+                                    helperText={!!error && error.message}
+                                />
+                            ) }
                         />
                     </div>
                 </fieldset>
@@ -335,8 +249,7 @@ export default function RegisterCriteria(): JSX.Element {
                     color='primary'
                     size='large'
                     startIcon={<MI.Save />}
-                    type="submit"
-                    disabled={!valid}
+                    type='submit'
                 >
                     { 
                         Number(slug) > -1 ? (
