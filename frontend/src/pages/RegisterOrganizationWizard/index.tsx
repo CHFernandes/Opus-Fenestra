@@ -5,6 +5,8 @@ import { Button, Step, Stepper, StepLabel, TextField, List, ListItem, ListItemTe
 import { useForm, Controller } from 'react-hook-form';
 import * as MI from '@material-ui/icons/';
 
+import { api } from '../../services/api';
+
 import styles from './styles.module.scss';
 
 type OrganizationForm = {
@@ -74,7 +76,6 @@ export default function RegisterOrganizationWizard(): JSX.Element {
     }
 
     function onSubmitAdmin(data: AdminForm) {
-        console.log(controlAdmin);
         const { email, password, name, user } = data;
         setForm(currentForm => ({
             ...currentForm,
@@ -87,8 +88,58 @@ export default function RegisterOrganizationWizard(): JSX.Element {
         return;
     }
 
-    function onSubmitForm() {
-        console.log(form);
+    async function onSubmitForm() {
+
+        let resultOrganization = null;
+
+        const { 
+            email,
+            mission,
+            name,
+            organizationName,
+            password,
+            user,
+            values,
+            vision
+         } = form;
+
+        try {
+
+            const organizationRequestData = {
+                name: organizationName,
+                mission,
+                vision,
+                values,
+            };
+
+            resultOrganization = await api.post('organizations', organizationRequestData);
+
+            alert('Organização criada com sucesso');
+        } catch (err) {
+            alert(err.message);
+        }
+
+        try {
+            if (resultOrganization) {
+
+                const personRequestData = {
+                    organizationId: resultOrganization.data.id_organization,
+                    personaId: 1,
+                    email,
+                    name,
+                    password,
+                    user,
+                };
+
+                await api.post('persons', personRequestData);
+
+                alert('Usuário criado com sucesso');
+                router.push('/');
+            }
+        } catch (err) {
+            alert(err.message);
+        }
+
         return;
     }
 
