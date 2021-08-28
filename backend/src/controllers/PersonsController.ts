@@ -38,8 +38,8 @@ class PersonsController {
     }
 
     async show(request: Request, response: Response): Promise<Response> {
-        const organizationsList = await singletonPersons.getInstance().list();
-        return response.json(organizationsList);
+        const personsList = await singletonPersons.getInstance().list();
+        return response.json(personsList);
     }
 
 }

@@ -115,27 +115,41 @@ export default function RegisterOrganizationWizard(): JSX.Element {
             resultOrganization = await api.post('organizations', organizationRequestData);
 
             alert('Organização criada com sucesso');
-        } catch (err) {
-            alert(err.message);
-        }
 
-        try {
-            if (resultOrganization) {
+            if (!resultOrganization) {
+                return;
+            }
 
-                const personRequestData = {
-                    organizationId: resultOrganization.data.id_organization,
-                    personaId: 1,
-                    email,
-                    name,
-                    password,
-                    user,
-                };
+            const personRequestData = {
+                organizationId: resultOrganization.data.id_organization,
+                personaId: 1,
+                email,
+                name,
+                password,
+                user,
+            };
 
-                await api.post('persons', personRequestData);
+            const resultPerson = await api.post('persons', personRequestData);
 
-                alert('Usuário criado com sucesso');
+            if (!resultPerson) {
+                return;
+            }
+
+            alert('Usuário criado com sucesso');
+
+            const portfolioRequestData = {
+                organizationId: resultOrganization.data.id_organization,
+                personId: resultPerson.data.id_person,
+                description: `Portfolio da organização: ${organizationName}`,
+                objective: `Portfolio principal da organização ${organizationName}`,
+            };
+
+            const resultPortfolio = await api.post('portfolios', portfolioRequestData);
+
+            if (resultPortfolio) {
                 router.push('/');
             }
+
         } catch (err) {
             alert(err.message);
         }
