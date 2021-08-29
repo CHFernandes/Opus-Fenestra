@@ -5,6 +5,7 @@ import { ProjectsController } from './controllers/ProjectsController';
 import { OrganizationsController } from './controllers/OrganizationsController';
 import { PersonsController } from './controllers/PersonsController';
 import { PortfoliosController } from './controllers/PortfoliosController';
+import { AuthenticationController } from './controllers/AuthenicationController';
 
 const routes = Router();
 
@@ -13,6 +14,10 @@ const projectsController = new ProjectsController();
 const organizationsController = new OrganizationsController();
 const personsController = new PersonsController();
 const portfoliosController = new PortfoliosController();
+const authenticationController = new AuthenticationController();
+
+routes.post('/login', authenticationController.login);
+routes.get('/login', authenticationController.getUser);
 
 routes.post('/organizations', organizationsController.create);
 routes.get('/organizations', organizationsController.show);

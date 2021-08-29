@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useContext } from 'react';
+import React, { useContext } from 'react';
 import { useRouter } from 'next/router';
 import Image from 'next/image';
 import Link from 'next/link';
@@ -20,8 +20,8 @@ export default function Login(): JSX.Element {
     const { signIn } = useContext(AuthContext);
 
     async function onSubmit(data: LoginForm) {
-        console.log('data', data);
         await signIn(data);
+        router.push('/Dashboard');
         return;
     }
 

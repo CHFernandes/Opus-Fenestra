@@ -14,7 +14,7 @@ type User = {
     email: string;
     userName: string;
     idPersona: number;
-    personaType: string;
+    idOrganization: number;
 }
 
 type SignInData = {
@@ -39,70 +39,53 @@ export function AuthContextProvider({ children }: AuthContextProviderProps): JSX
 
     useEffect(() => {
         async function getUser() {
-            // const { data } = await api.get('/userLogin/');
-            // const responseUser = {
-            //     id: data.idUser,
-            //     name: data.name,
-            //     email: data.email,
-            //     userName: data.userName,
-            //     idPersona: data.idPersona,
-            //     personaType: data.personaType,
-            // };
-
+            const { data } = await api.get('/login/');
             const responseUser = {
-                id: 0,
-                name: 'Administrador',
-                email: 'admin@admin.com',
-                userName: 'admin',
-                idPersona: 0,
-                personaType: 'Administrador',
+                id: data.id_person,
+                name: data.name,
+                email: data.email,
+                userName: data.user,
+                idPersona: data.id_persona,
+                idOrganization: data.id_organization,
             };
 
             setUser(responseUser);
+
+            router.push('/Dashboard');
         }
 
-        const { 'nextauth.token': token } = parseCookies();
+        const { 'nextAuth.token': token } = parseCookies();
 
         if (token) {
+            api.defaults.headers['authorization'] = `Bearer ${token}`;
             getUser();
         }
     }, []);
 
     async function signIn({ username, password }: SignInData) {
-        // const signInData = {
-        //     username,
-        //     password,
-        // };
-
-        // const { data } = await api.post('signIn', signInData);
-
-        // const token = data.token;
-
-        // const responseUser = {
-        //     id: data.idUser,
-        //     name: data.name,
-        //     email: data.email,
-        //     userName: data.userName,
-        //     idPersona: data.idPersona,
-        //     personaType: data.personaType,
-        // };
-
-        const token = 'token_teste';
-
-        const responseUser = {
-            id: 0,
-            name: 'Administrador',
-            email: 'admin@admin.com',
-            userName: 'admin',
-            idPersona: 0,
-            personaType: 'Administrador',
+        const signInData = {
+            user: username,
+            password,
         };
 
-        setCookie(undefined, 'nextauth.token', token, {
-            maxAge: 60 * 30 // 30 minutes
+        const { data } = await api.post('login', signInData);
+
+        const token = data.accessToken;
+
+        const responseUser = {
+            id: data.returnPerson.id_person,
+            name: data.returnPerson.name,
+            email: data.returnPerson.email,
+            userName: data.returnPerson.user,
+            idPersona: data.returnPerson.id_persona,
+            idOrganization: data.returnPerson.id_organization,
+        };
+
+        setCookie(undefined, 'nextAuth.token', token, {
+            maxAge: 1 * 60 * 60 // 1 hour
         });
 
-        api.defaults.headers['Authorization'] = `Bearer ${token}`;
+        api.defaults.headers['authorization'] = `Bearer ${token}`;
 
         setUser(responseUser);
 
