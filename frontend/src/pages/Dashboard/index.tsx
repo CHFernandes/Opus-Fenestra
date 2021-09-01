@@ -7,6 +7,7 @@ import * as MI from '@material-ui/icons/';
 import { AuthContext } from '../../contexts/AuthContext';
 
 import styles from './styles.module.scss';
+import { api } from '../../services/api';
 
 
 type DashboardForm = {
@@ -17,7 +18,7 @@ type DashboardForm = {
 }
 
 export default function Dashboard():JSX.Element {
-    const { isAuthenticated } = useContext(AuthContext);
+    const { isAuthenticated, user } = useContext(AuthContext);
     const router = useRouter();
 
     const startingform = {
@@ -30,26 +31,32 @@ export default function Dashboard():JSX.Element {
     const [dashboardForm, setDashboardForm] = useState<DashboardForm>(startingform);
 
     useEffect(() => {
+        async function getOrganization() {
+            const { data } = await api.get(`/organizations/${user.idOrganization}`);
+
+            const dashboardObject = {
+                organizationName: data.name,
+                mission: data.mission,
+                values: data.values,
+                vision: data.vision,
+            };
+    
+          setDashboardForm(dashboardObject);
+        }
+        
         if (!isAuthenticated) {
             router.push('/');
             return;
         }
 
-        const dashboardObject = {
-            organizationName: 'Organização De Teste para criação de dashboard',
-            mission: 'A missão dessa organização é ajudar o dev a montar a dashboard',
-            values: 'Os valores dessa organização é ajudar o dev a montar a dashboard',
-            vision: 'A visão dessa organização é ajudar o dev a montar a dashboard',
-        };
-
-      setDashboardForm(dashboardObject);
+        getOrganization();
     }, []);
 
     return(
         <div className={styles.dashboardWrapper}>
             <div className={styles.dashboardHeader}>
                 <h1>
-                    Seja muito bem-vindo Administrador!
+                    Seja muito bem-vindo {user && user.name + '!'}
                 </h1>
                 <h2>
                     Abaixo estão as informações da sua organização

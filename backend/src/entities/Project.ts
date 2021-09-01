@@ -1,48 +1,66 @@
-import {Entity, PrimaryColumn, Column } from 'typeorm';
+import {Entity, PrimaryGeneratedColumn, Column, JoinColumn, ManyToOne} from 'typeorm';
+import { Status } from './Status';
+import { Portfolio } from './Portfolio';
+import { Person } from './Person';
 
-@Entity('Project')
+@Entity('project')
 class Project {
-    @PrimaryColumn()
-    idProject: number;
+    @PrimaryGeneratedColumn()
+    id_project: number;
+
+    @JoinColumn({ name: 'id_status'})
+    @ManyToOne(() => Status)
+    status: Status;
 
     @Column()
-    name: string;
+    id_status: number;
+
+    @Column()
+    id_category: number;
+
+    @JoinColumn({ name: 'id_portfolio'})
+    @ManyToOne(() => Portfolio)
+    portfolio: Portfolio;
+
+    @Column()
+    id_portfolio: number;
 
     @Column()
     description: string;
 
     @Column()
-    idResponsible: number;
+    name: string;
+
+    @JoinColumn([
+        { name: 'responsible', referencedColumnName: 'id_person'},
+        { name: 'submitter', referencedColumnName: 'id_person'},
+    ])
+    @ManyToOne(() => Person)
+    person: Person;
+
+    @Column()
+    responsible: number;
     
     @Column()
-    idSubmitter: number;
+    submitter: number;
 
     @Column()
     document: string;
 
     @Column()
-    idPortfolio: number;
-
-    @Column()
-    idStatus: number;
-
-    @Column()
-    idCategory: number;
-
-    @Column()
     completion: number;
 
     @Column()
-    plannedStartDate: Date;
+    planned_start_date: Date;
 
     @Column()
-    plannedEndDate: Date;
+    planned_end_date: Date;
 
     @Column()
-    actualStartDate: Date;
+    actual_start_date: Date;
 
     @Column()
-    actualEndDate: Date;
+    actual_end_date: Date;
 }
 
 export { Project };

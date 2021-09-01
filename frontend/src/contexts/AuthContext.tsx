@@ -50,8 +50,6 @@ export function AuthContextProvider({ children }: AuthContextProviderProps): JSX
             };
 
             setUser(responseUser);
-
-            router.push('/Dashboard');
         }
 
         const { 'nextAuth.token': token } = parseCookies();

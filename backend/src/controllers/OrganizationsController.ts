@@ -40,6 +40,13 @@ class OrganizationsController {
         return response.json(organizationsList);
     }
 
+    async showById(request: Request, response: Response): Promise<Response> {
+        const {id} = request.params;
+        const list = await singletonOrganizations.getInstance().findById(Number(id));
+
+        return response.json(list);
+    }
+
 }
 
 export { OrganizationsController };

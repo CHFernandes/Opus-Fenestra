@@ -22,15 +22,16 @@ const singletonProject = (function () {
 class ProjectsController {
     async create(request: Request, response: Response): Promise<Response>{
         const {
+            portfolioId,
+            submitter,
             name,
             description,
             plannedStartDate,
             plannedEndDate
         } = request.body;
 
-
         try {
-            const project = await singletonProject.getInstance().create(name, description, plannedStartDate, plannedEndDate);
+            const project = await singletonProject.getInstance().create(Number(portfolioId), Number(submitter), name, description, plannedStartDate, plannedEndDate);
 
             return response.json(project);
         } catch (err) {
@@ -42,14 +43,15 @@ class ProjectsController {
     }
 
     async show(request: Request, response: Response): Promise<Response> {
-        const projectsList = await singletonProject.getInstance().list();
+        const {id} = request.params;
+
+        const projectsList = await singletonProject.getInstance().list(Number(id));
         return response.json(projectsList);
     }
 
     async showById(request: Request, response: Response): Promise<Response> {
         const {id} = request.params;
-        const projectsService = new ProjectsService();
-        const list = await projectsService.findById(Number(id));
+        const list = await singletonProject.getInstance().findById(Number(id));
 
         return response.json(list);
     }
@@ -63,8 +65,9 @@ class ProjectsController {
             plannedStartDate,
             plannedEndDate
         } = request.body;
+
         try {
-            const updatedProject = await singletonProject.getInstance().updateById(Number(id), name, completion, description, plannedStartDate, plannedEndDate);
+            const updatedProject = await singletonProject.getInstance().updateById(Number(id), name, completion,description, plannedStartDate, plannedEndDate);
 
             return response.json(updatedProject);
         } catch (err) {

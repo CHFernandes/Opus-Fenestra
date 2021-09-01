@@ -17,6 +17,9 @@ import { Controller, useForm } from 'react-hook-form';
 import { AuthContext } from '../../contexts/AuthContext';
 
 type FormData = {
+    portfolioId?: number;
+    submitter?: number;
+    status: number;
     id?: number;
     name: string;
     description: string;
@@ -26,7 +29,7 @@ type FormData = {
 }
 
 export default function RegisterProjects(): JSX.Element {
-    const { isAuthenticated } = useContext(AuthContext);
+    const { isAuthenticated, user } = useContext(AuthContext);
     const router = useRouter();
     const { slug } = router.query;
 
@@ -49,8 +52,9 @@ export default function RegisterProjects(): JSX.Element {
     const startingForm = {
         name: '',
         description: '',
+        status: 1,
         completion: 0,
-        plannedStartDate: newDate,
+        plannedStartDate: new Date(),
         plannedEndDate: standardEndDate,
     };
 
@@ -63,24 +67,18 @@ export default function RegisterProjects(): JSX.Element {
 
     useEffect(() => {
         async function getProject() {
-            // const { data } = await api.get(`/projects/${slug}`);
-            // const project = {
-            //     id: data.idProject,
-            //     name: data.name,
-            //     description: data.description,
-            //     completion: data.completion ? data.completion : 0,
-            //     plannedStartDate: new Date(data.plannedStartDate),
-            //     plannedEndDate: new Date(data.plannedEndDate)
-            // };
+            const { data } = await api.get(`/projects/${slug}`);
 
             const project = {
-                id: 36,
-                name: 'Test testonious',
-                description: 'descrita',
-                completion: 76,
-                plannedStartDate: new Date(newDate),
-                plannedEndDate: standardEndDate
+                id: data.idProject,
+                name: data.name,
+                description: data.description,
+                status: 1,
+                completion: data.completion ? data.completion : 0,
+                plannedStartDate: new Date(data.planned_start_date),
+                plannedEndDate: new Date(data.planned_end_date)
             };
+
             setFormData(project);
         }
 
@@ -106,9 +104,18 @@ export default function RegisterProjects(): JSX.Element {
     }, [formData]);
 
     async function onSubmit(data: FormData) {
+
+        const { data:portfolioData } = await api.get(`/portfolios/${user.idOrganization}`);
+
+        const portfolioId = portfolioData.id_portfolio;
+
+        const submitter = user.id;
+
         const { name, description, completion, plannedStartDate, plannedEndDate } = data;
 
         const requestData = {
+            portfolioId,
+            submitter,
             name,
             description,
             completion: Number(completion),

@@ -30,6 +30,17 @@ class PortfoliosService {
         const list = await this.portfoliosRepository.find();
         return list;
     }
+    async findById(id_organization: number): Promise<Portfolio> {
+        const portfolio = await this.portfoliosRepository.findOne({
+            where: {id_organization},
+        });
+
+        if(!portfolio) {
+            throw new Error('Portfolio doesn\'t exist');
+        }
+
+        return portfolio;
+    }
 }
 
 export { PortfoliosService };

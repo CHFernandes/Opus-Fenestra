@@ -30,6 +30,18 @@ class OrganizationsService {
         const list = await this.organizationsRepository.find();
         return list;
     }
+
+    async findById(id_organization: number): Promise<Organization> {
+        const organization = await this.organizationsRepository.findOne({
+            where: {id_organization},
+        });
+
+        if(!organization) {
+            throw new Error('Organization doesn\'t exist');
+        }
+
+        return organization;
+    }
 }
 
 export { OrganizationsService };
