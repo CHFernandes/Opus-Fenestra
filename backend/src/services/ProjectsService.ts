@@ -1,4 +1,4 @@
-import { getConnection, getCustomRepository, getManager, Repository } from 'typeorm';
+import { getConnection, getCustomRepository, Repository } from 'typeorm';
 import { Project } from '../entities/Project';
 import { Status } from '../entities/Status';
 import { ProjectsRepository } from '../repositories/ProjectsRepository';

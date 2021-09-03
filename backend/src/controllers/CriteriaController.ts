@@ -21,23 +21,22 @@ const singletonCriteria = (function () {
 
 class CriteriaController {
 
-
     async create(request: Request, response: Response): Promise<Response> {
         const { 
+            idPortfolio,
             description,
             weight,
-            unityType,
-            bestValue,
-            worstValue,
+            idUnities,
         } = request.body;
 
-        const criterion = await singletonCriteria.getInstance().create(description, weight, unityType, bestValue, worstValue);
+        const criterion = await singletonCriteria.getInstance().create(description, weight, Number(idPortfolio), Number(idUnities),);
 
         return response.json(criterion);
     }
 
     async show(request: Request, response: Response): Promise<Response> {
-        const criteriaList = await singletonCriteria.getInstance().list();
+        const {id} = request.params;
+        const criteriaList = await singletonCriteria.getInstance().list(Number(id));
         return response.json(criteriaList);
     }
 
@@ -53,12 +52,12 @@ class CriteriaController {
         const {
             description,
             weight,
-            unityType,
-            bestValue,
-            worstValue,
+            idPortfolio,
+            idUnities,
         } = request.body;
+
         try {
-            const updatedCriterion = await singletonCriteria.getInstance().updateById(Number(id), description, weight, unityType, bestValue, worstValue);
+            const updatedCriterion = await singletonCriteria.getInstance().updateById(description, weight, Number(idPortfolio), Number(idUnities), Number(id) );
 
             return response.json(updatedCriterion);
         } catch (err) {

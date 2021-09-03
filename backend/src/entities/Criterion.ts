@@ -1,9 +1,18 @@
-import { Entity, PrimaryColumn, Column } from 'typeorm';
+import { Entity, PrimaryGeneratedColumn, Column, JoinColumn, ManyToOne } from 'typeorm';
+import { Portfolio } from './Portfolio';
+import { Unit } from './Unit';
 
-@Entity('Criteria')
+@Entity('criteria')
 class Criterion {
-    @PrimaryColumn()
-    idCriteria: number;
+    @PrimaryGeneratedColumn()
+    id_criteria: number;
+
+    @JoinColumn({ name: 'id_portfolio'})
+    @ManyToOne(() => Portfolio)
+    portfolio: Portfolio;
+
+    @Column()
+    id_portfolio: number;
 
     @Column()
     description: string;
@@ -11,17 +20,12 @@ class Criterion {
     @Column()
     weight: number;
 
-    @Column()
-    unityType: string;
+    @JoinColumn({ name: 'id_unities'})
+    @ManyToOne(() => Unit)
+    unit: Unit;
 
     @Column()
-    bestValue: number;
-
-    @Column()
-    worstValue: number;
-
-    @Column()
-    idPortfolio: number;
+    id_unities: number;
 }
 
 export { Criterion };

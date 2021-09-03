@@ -31,7 +31,7 @@ routes.get('/portfolios', portfoliosController.show);
 routes.get('/portfolios/:id', portfoliosController.showById);
 
 routes.post('/criteria', criteriaController.create);
-routes.get('/criteria', criteriaController.show);
+routes.get('/criteriaPortfolio/:id', criteriaController.show);
 routes.get('/criteria/:id', criteriaController.showById);
 routes.put('/criteria/:id', criteriaController.updateById);
 routes.delete('/criteria/:id', criteriaController.deleteById);

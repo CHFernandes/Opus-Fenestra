@@ -12,22 +12,29 @@ import { AuthContext } from '../../contexts/AuthContext';
 
 type FormData = {
     id?: number;
+    portfolioId?: number;
     description: string;
     weight: number;
-    unityType: string;
+    unityType: number;
     bestValue: number;
     worstValue: number;
 }
 
 export default function RegisterCriteria(): JSX.Element {
-    const { isAuthenticated } = useContext(AuthContext);
+    const { isAuthenticated, user } = useContext(AuthContext);
     const router = useRouter();
     const { slug } = router.query;
+    const criteriaTypes = [
+        {
+            label: 'Escala 0-10',
+            value: 1,
+        }
+    ];
 
     const startingForm = {
         description: '',
-        weight: undefined,
-        unityType: '',
+        weight: 1,
+        unityType: 1,
         bestValue: undefined,
         worstValue: undefined,
     };
@@ -41,24 +48,16 @@ export default function RegisterCriteria(): JSX.Element {
 
     useEffect(() => {
         async function getCriterion() {
-            // const { data } = await api.get(`/criteria/${slug}`);
-            // const dataParsed = data;
-            // const criterion = {
-            //     id: dataParsed.idCriteria,
-            //     description: dataParsed.description,
-            //     weight: dataParsed.weight,
-            //     unityType: dataParsed.unityType,
-            //     bestValue: dataParsed.bestValue,
-            //     worstValue: dataParsed.worstValue,
-            // };
-
+            const { data } = await api.get(`/criteria/${slug}`);
+            const dataParsed = data;
             const criterion = {
-                id: 36,
-                description: 'descrita',
-                weight: 6,
-                unityType: 'Escala de 10',
-                bestValue: 10,
-                worstValue: 0,
+                id: dataParsed.id_criteria,
+                description: dataParsed.description,
+                weight: dataParsed.weight,
+                unityType: dataParsed.id_unities,
+                bestValue: dataParsed.best_value,
+                worstValue: dataParsed.worst_value,
+                portfolioId: dataParsed.id_portfolio,
             };
             setFormData(criterion);
         }
@@ -74,25 +73,26 @@ export default function RegisterCriteria(): JSX.Element {
     }, []);
 
     useEffect(() => {
-        const { description, weight, unityType, bestValue, worstValue} = formData;
+        const { description, weight, unityType} = formData;
 
         setValue('description', description);
         setValue('weight', weight);
         setValue('unityType', unityType);
-        setValue('bestValue', bestValue);
-        setValue('worstValue', worstValue);
 
     }, [formData]);
 
     async function onSubmit(data: FormData) {
-        const { description, weight, unityType, bestValue, worstValue } = data;
+        const { data:portfolioData } = await api.get(`/portfolios/${user.idOrganization}`);
 
-        const requestData: FormData = {
+        const portfolioId = portfolioData.id_portfolio;
+
+        const { description, weight, unityType } = data;
+
+        const requestData = {
+            idPortfolio: Number(portfolioId),
             description: description,
             weight: Number(weight),
-            unityType: unityType,
-            bestValue: Number(bestValue),
-            worstValue: Number(worstValue)
+            idUnities: Number(unityType),
         };
 
         try {
@@ -154,7 +154,7 @@ export default function RegisterCriteria(): JSX.Element {
                         <Controller 
                             name='weight'
                             control={control}
-                            defaultValue={undefined}
+                            defaultValue={1}
                             rules={{ 
                                 required: 'Campo obrigatório',
                                 validate: { isValuePositive: (value) => {
@@ -178,14 +178,14 @@ export default function RegisterCriteria(): JSX.Element {
                     </div>
 
                     <div className={styles.field}>
-                        <Controller 
+                        <Controller
                             name='unityType'
                             control={control}
-                            defaultValue=''
+                            defaultValue={1}
                             rules={{ required: 'Campo obrigatório' }}
                             render={ ({ field: { onChange, onBlur, value}, fieldState: { error } }) => (
                                 <TextField
-                                    type='text'
+                                    select
                                     label='Tipo de unidade'
                                     variant='outlined'
                                     onBlur={onBlur}
@@ -194,54 +194,21 @@ export default function RegisterCriteria(): JSX.Element {
                                     value={value}
                                     error={!!error}
                                     helperText={!!error && error.message}
-                                />
+                                    SelectProps={{
+                                        native: true,
+                                    }}
+                                >
+                                    <option aria-label='None' value='' />
+                                    {criteriaTypes.map((option) => (
+                                        <option key={option.value} value={option.value}>
+                                            {option.label}
+                                        </option>
+                                    ))}
+                                </TextField>
                             ) }
                         />
                     </div>
 
-                    <div className={styles.field}>
-                        <Controller 
-                            name='bestValue'
-                            control={control}
-                            defaultValue={undefined}
-                            rules={{ required: 'Campo obrigatório' }}
-                            render={ ({ field: { onChange, onBlur, value}, fieldState: { error } }) => (
-                                <TextField
-                                    type='number'
-                                    label='Valor Mais Esperado'
-                                    variant='outlined'
-                                    onBlur={onBlur}
-                                    onChange={onChange}
-                                    fullWidth
-                                    value={value}
-                                    error={!!error}
-                                    helperText={!!error && error.message}
-                                />
-                            ) }
-                        />
-                    </div>
-
-                    <div className={styles.field}>
-                        <Controller 
-                            name='worstValue'
-                            control={control}
-                            defaultValue={undefined}
-                            rules={{ required: 'Campo obrigatório' }}
-                            render={ ({ field: { onChange, onBlur, value}, fieldState: { error } }) => (
-                                <TextField
-                                    type='number'
-                                    label='Valor Menos Esperado'
-                                    variant='outlined'
-                                    onBlur={onBlur}
-                                    onChange={onChange}
-                                    fullWidth
-                                    value={value}
-                                    error={!!error}
-                                    helperText={!!error && error.message}
-                                />
-                            ) }
-                        />
-                    </div>
                 </fieldset>
 
                 <Button

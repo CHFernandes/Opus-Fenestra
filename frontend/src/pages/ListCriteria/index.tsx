@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useContext } from 'react';
 import { useRouter } from 'next/router';
 
 import { Button, IconButton } from '@material-ui/core';
@@ -10,6 +10,7 @@ import { DeleteConfirmation } from '../../components/DeleteConfirmation';
 
 import { api } from '../../services/api';
 import styles from './styles.module.scss';
+import { AuthContext } from '../../contexts/AuthContext';
 
 
 type Criterion = {
@@ -24,22 +25,30 @@ type Criterion = {
 
 
 export default function ListCriteria(): JSX.Element  {
+    const { isAuthenticated, user } = useContext(AuthContext);
     const [criteria, setCriteria] = useState<Criterion[]>([]);
 
     useEffect(() => {
         async function getCriteria() {
-            const { data } = await api.get('criteria');
+            const { data:portfolioData } = await api.get(`/portfolios/${user.idOrganization}`);
+            const portfolioId = portfolioData.id_portfolio;
+            const { data } = await api.get(`criteriaPortfolio/${portfolioId}`);
 
-            const criteria = data.map((criterion: Criterion) => {
+            const criteria = data.map((criterion) => {
                 return {
-                    id: criterion.idCriteria,
+                    id: criterion.id_criteria,
                     description: criterion.description,
                     weight: criterion.weight,
-                    unityType: criterion.unityType,
-                    bestValue: criterion.bestValue,
-                    worstValue: criterion.worstValue,
+                    unityType: criterion.unit_description,
+                    bestValue: criterion.best_manual_value,
+                    worstValue: criterion.worst_manual_value,
                 };
             });
+
+            if (!isAuthenticated) {
+                router.push('/');
+                return;
+            }
 
             setCriteria(criteria);
         }
@@ -139,17 +148,19 @@ export default function ListCriteria(): JSX.Element  {
 
         alert('Critério Excluído');
 
-        const { data } = await api.get('criteria');
+        const { data:portfolioData } = await api.get(`/portfolios/${user.idOrganization}`);
+        const portfolioId = portfolioData.id_portfolio;
+        const { data } = await api.get(`criteriaPortfolio/${portfolioId}`);
 
         if (data) {
-            const criteria = data.map((criterion: Criterion) => {
+            const criteria = data.map((criterion) => {
                 return {
-                    id: criterion.idCriteria,
+                    id: criterion.id_criteria,
                     description: criterion.description,
                     weight: criterion.weight,
-                    unityType: criterion.unityType,
-                    bestValue: criterion.bestValue,
-                    worstValue: criterion.worstValue,
+                    unityType: criterion.unit_description,
+                    bestValue: criterion.best_manual_value,
+                    worstValue: criterion.worst_manual_value,
                 };
             });
             setCriteria(criteria);
