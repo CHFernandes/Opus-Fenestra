@@ -14,7 +14,7 @@ import styles from './styles.module.scss';
 export function Header(): JSX.Element {
     const { toggleSidebar } = useSidebar();
 
-    const { user } = useContext(AuthContext);
+    const { user, logout } = useContext(AuthContext);
 
     const currentDate = format(new Date(), 'EEEEEE, d MMMM', {
         locale: ptBR,
@@ -32,8 +32,8 @@ export function Header(): JSX.Element {
 
                     <span>{currentDate}</span>
                     <div className={styles.user}>
-                        <span> Olá administrador</span>
-                        <Button color='primary' endIcon={<MI.ExitToApp />}>
+                        <span> Olá {user.userName}</span>
+                        <Button color='primary' endIcon={<MI.ExitToApp />} onClick={logout}>
                             <span>Sair</span>
                         </Button>
                     </div>

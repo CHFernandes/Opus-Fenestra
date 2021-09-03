@@ -46,7 +46,7 @@ export default function ListCriteria(): JSX.Element  {
             });
 
             if (!isAuthenticated) {
-                router.push('/');
+                router.push('/Login');
                 return;
             }
 

@@ -147,7 +147,7 @@ export default function RegisterOrganizationWizard(): JSX.Element {
             const resultPortfolio = await api.post('portfolios', portfolioRequestData);
 
             if (resultPortfolio) {
-                router.push('/');
+                router.push('/Login');
             }
 
         } catch (err) {

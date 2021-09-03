@@ -63,7 +63,7 @@ export default function RegisterCriteria(): JSX.Element {
         }
 
         if (!isAuthenticated) {
-            router.push('/');
+            router.push('/Login');
             return;
         }
 

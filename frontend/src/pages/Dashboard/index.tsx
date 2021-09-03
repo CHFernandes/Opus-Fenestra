@@ -45,7 +45,7 @@ export default function Dashboard():JSX.Element {
         }
         
         if (!isAuthenticated) {
-            router.push('/');
+            router.push('/Login');
             return;
         }
 

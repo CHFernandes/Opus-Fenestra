@@ -63,7 +63,7 @@ export default function RegisterPersons(): JSX.Element{
         }
 
         if (!isAuthenticated) {
-            router.push('/');
+            router.push('/Login');
             return;
         }
 

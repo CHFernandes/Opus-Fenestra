@@ -64,7 +64,7 @@ export default function ListProjects(): JSX.Element  {
         }
 
         if (!isAuthenticated) {
-            router.push('/');
+            router.push('/Login');
             return;
         }
 
