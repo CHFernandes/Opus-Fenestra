@@ -15,6 +15,22 @@ class PersonsService {
             throw new Error('Mandatory values not filled');
         }
 
+        const registeredEmail = await this.personsRepository.findOne({
+            where: {email},
+        });
+
+        if (registeredEmail) {
+            throw new Error('E-mail already registered');
+        }
+
+        const registeredPerson = await this.personsRepository.findOne({
+            where: {user, id_organization},
+        });
+
+        if (registeredPerson) {
+            throw new Error('Username already registered');
+        }
+
         // password = await bcrypt.hash(password, 10);
 
         const person = this.personsRepository.create({

@@ -59,8 +59,8 @@ export default function Submenu ({ item }: subMenuProps): JSX.Element {
                     return (
                         <div className={styles.dropdown} key={index}>
                             <Button onClick={() => redirect(item.path)} >
-                                {item.icon}
-                            <span>{item.title}</span>
+                                <span className={styles.icon}>{item.icon}</span>
+                                <span className={styles.text}>{item.title}</span>
                             </Button>
                         </div>
                     );

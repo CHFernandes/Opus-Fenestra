@@ -15,17 +15,40 @@ type UserForm = {
     email: string;
     password: string;
     confirmPassword: string;
+    persona: number;
+    oldPassword?: string;
 }
 
 export default function RegisterPersons(): JSX.Element{
-    const { isAuthenticated } = useContext(AuthContext);
+    const { isAuthenticated, user } = useContext(AuthContext);
+    const { idOrganization } = user;
     const router = useRouter();
     const { slug } = router.query;
+
+    const personaTypes = [
+        {
+            label: 'Administrador',
+            value: 1,
+        },
+        {
+            label: 'Diretoria',
+            value: 2,
+        },
+        {
+            label: 'Gerente de portfólio',
+            value: 3,
+        },
+        {
+            label: 'Gerente de projeto',
+            value: 4,
+        },
+    ];
 
     const startingForm = {
         name: '',
         user: '',
         email: '',
+        persona: 3,
         password: '',
         confirmPassword: '',
     };
@@ -55,6 +78,7 @@ export default function RegisterPersons(): JSX.Element{
                 name: 'Teste Testonious',
                 user: 'usedUser',
                 email: 'someEmail@go.to.die',
+                persona: 3,
                 password: '',
                 confirmPassword: '',
             };
@@ -73,32 +97,43 @@ export default function RegisterPersons(): JSX.Element{
     }, []);
 
     useEffect(() => {
-        const { user, name, email } = form;
+        const { user, name, email, persona } = form;
 
         setValue('user', user);
         setValue('name', name);
         setValue('email', email);
+        setValue('persona', persona);
 
     }, [form]);
 
-    function onSubmit(data: UserForm) {
-        const { email, password, name, user } = data;
+    async function onSubmit(data: UserForm) {
+        const { email, password, name, user, persona } = data;
         setForm({
             email,
             name,
             user,
+            persona,
             password: '',
             confirmPassword: '',
         });
 
-        console.log({ email, password, name, user });
+        const requestData = {
+            organizationId: idOrganization,
+            personaId: persona,
+            email,
+            name,
+            password,
+            user
+        };
 
         if (!isNaN(Number(slug)) && Number(slug) > -1) {
             alert('Pessoa cadastrada atualizada');
-            return;
-        }
+        } else {
+            await api.post('persons', requestData);
 
-        alert('Pessoa cadastrada com sucesso');
+            alert('Pessoa cadastrada com sucesso');
+        }
+        router.push('/ListPersons');
         return;
     }
     
@@ -183,15 +218,90 @@ export default function RegisterPersons(): JSX.Element{
                             />
                         </div>
                         <div className={styles.field}>
+                            <Controller
+                                name='persona'
+                                control={control}
+                                defaultValue={3}
+                                rules={{ required: 'Campo obrigatório' }}
+                                render={ ({ field: { onChange, onBlur, value}, fieldState: { error } }) => (
+                                    <TextField
+                                        select
+                                        label='Tipo de usuário'
+                                        variant='outlined'
+                                        onBlur={onBlur}
+                                        onChange={onChange}
+                                        fullWidth
+                                        value={value}
+                                        error={!!error}
+                                        helperText={!!error && error.message}
+                                        SelectProps={{
+                                            native: true,
+                                        }}
+                                    >
+                                        <option aria-label='None' value='' />
+                                        {personaTypes.map((option) => (
+                                            <option key={option.value} value={option.value}>
+                                                {option.label}
+                                            </option>
+                                        ))}
+                                    </TextField>
+                                ) }
+                            />
+                        </div>
+                        {
+                        Number(slug) > -1 && (
+                            <div className={styles.field}>
+                                <Controller 
+                                name='oldPassword'
+                                control={control}
+                                defaultValue=''
+                                rules={{
+                                    validate: {
+                                        required: value => {
+                                            return (Number(slug) > -1 && value) || 'Campo Obrigatório';
+                                        },
+                                    }
+                                }}
+                                render={ ({ field: { onChange, onBlur, value} }) => (
+                                    <TextField
+                                        type='password'
+                                        label='Senha atual do usuário'
+                                        variant='outlined'
+                                        onBlur={onBlur}
+                                        onChange={onChange}
+                                        fullWidth
+                                        value={value}
+                                    />
+                                ) }
+                            />
+                            </div>
+                        )
+                    }
+                        <div className={styles.field}>
                             <Controller 
                                 name='password'
                                 control={control}
                                 defaultValue=''
-                                rules={{ required: 'Campo obrigatório' }}
+                                rules={{ 
+                                    validate: {
+                                        required: value => {
+                                            return (Number(slug) === -1 && !!value) || 'Campo Obrigatório';
+                                        },
+                                        requireOldPassword: value => {
+                                            const { oldPassword } = getValues();
+                                            if (Number(slug) > -1) {
+                                                if (!!value && !oldPassword){
+                                                    return 'Insira a senha antiga do usuário antes de mudar para uma nova';
+                                                }
+                                            }
+                                            return true;
+                                        },
+                                    }
+                                }}
                                 render={ ({ field: { onChange, onBlur, value}, fieldState: { error } }) => (
                                     <TextField
                                         type='password'
-                                        label='Senha'
+                                        label={ Number(slug) > -1 ? 'Nova Senha' : 'Senha'}
                                         variant='outlined'
                                         onBlur={onBlur}
                                         onChange={onChange}
@@ -209,11 +319,16 @@ export default function RegisterPersons(): JSX.Element{
                                 control={control}
                                 defaultValue=''
                                 rules={{
-                                    required: 'Campo obrigatório',
-                                    validate: { isPasswordsMatches: (value) => { 
+                                    validate: { 
+                                        isPasswordFilled: (value) => { 
+                                            const { password } = getValues();
+                                            return !!value && !!password || 'Confirme a nova senha';
+                                        }, 
+                                        isPasswordsMatches: (value) => { 
                                         const { password } = getValues();
                                         return password === value || 'Senhas devem ser iguais';
-                                    } }
+                                        }, 
+                                    }
                                 }}
                                 render={ ({ field: { onChange, onBlur, value}, fieldState: { error } }) => (
                                     <TextField

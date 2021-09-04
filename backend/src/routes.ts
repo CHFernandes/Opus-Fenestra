@@ -5,7 +5,7 @@ import { ProjectsController } from './controllers/ProjectsController';
 import { OrganizationsController } from './controllers/OrganizationsController';
 import { PersonsController } from './controllers/PersonsController';
 import { PortfoliosController } from './controllers/PortfoliosController';
-import { AuthenticationController } from './controllers/AuthenicationController';
+import { AuthenticationController } from './controllers/AuthenticationController';
 
 const routes = Router();
 

@@ -1,4 +1,4 @@
-import React, { useContext } from 'react';
+import React, { useContext, useEffect } from 'react';
 import { useRouter } from 'next/router';
 import Image from 'next/image';
 import Link from 'next/link';
@@ -17,13 +17,20 @@ type LoginForm = {
 export default function Login(): JSX.Element {
     const router = useRouter();
     const { handleSubmit, control } = useForm<LoginForm>({mode: 'all'});
-    const { signIn } = useContext(AuthContext);
+    const { signIn, isAuthenticated } = useContext(AuthContext);
 
     async function onSubmit(data: LoginForm) {
         await signIn(data);
         router.push('/Dashboard');
         return;
     }
+
+    useEffect(() => {
+        if (isAuthenticated) {
+            router.push('/Dashboard');
+            return;
+        }
+    }, []);
 
     return(
         <div className={styles.loginWrapper}>

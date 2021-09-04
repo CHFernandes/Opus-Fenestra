@@ -1,6 +1,6 @@
 .sidebarNav {
     background: var(--white);
-    width: 14rem;
+    width: 16rem;
     height: 100vh;
     display: flex;
     justify-content: center;
@@ -9,6 +9,7 @@
     transition: 350ms;
     z-index: 10;
     box-shadow: 2rem 0rem 2rem #0F0F0F44;
+    overflow-y: auto;
 }
 
 .sidebarWrap {
@@ -78,12 +79,18 @@
         }
     }
 
-    button {
-        padding-left: 3rem;
+    .icon {
+        width: 30%;
+        text-align: center;
     }
 
-    span {
-        margin-left: 1rem;
-        margin: auto;
+    .text {
+        width: 70%;
+        text-align: left;
+    }
+
+    button {
+        padding-left: 3rem;
+        width: 100%;
     }
 }
