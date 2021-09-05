@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useContext } from 'react';
 import { useRouter } from 'next/router';
 
 import { Button, IconButton } from '@material-ui/core';
@@ -10,6 +10,7 @@ import { DeleteConfirmation } from '../../components/DeleteConfirmation';
 
 import { api } from '../../services/api';
 import styles from './styles.module.scss';
+import { AuthContext } from '../../contexts/AuthContext';
 
 type Person = {
     id: number;
@@ -20,34 +21,33 @@ type Person = {
 }
 
 export default function ListPersons(): JSX.Element {
+    const { isAuthenticated, user } = useContext(AuthContext);
     const [personList, setPersons] = useState<Person[]>([]);
 
     useEffect(() => {
         async function getPersons() {
-            // const { data } = await api.get('criteria');
+            const { idOrganization } = user;
 
-            // const persons = data.map((person => {
-            //     return {
-            //         id: person.idPerson,
-            //         name: person.name,
-            //         user: person.user,
-            //         email: person.email,
-            //         persona: person.personaDescription,
-            //     };
-            // }));
+            const { data } = await api.get(`personsOrganization/${idOrganization}`);
 
-            const persons = [
-                {
-                    id: 69,
-                    name: 'Test Testonious',
-                    user: 'testonious.telonious',
-                    email: 'someEmail@go.to.die',
-                    persona: 'Administrador',
-                }
-            ];
+            const persons = data.map((person => {
+                return {
+                    id: person.id_person,
+                    name: person.name,
+                    user: person.user,
+                    email: person.email,
+                    persona: person.type_persona,
+                };
+            }));
 
             setPersons(persons);
         }
+
+        if (!isAuthenticated) {
+            router.push('/Login');
+            return;
+        }
+
         getPersons();
     }, []);
 
@@ -111,12 +111,12 @@ export default function ListPersons(): JSX.Element {
     ];
 
     function handleNewPerson () {
-        router.push('/RegisterPerson/-1');
+        router.push('/RegisterPersons/-1');
     }
 
     function handleEdit (id: number) {
-        const idCriteria = String(id);
-        router.push(`/RegisterPerson/${idCriteria}`);
+        const idPerson = String(id);
+        router.push(`/RegisterPersons/${idPerson}`);
     }
 
     async function handleDelete (id: number) {
@@ -127,28 +127,30 @@ export default function ListPersons(): JSX.Element {
             return;
         }
 
-        const idCriteria = String(id);
-        const responseDeletion = await api.delete(`/persons/${idCriteria}`);
+        const idPerson = String(id);
+        const responseDeletion = await api.delete(`/persons/${idPerson}`);
 
         if (!responseDeletion.data) {
             alert('Erro durante a exclusão');
             return;
         }
 
-        alert('Critério Excluído');
+        alert('Pessoa Excluída');
 
-        const { data } = await api.get('persons');
+        const { idOrganization } = user;
+        const { data } = await api.get(`personsOrganization/${idOrganization}`);
 
         if (data) {
-            const persons = data.map((person) => {
+            const persons = data.map((person => {
                 return {
-                    id: person.idPerson,
+                    id: person.id_person,
                     name: person.name,
                     user: person.user,
                     email: person.email,
-                    persona: person.personaDescription,
+                    persona: person.type_persona,
                 };
-            });
+            }));
+
             setPersons(persons);
         }
     }

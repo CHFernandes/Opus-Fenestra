@@ -24,7 +24,10 @@ routes.get('/organizations', organizationsController.show);
 routes.get('/organizations/:id', organizationsController.showById);
 
 routes.post('/persons', personsController.create);
-routes.get('/persons', personsController.show);
+routes.get('/personsOrganization/:id', personsController.show);
+routes.get('/persons/:id', personsController.showById);
+routes.put('/persons/:id', personsController.updateById);
+routes.delete('/persons/:id', personsController.deleteById);
 
 routes.post('/portfolios', portfoliosController.create);
 routes.get('/portfolios', portfoliosController.show);

@@ -132,11 +132,11 @@ class ProjectsService {
     }
 
     async deleteById (id_project: number): Promise<boolean> {
-        const criterion = await this.projectsRepository.findOne({
+        const project = await this.projectsRepository.findOne({
             where: {id_project},
         });
 
-        if (!criterion) {
+        if (!project) {
             throw new Error('Project doesn\'t exist');
         }
 

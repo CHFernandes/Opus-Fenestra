@@ -19,9 +19,18 @@ type UserForm = {
     oldPassword?: string;
 }
 
+type RequestData = {
+    organizationId: number;
+    personaId: number;
+    email: string;
+    name: string;
+    user: string;
+    password: string;
+    oldPassword?: string;
+}
+
 export default function RegisterPersons(): JSX.Element{
     const { isAuthenticated, user } = useContext(AuthContext);
-    const { idOrganization } = user;
     const router = useRouter();
     const { slug } = router.query;
 
@@ -62,23 +71,14 @@ export default function RegisterPersons(): JSX.Element{
 
     useEffect(() => {
         async function getPerson() {
-            // const { data } = await api.get(`/person/${slug}`);
-            // const dataParsed = data;
-            // const person = {
-            //     id: dataParsed.idPerson,
-            //     name: dataParsed.name,
-            //     user: dataParsed.user,
-            //     email: dataParsed.email,
-            //     password: '',
-            //     confirmPassword: '',
-            // };
-
+            const { data } = await api.get(`/persons/${slug}`);
+            const dataParsed = data;
             const person = {
-                id: 1,
-                name: 'Teste Testonious',
-                user: 'usedUser',
-                email: 'someEmail@go.to.die',
-                persona: 3,
+                id: dataParsed.id_person,
+                name: dataParsed.name,
+                user: dataParsed.user,
+                email: dataParsed.email,
+                persona: dataParsed.id_persona,
                 password: '',
                 confirmPassword: '',
             };
@@ -107,34 +107,46 @@ export default function RegisterPersons(): JSX.Element{
     }, [form]);
 
     async function onSubmit(data: UserForm) {
-        const { email, password, name, user, persona } = data;
+        const { idOrganization } = user;
+        const { email, password, name, user: userName, persona, oldPassword } = data;
+
         setForm({
             email,
             name,
-            user,
+            user:userName,
             persona,
             password: '',
             confirmPassword: '',
         });
 
-        const requestData = {
+        const requestData: RequestData = {
             organizationId: idOrganization,
             personaId: persona,
             email,
             name,
             password,
-            user
+            user: userName
         };
 
-        if (!isNaN(Number(slug)) && Number(slug) > -1) {
-            alert('Pessoa cadastrada atualizada');
-        } else {
-            await api.post('persons', requestData);
+        try {
+            if (!isNaN(Number(slug)) && Number(slug) > -1) {
+                requestData.oldPassword = oldPassword;
+                await api.put(`persons/${Number(slug)}`, requestData);
+                alert('Pessoa cadastrada atualizada');
+            } else {
+                await api.post('persons', requestData);
 
-            alert('Pessoa cadastrada com sucesso');
+                alert('Pessoa cadastrada com sucesso');
+            }
+            router.push('/ListPersons');
+            return;
+
+        } catch (error) {
+            console.log(error);
+            console.log(error.message);
+            console.log(error.response);
+            console.log(error.response.data.message);
         }
-        router.push('/ListPersons');
-        return;
     }
     
 
@@ -143,7 +155,7 @@ export default function RegisterPersons(): JSX.Element{
             <form onSubmit={handleSubmit(onSubmit)}>
                 <fieldset>
                     <legend>
-                        <h2>Pessoa</h2>
+                        <h2>Usuário</h2>
                     </legend>
                     <div className={styles.formFields}>
                         <div className={styles.field}>
@@ -258,11 +270,11 @@ export default function RegisterPersons(): JSX.Element{
                                 rules={{
                                     validate: {
                                         required: value => {
-                                            return (Number(slug) > -1 && value) || 'Campo Obrigatório';
+                                            return (Number(slug) > -1 && !!value) || 'Campo Obrigatório';
                                         },
                                     }
                                 }}
-                                render={ ({ field: { onChange, onBlur, value} }) => (
+                                render={ ({ field: { onChange, onBlur, value}, fieldState: { error } }) => (
                                     <TextField
                                         type='password'
                                         label='Senha atual do usuário'
@@ -271,6 +283,8 @@ export default function RegisterPersons(): JSX.Element{
                                         onChange={onChange}
                                         fullWidth
                                         value={value}
+                                        error={!!error}
+                                        helperText={error && error.message}
                                     />
                                 ) }
                             />
@@ -285,7 +299,12 @@ export default function RegisterPersons(): JSX.Element{
                                 rules={{ 
                                     validate: {
                                         required: value => {
-                                            return (Number(slug) === -1 && !!value) || 'Campo Obrigatório';
+                                            if(Number(slug) === -1) {
+                                                if(!value) {
+                                                    return 'Campo Obrigatório';
+                                                }
+                                            }
+                                            return true;
                                         },
                                         requireOldPassword: value => {
                                             const { oldPassword } = getValues();
@@ -322,7 +341,12 @@ export default function RegisterPersons(): JSX.Element{
                                     validate: { 
                                         isPasswordFilled: (value) => { 
                                             const { password } = getValues();
-                                            return !!value && !!password || 'Confirme a nova senha';
+                                            if (password) {
+                                                if (!value) {
+                                                    return 'Confirme a nova senha';
+                                                }
+                                            }
+                                            return true;
                                         }, 
                                         isPasswordsMatches: (value) => { 
                                         const { password } = getValues();
@@ -354,7 +378,13 @@ export default function RegisterPersons(): JSX.Element{
                             color='primary'
                             type='submit'
                         >
-                            Próximo
+                            { 
+                                Number(slug) > -1 ? (
+                                    <span>Atualizar Usuário</span>
+                                ) : (
+                                    <span>Cadastrar Usuário</span>
+                                )
+                            }   
                         </Button>
                 </div>
             </form>
