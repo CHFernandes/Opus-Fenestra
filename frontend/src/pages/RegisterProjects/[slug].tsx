@@ -15,6 +15,7 @@ import { api } from '../../services/api';
 import styles from './styles.module.scss';
 import { Controller, useForm } from 'react-hook-form';
 import { AuthContext } from '../../contexts/AuthContext';
+import toast from 'react-hot-toast';
 
 type FormData = {
     portfolioId?: number;
@@ -67,19 +68,23 @@ export default function RegisterProjects(): JSX.Element {
 
     useEffect(() => {
         async function getProject() {
-            const { data } = await api.get(`/projects/${slug}`);
+            try {
+                const { data } = await api.get(`/projects/${slug}`);
 
-            const project = {
-                id: data.idProject,
-                name: data.name,
-                description: data.description,
-                status: 1,
-                completion: data.completion ? data.completion : 0,
-                plannedStartDate: new Date(data.planned_start_date),
-                plannedEndDate: new Date(data.planned_end_date)
-            };
+                const project = {
+                    id: data.idProject,
+                    name: data.name,
+                    description: data.description,
+                    status: 1,
+                    completion: data.completion ? data.completion : 0,
+                    plannedStartDate: new Date(data.planned_start_date),
+                    plannedEndDate: new Date(data.planned_end_date)
+                };
 
-            setFormData(project);
+                setFormData(project);
+            } catch (error) {
+                toast.error(error.response.data.message);
+            } 
         }
 
         if (!isAuthenticated) {
@@ -104,30 +109,29 @@ export default function RegisterProjects(): JSX.Element {
     }, [formData]);
 
     async function onSubmit(data: FormData) {
+        try{
+            const { data:portfolioData } = await api.get(`/portfolios/${user.idOrganization}`);
 
-        const { data:portfolioData } = await api.get(`/portfolios/${user.idOrganization}`);
+            const portfolioId = portfolioData.id_portfolio;
 
-        const portfolioId = portfolioData.id_portfolio;
+            const submitter = user.id;
 
-        const submitter = user.id;
+            const { name, description, completion, plannedStartDate, plannedEndDate } = data;
 
-        const { name, description, completion, plannedStartDate, plannedEndDate } = data;
+            const requestData = {
+                portfolioId,
+                submitter,
+                name,
+                description,
+                completion: Number(completion),
+                plannedStartDate: format(plannedStartDate, 'yyyy-MM-dd HH:mm:ss', {
+                    locale: ptBR,
+                }),
+                plannedEndDate: format(plannedEndDate, 'yyyy-MM-dd HH:mm:ss', {
+                    locale: ptBR,
+                }),
+            };
 
-        const requestData = {
-            portfolioId,
-            submitter,
-            name,
-            description,
-            completion: Number(completion),
-            plannedStartDate: format(plannedStartDate, 'yyyy-MM-dd HH:mm:ss', {
-                locale: ptBR,
-            }),
-            plannedEndDate: format(plannedEndDate, 'yyyy-MM-dd HH:mm:ss', {
-                locale: ptBR,
-            }),
-        };
-
-        try {
             if (Number(slug) > -1) {
                 await api.put(`projects/${slug}`, requestData);
 
@@ -139,9 +143,9 @@ export default function RegisterProjects(): JSX.Element {
                 alert('Projeto criado com sucesso');
                 router.push('/ListProjects');
             }
-        } catch (err) {
-            alert(err.message);
-        }
+        } catch (error) {
+            toast.error(error.response.data.message);
+        } 
     }
 
     return (

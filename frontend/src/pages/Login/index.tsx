@@ -8,6 +8,7 @@ import { useForm, Controller } from 'react-hook-form';
 
 import styles from './styles.module.scss';
 import { AuthContext } from '../../contexts/AuthContext';
+import toast from 'react-hot-toast';
 
 type LoginForm = {
     username: string;
@@ -20,9 +21,13 @@ export default function Login(): JSX.Element {
     const { signIn, isAuthenticated } = useContext(AuthContext);
 
     async function onSubmit(data: LoginForm) {
-        await signIn(data);
-        router.push('/Dashboard');
-        return;
+        try {
+            await signIn(data);
+            router.push('/Dashboard');
+            return;
+        } catch (error) {
+            toast.error(error.response.data.message);
+        } 
     }
 
     useEffect(() => {

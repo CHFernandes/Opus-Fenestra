@@ -7,6 +7,8 @@ import { Sidebar } from '../components/Sidebar';
 import { SidebarContextProvider } from '../contexts/SidebarContext';
 import { AuthContextProvider } from '../contexts/AuthContext';
 
+import { Toaster } from 'react-hot-toast';
+
 import '../styles/global.scss';
 import styles from '../styles/app.module.scss';
 
@@ -26,6 +28,7 @@ function MyApp({ Component, pageProps }: AppProps): JSX.Element {
           <main>
             <Header />
             <Component {...pageProps} />
+            <Toaster />
           </main>
         </div>
       </SidebarContextProvider>

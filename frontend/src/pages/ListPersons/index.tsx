@@ -11,6 +11,7 @@ import { DeleteConfirmation } from '../../components/DeleteConfirmation';
 import { api } from '../../services/api';
 import styles from './styles.module.scss';
 import { AuthContext } from '../../contexts/AuthContext';
+import toast from 'react-hot-toast';
 
 type Person = {
     id: number;
@@ -26,21 +27,26 @@ export default function ListPersons(): JSX.Element {
 
     useEffect(() => {
         async function getPersons() {
-            const { idOrganization } = user;
+            try {
+                const { idOrganization } = user;
 
-            const { data } = await api.get(`personsOrganization/${idOrganization}`);
+                const { data } = await api.get(`personsOrganization/${idOrganization}`);
 
-            const persons = data.map((person => {
-                return {
-                    id: person.id_person,
-                    name: person.name,
-                    user: person.user,
-                    email: person.email,
-                    persona: person.type_persona,
-                };
-            }));
+                const persons = data.map((person => {
+                    return {
+                        id: person.id_person,
+                        name: person.name,
+                        user: person.user,
+                        email: person.email,
+                        persona: person.type_persona,
+                    };
+                }));
 
-            setPersons(persons);
+                setPersons(persons);
+
+            } catch (error) {
+                toast.error(error.response.data.message);
+            }
         }
 
         if (!isAuthenticated) {
@@ -120,39 +126,43 @@ export default function ListPersons(): JSX.Element {
     }
 
     async function handleDelete (id: number) {
+        try {
+            const response = await DeleteConfirmation();
 
-        const response = await DeleteConfirmation();
+            if(!response){
+                return;
+            }
 
-        if(!response){
-            return;
-        }
+            const idPerson = String(id);
+            const responseDeletion = await api.delete(`/persons/${idPerson}`);
 
-        const idPerson = String(id);
-        const responseDeletion = await api.delete(`/persons/${idPerson}`);
+            if (!responseDeletion.data) {
+                alert('Erro durante a exclusão');
+                return;
+            }
 
-        if (!responseDeletion.data) {
-            alert('Erro durante a exclusão');
-            return;
-        }
+            alert('Pessoa Excluída');
 
-        alert('Pessoa Excluída');
+            const { idOrganization } = user;
+            const { data } = await api.get(`personsOrganization/${idOrganization}`);
 
-        const { idOrganization } = user;
-        const { data } = await api.get(`personsOrganization/${idOrganization}`);
+            if (data) {
+                const persons = data.map((person => {
+                    return {
+                        id: person.id_person,
+                        name: person.name,
+                        user: person.user,
+                        email: person.email,
+                        persona: person.type_persona,
+                    };
+                }));
 
-        if (data) {
-            const persons = data.map((person => {
-                return {
-                    id: person.id_person,
-                    name: person.name,
-                    user: person.user,
-                    email: person.email,
-                    persona: person.type_persona,
-                };
-            }));
+                setPersons(persons);
+            }
 
-            setPersons(persons);
-        }
+        } catch (error) {
+            toast.error(error.response.data.message);
+        } 
     }
 
     return (

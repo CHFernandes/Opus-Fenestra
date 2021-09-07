@@ -8,6 +8,7 @@ import * as MI from '@material-ui/icons';
 import { api } from '../../services/api';
 import styles from './styles.module.scss';
 import { AuthContext } from '../../contexts/AuthContext';
+import toast from 'react-hot-toast';
 
 
 type FormData = {
@@ -48,18 +49,22 @@ export default function RegisterCriteria(): JSX.Element {
 
     useEffect(() => {
         async function getCriterion() {
-            const { data } = await api.get(`/criteria/${slug}`);
-            const dataParsed = data;
-            const criterion = {
-                id: dataParsed.id_criteria,
-                description: dataParsed.description,
-                weight: dataParsed.weight,
-                unityType: dataParsed.id_unities,
-                bestValue: dataParsed.best_value,
-                worstValue: dataParsed.worst_value,
-                portfolioId: dataParsed.id_portfolio,
-            };
-            setFormData(criterion);
+            try {
+                const { data } = await api.get(`/criteria/${slug}`);
+                const dataParsed = data;
+                const criterion = {
+                    id: dataParsed.id_criteria,
+                    description: dataParsed.description,
+                    weight: dataParsed.weight,
+                    unityType: dataParsed.id_unities,
+                    bestValue: dataParsed.best_value,
+                    worstValue: dataParsed.worst_value,
+                    portfolioId: dataParsed.id_portfolio,
+                };
+                setFormData(criterion);
+            } catch (error) {
+                toast.error(error.response.data.message);
+            }  
         }
 
         if (!isAuthenticated) {

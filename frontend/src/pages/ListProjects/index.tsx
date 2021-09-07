@@ -13,6 +13,7 @@ import { DeleteConfirmation } from '../../components/DeleteConfirmation';
 import { api } from '../../services/api';
 import styles from './styles.module.scss';
 import { AuthContext } from '../../contexts/AuthContext';
+import toast from 'react-hot-toast';
 
 type Project = {
     id: number;
@@ -36,31 +37,36 @@ export default function ListProjects(): JSX.Element  {
 
     useEffect(() => {
         async function getProjects() {
-            const { data:portfolioData } = await api.get(`/portfolios/${user.idOrganization}`);
-            const portfolioId = portfolioData.id_portfolio;
-            const { data } = await api.get(`/projectsPortfolio/${portfolioId}`);
-            const projects = data.map((project) => {
-                return {
-                    id: project.id_project,
-                    idPortfolio: project.id_portfolio,
-                    name: project.name,
-                    description: project.description,
-                    completion: Number(project.completion),
-                    statusDescription: project.status_description,
-                    status: project.id_status,
-                    plannedStartDate: new Date(project.planned_start_date),
-                    plannedEndDate: new Date(project.planned_end_date),
-                    plannedStartDateAsString: format(new Date(project.planned_start_date), 'dd/MM/yyyy', {
-                        locale: ptBR,
-                    }),
-                    plannedEndDateAsString: format(new Date(project.planned_end_date), 'dd/MM/yyyy', {
-                        locale: ptBR,
-                    }),
+            try {
+                const { data:portfolioData } = await api.get(`/portfolios/${user.idOrganization}`);
+                const portfolioId = portfolioData.id_portfolio;
+                const { data } = await api.get(`/projectsPortfolio/${portfolioId}`);
+                const projects = data.map((project) => {
+                    return {
+                        id: project.id_project,
+                        idPortfolio: project.id_portfolio,
+                        name: project.name,
+                        description: project.description,
+                        completion: Number(project.completion),
+                        statusDescription: project.status_description,
+                        status: project.id_status,
+                        plannedStartDate: new Date(project.planned_start_date),
+                        plannedEndDate: new Date(project.planned_end_date),
+                        plannedStartDateAsString: format(new Date(project.planned_start_date), 'dd/MM/yyyy', {
+                            locale: ptBR,
+                        }),
+                        plannedEndDateAsString: format(new Date(project.planned_end_date), 'dd/MM/yyyy', {
+                            locale: ptBR,
+                        }),
 
-                };
-            });
+                    };
+                });
 
-            setProjects(projects);
+                setProjects(projects);
+
+            } catch (error) {
+                toast.error(error.response.data.message);
+            }
         }
 
         if (!isAuthenticated) {
@@ -163,50 +169,53 @@ export default function ListProjects(): JSX.Element  {
     }
 
     async function handleDelete (id: number) {
+        try {
+            const response = await DeleteConfirmation();
 
-        const response = await DeleteConfirmation();
+            if(!response){
+                return;
+            }
 
-        if(!response){
-            return;
-        }
+            const idProject = String(id);
+            const responseDeletion = await api.delete(`/projects/${idProject}`);
 
-        const idProject = String(id);
-        const responseDeletion = await api.delete(`/projects/${idProject}`);
+            if (!responseDeletion.data) {
+                alert('Erro durante a exclusão');
+                return;
+            }
 
-        if (!responseDeletion.data) {
-            alert('Erro durante a exclusão');
-            return;
-        }
+            const { data:portfolioData } = await api.get(`/portfolios/${user.idOrganization}`);
+            const portfolioId = portfolioData.id_portfolio;
+            const { data } = await api.get(`/projectsPortfolio/${portfolioId}`);
+            
+            if (data) {
+                const projects = data.map((project) => {
+                    return {
+                        id: project.id_project,
+                        idPortfolio: project.id_portfolio,
+                        name: project.name,
+                        description: project.description,
+                        completion: Number(project.completion),
+                        statusDescription: project.status_description,
+                        status: project.id_status,
+                        plannedStartDate: new Date(project.planned_start_date),
+                        plannedEndDate: new Date(project.planned_end_date),
+                        plannedStartDateAsString: format(new Date(project.planned_start_date), 'dd/MM/yyyy', {
+                            locale: ptBR,
+                        }),
+                        plannedEndDateAsString: format(new Date(project.planned_end_date), 'dd/MM/yyyy', {
+                            locale: ptBR,
+                        }),
+                    };
+                });
 
-        const { data:portfolioData } = await api.get(`/portfolios/${user.idOrganization}`);
-        const portfolioId = portfolioData.id_portfolio;
-        const { data } = await api.get(`/projectsPortfolio/${portfolioId}`);
-        
-        if (data) {
-            const projects = data.map((project) => {
-                return {
-                    id: project.id_project,
-                    idPortfolio: project.id_portfolio,
-                    name: project.name,
-                    description: project.description,
-                    completion: Number(project.completion),
-                    statusDescription: project.status_description,
-                    status: project.id_status,
-                    plannedStartDate: new Date(project.planned_start_date),
-                    plannedEndDate: new Date(project.planned_end_date),
-                    plannedStartDateAsString: format(new Date(project.planned_start_date), 'dd/MM/yyyy', {
-                        locale: ptBR,
-                    }),
-                    plannedEndDateAsString: format(new Date(project.planned_end_date), 'dd/MM/yyyy', {
-                        locale: ptBR,
-                    }),
-                };
-            });
+                setProjects(projects);
 
-            setProjects(projects);
-
-            alert('Projeto Excluído');
-        }
+                alert('Projeto Excluído');
+            }
+        } catch (error) {
+            toast.error(error.response.data.message);
+        } 
     }
 
     return (

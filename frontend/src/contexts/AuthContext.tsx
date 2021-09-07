@@ -3,6 +3,7 @@ import { useRouter } from 'next/router';
 
 import { setCookie, parseCookies, destroyCookie } from 'nookies';
 import { api } from '../services/api';
+import toast from 'react-hot-toast';
 
 type AuthContextProviderProps = {
     children: ReactNode;
@@ -40,6 +41,7 @@ export function AuthContextProvider({ children }: AuthContextProviderProps): JSX
 
     useEffect(() => {
         async function getUser() {
+            try {
             const { data } = await api.get('/login/');
             const responseUser = {
                 id: data.id_person,
@@ -51,6 +53,9 @@ export function AuthContextProvider({ children }: AuthContextProviderProps): JSX
             };
 
             setUser(responseUser);
+            } catch(error) {
+                toast.error(error.response.data.message);
+            }
         }
 
         const { 'nextAuth.token': token } = parseCookies();
@@ -62,33 +67,37 @@ export function AuthContextProvider({ children }: AuthContextProviderProps): JSX
     }, []);
 
     async function signIn({ username, password }: SignInData) {
-        const signInData = {
-            user: username,
-            password,
-        };
+        try {
+            const signInData = {
+                user: username,
+                password,
+            };
 
-        const { data } = await api.post('login', signInData);
+            const { data } = await api.post('login', signInData);
 
-        const token = data.accessToken;
+            const token = data.accessToken;
 
-        const responseUser = {
-            id: data.returnPerson.id_person,
-            name: data.returnPerson.name,
-            email: data.returnPerson.email,
-            userName: data.returnPerson.user,
-            idPersona: data.returnPerson.id_persona,
-            idOrganization: data.returnPerson.id_organization,
-        };
+            const responseUser = {
+                id: data.returnPerson.id_person,
+                name: data.returnPerson.name,
+                email: data.returnPerson.email,
+                userName: data.returnPerson.user,
+                idPersona: data.returnPerson.id_persona,
+                idOrganization: data.returnPerson.id_organization,
+            };
 
-        setCookie(undefined, 'nextAuth.token', token, {
-            maxAge: 1 * 60 * 60 // 1 hour
-        });
+            setCookie(undefined, 'nextAuth.token', token, {
+                maxAge: 1 * 60 * 60 // 1 hour
+            });
 
-        api.defaults.headers['authorization'] = `Bearer ${token}`;
+            api.defaults.headers['authorization'] = `Bearer ${token}`;
 
-        setUser(responseUser);
+            setUser(responseUser);
 
-        router.push('/Dashboard');
+            router.push('/Dashboard');
+        } catch (error) {
+            toast.error(error.response.data.message);
+        }
     }
 
     function logout() {

@@ -7,6 +7,7 @@ import { useForm, Controller } from 'react-hook-form';
 import { api } from '../../services/api';
 import styles from './styles.module.scss';
 import { AuthContext } from '../../contexts/AuthContext';
+import toast from 'react-hot-toast';
 
 type UserForm = {
     id?: number;
@@ -142,10 +143,7 @@ export default function RegisterPersons(): JSX.Element{
             return;
 
         } catch (error) {
-            console.log(error);
-            console.log(error.message);
-            console.log(error.response);
-            console.log(error.response.data.message);
+            toast.error(error.response.data.message);
         }
     }
     

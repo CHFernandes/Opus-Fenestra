@@ -11,6 +11,7 @@ import { DeleteConfirmation } from '../../components/DeleteConfirmation';
 import { api } from '../../services/api';
 import styles from './styles.module.scss';
 import { AuthContext } from '../../contexts/AuthContext';
+import toast from 'react-hot-toast';
 
 
 type Criterion = {
@@ -30,28 +31,33 @@ export default function ListCriteria(): JSX.Element  {
 
     useEffect(() => {
         async function getCriteria() {
-            const { data:portfolioData } = await api.get(`/portfolios/${user.idOrganization}`);
-            const portfolioId = portfolioData.id_portfolio;
-            const { data } = await api.get(`criteriaPortfolio/${portfolioId}`);
+            try {
+                const { data:portfolioData } = await api.get(`/portfolios/${user.idOrganization}`);
+                const portfolioId = portfolioData.id_portfolio;
+                const { data } = await api.get(`criteriaPortfolio/${portfolioId}`);
 
-            const criteria = data.map((criterion) => {
-                return {
-                    id: criterion.id_criteria,
-                    description: criterion.description,
-                    weight: criterion.weight,
-                    unityType: criterion.unit_description,
-                    bestValue: criterion.best_manual_value,
-                    worstValue: criterion.worst_manual_value,
-                };
-            });
+                const criteria = data.map((criterion) => {
+                    return {
+                        id: criterion.id_criteria,
+                        description: criterion.description,
+                        weight: criterion.weight,
+                        unityType: criterion.unit_description,
+                        bestValue: criterion.best_manual_value,
+                        worstValue: criterion.worst_manual_value,
+                    };
+                });
 
-            if (!isAuthenticated) {
-                router.push('/Login');
-                return;
+                setCriteria(criteria);
+            } catch (error) {
+                toast.error(error.response.data.message);
             }
-
-            setCriteria(criteria);
         }
+
+        if (!isAuthenticated) {
+            router.push('/Login');
+            return;
+        }
+
         getCriteria();
     }, []);
 
@@ -131,41 +137,43 @@ export default function ListCriteria(): JSX.Element  {
     }
 
     async function handleDelete (id: number) {
+        try {
+            const response = await DeleteConfirmation();
 
-        const response = await DeleteConfirmation();
+            if(!response){
+                return;
+            }
 
-        if(!response){
-            return;
-        }
+            const idCriteria = String(id);
+            const responseDeletion = await api.delete(`/criteria/${idCriteria}`);
 
-        const idCriteria = String(id);
-        const responseDeletion = await api.delete(`/criteria/${idCriteria}`);
+            if (!responseDeletion.data) {
+                alert('Erro durante a exclusão');
+                return;
+            }
 
-        if (!responseDeletion.data) {
-            alert('Erro durante a exclusão');
-            return;
-        }
+            alert('Critério Excluído');
 
-        alert('Critério Excluído');
+            const { data:portfolioData } = await api.get(`/portfolios/${user.idOrganization}`);
+            const portfolioId = portfolioData.id_portfolio;
+            const { data } = await api.get(`criteriaPortfolio/${portfolioId}`);
 
-        const { data:portfolioData } = await api.get(`/portfolios/${user.idOrganization}`);
-        const portfolioId = portfolioData.id_portfolio;
-        const { data } = await api.get(`criteriaPortfolio/${portfolioId}`);
-
-        if (data) {
-            const criteria = data.map((criterion) => {
-                return {
-                    id: criterion.id_criteria,
-                    description: criterion.description,
-                    weight: criterion.weight,
-                    unityType: criterion.unit_description,
-                    bestValue: criterion.best_manual_value,
-                    worstValue: criterion.worst_manual_value,
-                };
-            });
-            setCriteria(criteria);
-        }
-
+            if (data) {
+                const criteria = data.map((criterion) => {
+                    return {
+                        id: criterion.id_criteria,
+                        description: criterion.description,
+                        weight: criterion.weight,
+                        unityType: criterion.unit_description,
+                        bestValue: criterion.best_manual_value,
+                        worstValue: criterion.worst_manual_value,
+                    };
+                });
+                setCriteria(criteria);
+            }
+        } catch (error) {
+            toast.error(error.response.data.message);
+        } 
     }
 
     return (

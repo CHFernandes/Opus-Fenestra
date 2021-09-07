@@ -8,6 +8,7 @@ import { AuthContext } from '../../contexts/AuthContext';
 
 import styles from './styles.module.scss';
 import { api } from '../../services/api';
+import toast from 'react-hot-toast';
 
 
 type DashboardForm = {
@@ -32,16 +33,20 @@ export default function Dashboard():JSX.Element {
 
     useEffect(() => {
         async function getOrganization() {
-            const { data } = await api.get(`/organizations/${user.idOrganization}`);
+            try {
+                const { data } = await api.get(`/organizations/${user.idOrganization}`);
 
-            const dashboardObject = {
-                organizationName: data.name,
-                mission: data.mission,
-                values: data.values,
-                vision: data.vision,
-            };
-    
-          setDashboardForm(dashboardObject);
+                const dashboardObject = {
+                    organizationName: data.name,
+                    mission: data.mission,
+                    values: data.values,
+                    vision: data.vision,
+                };
+        
+                setDashboardForm(dashboardObject);
+            } catch (error) {
+                toast.error(error.response.data.message);
+            } 
         }
         
         if (!isAuthenticated) {

@@ -8,6 +8,7 @@ import * as MI from '@material-ui/icons/';
 import { api } from '../../services/api';
 
 import styles from './styles.module.scss';
+import toast from 'react-hot-toast';
 
 type OrganizationForm = {
     organizationName: string;
@@ -104,7 +105,6 @@ export default function RegisterOrganizationWizard(): JSX.Element {
          } = form;
 
         try {
-
             const organizationRequestData = {
                 name: organizationName,
                 mission,
@@ -150,9 +150,9 @@ export default function RegisterOrganizationWizard(): JSX.Element {
                 router.push('/Login');
             }
 
-        } catch (err) {
-            alert(err.message);
-        }
+        } catch (error) {
+            toast.error(error.response.data.message);
+        } 
 
         return;
     }
