@@ -1,4 +1,4 @@
-import { Request, Response, NextFunction } from 'express';
+import { Request, Response } from 'express';
 import { AuthenticationService } from '../services/AuthenticationService';
 
 const singletonAuthentication = (function () {

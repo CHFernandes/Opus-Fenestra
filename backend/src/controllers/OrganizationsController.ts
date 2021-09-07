@@ -30,21 +30,39 @@ class OrganizationsController {
             vision
         } = request.body;
 
-        const organization = await singletonOrganizations.getInstance().create(name, mission, values,vision);
+        try {
+            const organization = await singletonOrganizations.getInstance().create(name, mission, values,vision);
 
-        return response.json(organization);
+            return response.json(organization);
+        } catch (err) {
+            return response.status(400).json({
+                message: err.message,
+            });
+        }
     }
 
     async show(request: Request, response: Response): Promise<Response> {
-        const organizationsList = await singletonOrganizations.getInstance().list();
-        return response.json(organizationsList);
+        try {
+            const organizationsList = await singletonOrganizations.getInstance().list();
+            return response.json(organizationsList);
+        } catch (err) {
+            return response.status(400).json({
+                message: err.message,
+            });
+        }
     }
 
     async showById(request: Request, response: Response): Promise<Response> {
         const {id} = request.params;
-        const list = await singletonOrganizations.getInstance().findById(Number(id));
+        try {
+            const list = await singletonOrganizations.getInstance().findById(Number(id));
 
-        return response.json(list);
+            return response.json(list);
+        } catch (err) {
+            return response.status(400).json({
+                message: err.message,
+            });
+        }
     }
 
 }

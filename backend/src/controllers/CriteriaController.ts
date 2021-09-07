@@ -29,22 +29,41 @@ class CriteriaController {
             idUnities,
         } = request.body;
 
-        const criterion = await singletonCriteria.getInstance().create(description, weight, Number(idPortfolio), Number(idUnities),);
+        try {
+            const criterion = await singletonCriteria.getInstance().create(description, weight, Number(idPortfolio), Number(idUnities),);
 
-        return response.json(criterion);
+            return response.json(criterion);
+
+        } catch (err) {
+            return response.status(400).json({
+                message: err.message,
+            });
+        }
     }
 
     async show(request: Request, response: Response): Promise<Response> {
         const {id} = request.params;
-        const criteriaList = await singletonCriteria.getInstance().list(Number(id));
-        return response.json(criteriaList);
+        try {
+            const criteriaList = await singletonCriteria.getInstance().list(Number(id));
+            return response.json(criteriaList);
+        } catch (err) {
+            return response.status(400).json({
+                message: err.message,
+            });
+        }
     }
 
     async showById(request: Request, response: Response): Promise<Response> {
         const {id} = request.params;
-        const list = await singletonCriteria.getInstance().findById(Number(id));
+        try {
+            const list = await singletonCriteria.getInstance().findById(Number(id));
 
-        return response.json(list);
+            return response.json(list);
+        } catch (err) {
+            return response.status(400).json({
+                message: err.message,
+            });
+        }
     }
 
     async updateById(request: Request, response: Response): Promise<Response> {

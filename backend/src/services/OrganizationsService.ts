@@ -28,16 +28,27 @@ class OrganizationsService {
 
     async list(): Promise<Organization[]> {
         const list = await this.organizationsRepository.find();
+        if (list.length < 1) {
+            throw new Error('Nenhuma organização está cadastrada');
+        }
         return list;
     }
 
     async findById(id_organization: number): Promise<Organization> {
+        if (!id_organization) {
+            throw new Error('Valores obrigatórios não preenchidos');
+        }
+
+        if (Number.isNaN(id_organization)) {
+            throw new Error('Organização inválida');
+        }
+
         const organization = await this.organizationsRepository.findOne({
             where: {id_organization},
         });
 
         if(!organization) {
-            throw new Error('Organization doesn\'t exist');
+            throw new Error('Organização não exite');
         }
 
         return organization;

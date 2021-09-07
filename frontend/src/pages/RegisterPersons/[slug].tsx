@@ -133,11 +133,11 @@ export default function RegisterPersons(): JSX.Element{
             if (!isNaN(Number(slug)) && Number(slug) > -1) {
                 requestData.oldPassword = oldPassword;
                 await api.put(`persons/${Number(slug)}`, requestData);
-                alert('Pessoa cadastrada atualizada');
+                toast.success('Pessoa atualizada com sucesso');
             } else {
                 await api.post('persons', requestData);
 
-                alert('Pessoa cadastrada com sucesso');
+                toast.success('Pessoa cadastrada com sucesso');
             }
             router.push('/ListPersons');
             return;

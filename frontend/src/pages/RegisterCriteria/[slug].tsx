@@ -104,16 +104,16 @@ export default function RegisterCriteria(): JSX.Element {
             if (Number(slug) > -1) {
                 await api.put(`criteria/${slug}`, requestData);
 
-                alert('Critério atualizado com sucesso');
+                toast.success('Critério atualizado com sucesso');
                 router.push('/ListCriteria');
             } else {
                 await api.post('criteria', requestData);
 
-                alert('Critério criado com sucesso');
+                toast.success('Critério criado com sucesso');
                 router.push('/ListCriteria');
             }
         } catch (err) {
-            alert(err.message);
+            toast.error(err.message);
         }
     }
 

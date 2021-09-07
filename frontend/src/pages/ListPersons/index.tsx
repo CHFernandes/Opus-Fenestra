@@ -137,11 +137,11 @@ export default function ListPersons(): JSX.Element {
             const responseDeletion = await api.delete(`/persons/${idPerson}`);
 
             if (!responseDeletion.data) {
-                alert('Erro durante a exclusão');
+                toast.error('Erro durante a exclusão');
                 return;
             }
 
-            alert('Pessoa Excluída');
+            toast.success('Pessoa Excluída');
 
             const { idOrganization } = user;
             const { data } = await api.get(`personsOrganization/${idOrganization}`);

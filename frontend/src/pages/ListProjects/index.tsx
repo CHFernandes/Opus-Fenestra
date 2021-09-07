@@ -180,7 +180,7 @@ export default function ListProjects(): JSX.Element  {
             const responseDeletion = await api.delete(`/projects/${idProject}`);
 
             if (!responseDeletion.data) {
-                alert('Erro durante a exclusão');
+                toast.error('Erro durante a exclusão');
                 return;
             }
 
@@ -211,7 +211,7 @@ export default function ListProjects(): JSX.Element  {
 
                 setProjects(projects);
 
-                alert('Projeto Excluído');
+                toast.success('Projeto Excluído');
             }
         } catch (error) {
             toast.error(error.response.data.message);

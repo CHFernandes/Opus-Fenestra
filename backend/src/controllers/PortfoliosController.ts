@@ -30,21 +30,39 @@ class PortfoliosController {
             objective,
         } = request.body;
 
-        const organization = await singletonPortfolio.getInstance().create(Number(organizationId), Number(personId),description, objective);
+        try {
+            const organization = await singletonPortfolio.getInstance().create(Number(organizationId), Number(personId),description, objective);
 
-        return response.json(organization);
+            return response.json(organization);
+        } catch (err) {
+            return response.status(400).json({
+                message: err.message,
+            });
+        }
     }
 
     async show(request: Request, response: Response): Promise<Response> {
-        const portfoliosList = await singletonPortfolio.getInstance().list();
-        return response.json(portfoliosList);
+        try {
+            const portfoliosList = await singletonPortfolio.getInstance().list();
+            return response.json(portfoliosList);
+        } catch (err) {
+            return response.status(400).json({
+                message: err.message,
+            });
+        }
     }
 
     async showById(request: Request, response: Response): Promise<Response> {
         const {id} = request.params;
-        const list = await singletonPortfolio.getInstance().findById(Number(id));
+        try {
+            const list = await singletonPortfolio.getInstance().findById(Number(id));
 
-        return response.json(list);
+            return response.json(list);
+        } catch (err) {
+            return response.status(400).json({
+                message: err.message,
+            });
+        }
     }
 
 }

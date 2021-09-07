@@ -13,28 +13,44 @@ import '../styles/global.scss';
 import styles from '../styles/app.module.scss';
 
 function MyApp({ Component, pageProps }: AppProps): JSX.Element {
-  return (
-    <>
-    <Head>
-      <meta
-        name='viewport'
-        content='minimum-scale=1, initial-scale=1, width=device-width'
-      />
-    </Head>
-    <AuthContextProvider>
-      <SidebarContextProvider>
-        <div className={styles.wrapper}>
-          <Sidebar />
-          <main>
-            <Header />
-            <Component {...pageProps} />
-            <Toaster />
-          </main>
-        </div>
-      </SidebarContextProvider>
-    </AuthContextProvider>
-    </>
-  );
+    return (
+        <>
+            <Head>
+                <meta
+                    name='viewport'
+                    content='minimum-scale=1, initial-scale=1, width=device-width'
+                />
+            </Head>
+            <AuthContextProvider>
+                <SidebarContextProvider>
+                    <div className={styles.wrapper}>
+                        <Sidebar />
+                        <main>
+                            <Header />
+                            <Component {...pageProps} />
+                            <Toaster 
+                                position='bottom-center'
+                                toastOptions={{
+                                    success: {
+                                        style: {
+                                            background: 'green',
+                                            color: 'white',
+                                        },
+                                    },
+                                    error: {
+                                        style: {
+                                            background: 'red',
+                                            color: 'white',
+                                        },
+                                    },
+                                }}
+                            />
+                        </main>
+                    </div>
+                </SidebarContextProvider>
+            </AuthContextProvider>
+        </>
+    );
 }
 
 export default MyApp;

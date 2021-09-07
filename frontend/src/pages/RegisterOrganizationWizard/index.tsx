@@ -114,7 +114,7 @@ export default function RegisterOrganizationWizard(): JSX.Element {
 
             resultOrganization = await api.post('organizations', organizationRequestData);
 
-            alert('Organização criada com sucesso');
+            toast.success('Organização criada com sucesso');
 
             if (!resultOrganization) {
                 return;
@@ -135,7 +135,7 @@ export default function RegisterOrganizationWizard(): JSX.Element {
                 return;
             }
 
-            alert('Usuário criado com sucesso');
+            toast.success('Usuário criado com sucesso');
 
             const portfolioRequestData = {
                 organizationId: resultOrganization.data.id_organization,

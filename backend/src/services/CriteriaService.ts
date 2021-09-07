@@ -2,6 +2,8 @@ import { getConnection, getCustomRepository, Repository } from 'typeorm';
 import { Criterion } from '../entities/Criterion';
 import { Unit } from '../entities/Unit';
 import { CriteriaRepository } from '../repositories/CriteriaRepository';
+import { PortfoliosRepository } from '../repositories/PortfoliosRepository';
+import { UnitiesRepository } from '../repositories/UnitiesRepository';
 
 class CriteriaService {
     private criteriaRepository: Repository<Criterion>;
@@ -12,7 +14,35 @@ class CriteriaService {
 
     async create(description: string, weight: number, id_portfolio: number, id_unities: number): Promise<Criterion> {
         if(!description || !weight || !id_portfolio || !id_unities) {
-            throw new Error('Mandatory values not filled');
+            throw new Error('Campos obrigatórios não preenchidos');
+        }
+
+        if (Number.isNaN(weight) || weight < 1) {
+            throw new Error('Peso com valor inválido');
+        }
+
+        if (Number.isNaN(id_portfolio)) {
+            throw new Error('Portfolio inválido');
+        }
+
+        if (Number.isNaN(id_unities)) {
+            throw new Error('Unidades inválidas');
+        }
+
+        const portfolio = new PortfoliosRepository().findOne({
+            where: { id_portfolio},
+        });
+
+        if (!portfolio) {
+            throw new Error('Portfólio não encontrado');
+        }
+
+        const unit = new UnitiesRepository().findOne({
+            where: { id_unities},
+        });
+
+        if (!unit) {
+            throw new Error('Unidade não encontrada');
         }
 
         const criterion = this.criteriaRepository.create({
@@ -28,26 +58,42 @@ class CriteriaService {
     }
 
     async list(id_portfolio: number): Promise<Criterion[]> {
-        //const list = await this.criteriaRepository.find();
 
         if(!id_portfolio) {
-            throw new Error('Mandatory values not filled');
+            throw new Error('Campos obrigatórios não preenchidos');
+        }
+
+        if (Number.isNaN(id_portfolio)) {
+            throw new Error('Portfolio inválido');
+        }
+
+        const portfolio = new PortfoliosRepository().findOne({
+            where: { id_portfolio},
+        });
+
+        if (!portfolio) {
+            throw new Error('Portfólio não encontrado');
         }
 
         const list = await getConnection()
-                        .createQueryBuilder(Criterion, 'criteria')
-                        .select('criteria.id_criteria', 'id_criteria')
-                        .addSelect('criteria.id_portfolio', 'id_portfolio')
-                        .addSelect('criteria.description', 'description')
-                        .addSelect('criteria.weight', 'weight')
-                        .addSelect('criteria.id_unities', 'id_unities')
-                        .addSelect('unities.description', 'unit_description')
-                        .addSelect('unities.is_values_manual', 'is_values_manual')
-                        .addSelect('unities.best_manual_value', 'best_manual_value')
-                        .addSelect('unities.worst_manual_value', 'worst_manual_value')
-                        .leftJoin(Unit, 'unities', 'criteria.id_unities = unities.id_unities')
-                        .where('criteria.id_portfolio = :id_portfolio', { id_portfolio })
-                        .getRawMany();
+        .createQueryBuilder(Criterion, 'criteria')
+        .select('criteria.id_criteria', 'id_criteria')
+        .addSelect('criteria.id_portfolio', 'id_portfolio')
+        .addSelect('criteria.description', 'description')
+        .addSelect('criteria.weight', 'weight')
+        .addSelect('criteria.id_unities', 'id_unities')
+        .addSelect('unities.description', 'unit_description')
+        .addSelect('unities.is_values_manual', 'is_values_manual')
+        .addSelect('unities.best_manual_value', 'best_manual_value')
+        .addSelect('unities.worst_manual_value', 'worst_manual_value')
+        .leftJoin(Unit, 'unities', 'criteria.id_unities = unities.id_unities')
+        .where('criteria.id_portfolio = :id_portfolio', { id_portfolio })
+        .getRawMany();
+
+        if (list.length < 1) {
+            throw new Error('Nenhum critério está cadastrado');
+        }
+
         return list;
     }
 
@@ -56,27 +102,27 @@ class CriteriaService {
             throw new Error('Mandatory values not filled');
         }
 
-        // const criterion = await this.criteriaRepository.findOne({
-        //     where: {id_criteria},
-        // });
+        if (Number.isNaN(id_criteria)) {
+            throw new Error('Critério inválido');
+        }
 
         const criterion = await getConnection()
-                        .createQueryBuilder(Criterion, 'criteria')
-                        .select('criteria.id_criteria', 'id_criteria')
-                        .addSelect('criteria.id_portfolio', 'id_portfolio')
-                        .addSelect('criteria.description', 'description')
-                        .addSelect('criteria.weight', 'weight')
-                        .addSelect('criteria.id_unities', 'id_unities')
-                        .addSelect('unities.description', 'unit_description')
-                        .addSelect('unities.is_values_manual', 'is_values_manual')
-                        .addSelect('unities.best_manual_value', 'best_value')
-                        .addSelect('unities.worst_manual_value', 'worst_value')
-                        .leftJoin(Unit, 'unities', 'criteria.id_unities = unities.id_unities')
-                        .where('criteria.id_criteria = :id_criteria', { id_criteria })
-                        .getRawOne();
+        .createQueryBuilder(Criterion, 'criteria')
+        .select('criteria.id_criteria', 'id_criteria')
+        .addSelect('criteria.id_portfolio', 'id_portfolio')
+        .addSelect('criteria.description', 'description')
+        .addSelect('criteria.weight', 'weight')
+        .addSelect('criteria.id_unities', 'id_unities')
+        .addSelect('unities.description', 'unit_description')
+        .addSelect('unities.is_values_manual', 'is_values_manual')
+        .addSelect('unities.best_manual_value', 'best_value')
+        .addSelect('unities.worst_manual_value', 'worst_value')
+        .leftJoin(Unit, 'unities', 'criteria.id_unities = unities.id_unities')
+        .where('criteria.id_criteria = :id_criteria', { id_criteria })
+        .getRawOne();
 
         if(!criterion) {
-            throw new Error('Criterion doesn\'t exist');
+            throw new Error('Critério não existe');
         }
 
         return criterion;
@@ -87,17 +133,48 @@ class CriteriaService {
             throw new Error('Mandatory values not filled');
         }
 
+        if (Number.isNaN(weight) || weight < 1) {
+            throw new Error('Peso com valor inválido');
+        }
+
+        if (Number.isNaN(id_portfolio)) {
+            throw new Error('Portfolio inválido');
+        }
+
+        if (Number.isNaN(id_unities)) {
+            throw new Error('Unidades inválidas');
+        }
+
+        if (Number.isNaN(id_criteria)) {
+            throw new Error('Critério inválido');
+        }
+
+        const portfolio = new PortfoliosRepository().findOne({
+            where: { id_portfolio},
+        });
+
+        if (!portfolio) {
+            throw new Error('Portfólio não encontrado');
+        }
+
+        const unit = new UnitiesRepository().findOne({
+            where: { id_unities},
+        });
+
+        if (!unit) {
+            throw new Error('Unidade não encontrada');
+        }
+
         const criterion = await this.criteriaRepository.findOne({
-            where: {id_criteria},
+            where: {id_criteria, id_portfolio},
         });
 
         if (!criterion) {
-            throw new Error('Criterion doesn\'t exist');
+            throw new Error('Critério não existe');
         }
 
         criterion.description = description;
         criterion.weight = weight;
-        criterion.id_portfolio = id_portfolio;
         criterion.id_unities = id_unities;
 
         const updatedCriterion = await this.criteriaRepository.save(criterion);
@@ -106,12 +183,21 @@ class CriteriaService {
     }
 
     async deleteById (id_criteria: number): Promise<boolean> {
+
+        if (!id_criteria) {
+            throw new Error('Valores obrigatórios não preenchidos');
+        }
+
+        if (Number.isNaN(id_criteria)) {
+            throw new Error('Critério inválido');
+        }
+
         const criterion = await this.criteriaRepository.findOne({
             where: {id_criteria},
         });
 
         if (!criterion) {
-            throw new Error('Criterion doesn\'t exist');
+            throw new Error('Critério não existe');
         }
 
         await this.criteriaRepository.delete(id_criteria);

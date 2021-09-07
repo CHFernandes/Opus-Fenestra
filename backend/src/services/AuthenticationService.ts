@@ -1,5 +1,5 @@
 import { getCustomRepository, Repository } from 'typeorm';
-import bcrypt from 'bcrypt';
+// import bcrypt from 'bcrypt';
 import jwt from 'jsonwebtoken';
 import { Person } from '../entities/Person';
 import { PersonsRepository } from '../repositories/PersonsRepository';
@@ -18,7 +18,7 @@ class AuthenticationService {
 
     async login( user: string, password: string ): Promise<ReturnToken> {
         if(!password || !user) {
-            throw new Error('Mandatory values not filled');
+            throw new Error('Campos obrigatórios não preenchidos');
         }
 
         const person = await this.personsRepository.findOne({
@@ -26,17 +26,17 @@ class AuthenticationService {
         });
 
         if (!person) {
-            throw new Error('User not found or password mismatch');
+            throw new Error('Usuário não encontrado ou senha incorreta');
         }
 
         if (person.password !== password) {
-            throw new Error('User not found or password mismatch');
+            throw new Error('Usuário não encontrado ou senha incorreta');
         }
 
         // const passwordSuccess = await bcrypt.compare(password, person.password);
 
         // if (!passwordSuccess) {
-        //     throw new Error('User not found or password mismatch');
+        //     throw new Error('Usuário não encontrado ou senha incorreta');
         // }
 
         const accessToken = jwt.sign(JSON.stringify(person), process.env.ACCESS_TOKEN_SECRET);
@@ -48,15 +48,23 @@ class AuthenticationService {
     }
 
     async getUser(token: string): Promise<void> {
-        const tokenResponse = jwt.verify(token, process.env.ACCESS_TOKEN_SECRET, (err, user) => {
-            if(err){
-                throw new Error('Invalid Token');
-            }
-            user.password = '';
-            return user;
-        });
+        if (!token) {
+            throw new Error('Token inválido');
+        }
 
-        return tokenResponse;
+        try {
+            const tokenResponse = jwt.verify(token, process.env.ACCESS_TOKEN_SECRET, (err, user) => {
+                if(err){
+                    throw new Error('Token inválido');
+                }
+                user.password = '';
+                return user;
+            });
+
+            return tokenResponse;
+        } catch(err) {
+            throw new Error('Token inválido');
+        }
     }
 }
 

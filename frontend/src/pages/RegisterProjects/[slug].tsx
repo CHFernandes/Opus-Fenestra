@@ -135,12 +135,12 @@ export default function RegisterProjects(): JSX.Element {
             if (Number(slug) > -1) {
                 await api.put(`projects/${slug}`, requestData);
 
-                alert('Projeto atualizado com sucesso');
+                toast.success('Projeto atualizado com sucesso');
                 router.push('/ListProjects');
             } else {
                 await api.post('projects', requestData);
 
-                alert('Projeto criado com sucesso');
+                toast.success('Projeto criado com sucesso');
                 router.push('/ListProjects');
             }
         } catch (error) {

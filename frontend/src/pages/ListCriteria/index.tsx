@@ -148,11 +148,11 @@ export default function ListCriteria(): JSX.Element  {
             const responseDeletion = await api.delete(`/criteria/${idCriteria}`);
 
             if (!responseDeletion.data) {
-                alert('Erro durante a exclusão');
+                toast.error('Erro durante a exclusão');
                 return;
             }
 
-            alert('Critério Excluído');
+            toast.success('Critério Excluído');
 
             const { data:portfolioData } = await api.get(`/portfolios/${user.idOrganization}`);
             const portfolioId = portfolioData.id_portfolio;
