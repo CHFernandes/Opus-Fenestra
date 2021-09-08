@@ -5,6 +5,7 @@ frontend/node_modules
 backend/node_modules
 frontend/.vscode/
 backend/.vscode/
+backend/src/database/database.sqlite
 /.pnp
 .pnp.js
 
