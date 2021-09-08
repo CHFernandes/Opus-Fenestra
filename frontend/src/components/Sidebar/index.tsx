@@ -40,7 +40,7 @@ export function Sidebar(): JSX.Element  {
                     </IconButton>
                 </div>
                 {SidebarData.map((item, index) => {
-                    return <Submenu item={item} key={index} />;
+                    return <Submenu item={item} key={index} toggle={toggleSidebar} />;
                 })}
             </div>
         </div>

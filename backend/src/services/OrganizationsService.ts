@@ -11,7 +11,7 @@ class OrganizationsService {
 
     async create(name: string, mission: string, values: string, vision: string ): Promise<Organization> {
         if(!name || !mission || !values || !vision) {
-            throw new Error('Mandatory values not filled');
+            throw new Error('Campos obrigatórios não preenchidos');
         }
 
         const organization = this.organizationsRepository.create({

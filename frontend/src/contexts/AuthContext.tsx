@@ -93,6 +93,8 @@ export function AuthContextProvider({ children }: AuthContextProviderProps): JSX
             api.defaults.headers['authorization'] = `Bearer ${token}`;
 
             setUser(responseUser);
+            
+            toast.success('Login realizado com sucesso');
 
             router.push('/Dashboard');
         } catch (error) {

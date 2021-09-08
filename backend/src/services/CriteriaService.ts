@@ -1,5 +1,6 @@
 import { getConnection, getCustomRepository, Repository } from 'typeorm';
 import { Criterion } from '../entities/Criterion';
+import { Portfolio } from '../entities/Portfolio';
 import { Unit } from '../entities/Unit';
 import { CriteriaRepository } from '../repositories/CriteriaRepository';
 import { PortfoliosRepository } from '../repositories/PortfoliosRepository';
@@ -7,9 +8,13 @@ import { UnitiesRepository } from '../repositories/UnitiesRepository';
 
 class CriteriaService {
     private criteriaRepository: Repository<Criterion>;
+    private portfoliosRepository: Repository<Portfolio>;
+    private unitiesRepository: Repository<Unit>;
 
     constructor() {
         this.criteriaRepository = getCustomRepository(CriteriaRepository);
+        this.portfoliosRepository = getCustomRepository(PortfoliosRepository);
+        this.unitiesRepository = getCustomRepository(UnitiesRepository);
     }
 
     async create(description: string, weight: number, id_portfolio: number, id_unities: number): Promise<Criterion> {
@@ -29,7 +34,7 @@ class CriteriaService {
             throw new Error('Unidades inválidas');
         }
 
-        const portfolio = new PortfoliosRepository().findOne({
+        const portfolio =this.portfoliosRepository.findOne({
             where: { id_portfolio},
         });
 
@@ -37,7 +42,7 @@ class CriteriaService {
             throw new Error('Portfólio não encontrado');
         }
 
-        const unit = new UnitiesRepository().findOne({
+        const unit = this.unitiesRepository.findOne({
             where: { id_unities},
         });
 
@@ -67,7 +72,7 @@ class CriteriaService {
             throw new Error('Portfolio inválido');
         }
 
-        const portfolio = new PortfoliosRepository().findOne({
+        const portfolio = this.portfoliosRepository.findOne({
             where: { id_portfolio},
         });
 
@@ -99,7 +104,7 @@ class CriteriaService {
 
     async findById(id_criteria: number): Promise<Criterion> {
         if(!id_criteria) {
-            throw new Error('Mandatory values not filled');
+            throw new Error('Campos obrigatórios não preenchidos');
         }
 
         if (Number.isNaN(id_criteria)) {
@@ -130,7 +135,7 @@ class CriteriaService {
 
     async updateById (description: string, weight: number, id_portfolio: number, id_unities: number, id_criteria: number): Promise<Criterion> {
         if(!description || !weight || !id_portfolio || !id_unities || !id_criteria) {
-            throw new Error('Mandatory values not filled');
+            throw new Error('Campos obrigatórios não preenchidos');
         }
 
         if (Number.isNaN(weight) || weight < 1) {
@@ -149,7 +154,7 @@ class CriteriaService {
             throw new Error('Critério inválido');
         }
 
-        const portfolio = new PortfoliosRepository().findOne({
+        const portfolio = this.portfoliosRepository.findOne({
             where: { id_portfolio},
         });
 
@@ -157,7 +162,7 @@ class CriteriaService {
             throw new Error('Portfólio não encontrado');
         }
 
-        const unit = new UnitiesRepository().findOne({
+        const unit = this.unitiesRepository.findOne({
             where: { id_unities},
         });
 

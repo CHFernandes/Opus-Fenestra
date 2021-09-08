@@ -1,4 +1,6 @@
 import { getConnection, getCustomRepository, Repository } from 'typeorm';
+import { Person } from '../entities/Person';
+import { Portfolio } from '../entities/Portfolio';
 import { Project } from '../entities/Project';
 import { Status } from '../entities/Status';
 import { PersonsRepository } from '../repositories/PersonsRepository';
@@ -7,9 +9,13 @@ import { ProjectsRepository } from '../repositories/ProjectsRepository';
 
 class ProjectsService {
     private projectsRepository: Repository<Project>;
+    private portfoliosRepository: Repository<Portfolio>
+    private personsRepository: Repository<Person>
 
     constructor() {
         this.projectsRepository = getCustomRepository(ProjectsRepository);
+        this.portfoliosRepository = getCustomRepository(PortfoliosRepository);
+        this.personsRepository = getCustomRepository(PersonsRepository);
     }
 
     async create(id_portfolio: number, submitter: number, name: string, description: string, plannedStartDateAsString: string, plannedEndDateAsString: string): Promise<Project> {
@@ -42,7 +48,7 @@ class ProjectsService {
             throw new Error('Data final deve ser depois da data inicial');
         }
 
-        const portfolio = await new PortfoliosRepository().findOne({
+        const portfolio = this.portfoliosRepository.findOne({
             where: {id_portfolio},
         });
 
@@ -50,8 +56,8 @@ class ProjectsService {
             throw new Error('Portfólio não existe');
         }
 
-        const person = await new PersonsRepository().findOne({
-            where: {submitter},
+        const person = this.personsRepository.findOne({
+            where: {id_person: submitter},
         });
 
         if(!person) {
@@ -84,7 +90,7 @@ class ProjectsService {
             throw new Error('Portfólio inválido');
         }
 
-        const portfolio = await new PortfoliosRepository().findOne({
+        const portfolio = this.portfoliosRepository.findOne({
             where: {id_portfolio},
         });
 
@@ -114,7 +120,7 @@ class ProjectsService {
         .getRawMany();
 
         if (list.length < 1) {
-            throw new Error('Nenhum portfólio está cadastrado');
+            throw new Error('Nenhum projeto está cadastrado');
         }
         return list;
     }

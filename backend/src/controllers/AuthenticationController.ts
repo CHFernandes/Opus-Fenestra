@@ -27,9 +27,15 @@ class AuthenticationController {
             password,
         } = request.body;
 
-        const authentication = await singletonAuthentication.getInstance().login(user, password);
+        try {
+            const authentication = await singletonAuthentication.getInstance().login(user, password);
+            return response.json(authentication);
 
-        return response.json(authentication);
+        } catch (err) {
+            return response.status(400).json({
+                message: err.message,
+            });
+    }
     }
 
     async getUser(request: Request, response: Response): Promise<Response> {

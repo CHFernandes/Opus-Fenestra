@@ -38,7 +38,7 @@ export default function RegisterProjects(): JSX.Element {
         required: 'Campo obrigatório', 
         validate: { 
             isPositive: (value: number) => {
-                return  value > 0 || 'Insira uma porcentagem de completude acima de 0';
+                return  value >= 0 || 'Insira uma porcentagem de completude de 0 ou acima';
             },
             isAboveHundred: (value: number) => {
                 return  value <= 100 || 'Insira uma porcentagem de completude abaixo de 100';

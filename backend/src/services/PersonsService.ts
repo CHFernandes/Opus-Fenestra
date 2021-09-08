@@ -5,12 +5,17 @@ import { PersonsRepository } from '../repositories/PersonsRepository';
 import { Persona } from '../entities/Persona';
 import { OrganizationsRepository } from '../repositories/OrganizationsRepository';
 import { PersonasRepository } from '../repositories/PersonasRepository';
+import { Organization } from '../entities/Organization';
 
 class PersonsService {
     private personsRepository: Repository<Person>;
+    private organizationsRepository: Repository<Organization>;
+    private personasRepository: Repository<Persona>;
 
     constructor() {
         this.personsRepository = getCustomRepository(PersonsRepository);
+        this.organizationsRepository = getCustomRepository(OrganizationsRepository);
+        this.personasRepository = getCustomRepository(PersonasRepository);
     }
 
     async create(id_organization: number, id_persona: number, email: string, name: string, password: string, user: string ): Promise<Person> {
@@ -33,7 +38,7 @@ class PersonsService {
             throw new Error('Insira um e-mail valido');
         }
 
-        const organization = new OrganizationsRepository().findOne({
+        const organization = this.organizationsRepository.findOne({
             where: { id_organization},
         });
 
@@ -41,7 +46,7 @@ class PersonsService {
             throw new Error('Organização não encontrada');
         }
 
-        const persona = new PersonasRepository().findOne({
+        const persona = this.personasRepository.findOne({
             where: { id_persona},
         });
 
@@ -58,7 +63,7 @@ class PersonsService {
         }
 
         const registeredPerson = await this.personsRepository.findOne({
-            where: {user, id_organization},
+            where: {user},
         });
 
         if (registeredPerson) {
@@ -93,7 +98,7 @@ class PersonsService {
             throw new Error('Organização inválida');
         }
 
-        const organization = new OrganizationsRepository().findOne({
+        const organization = this.organizationsRepository.findOne({
             where: { id_organization},
         });
 
@@ -144,6 +149,10 @@ class PersonsService {
         .where('person.id_person = :id_person', { id_person})
         .getRawOne();
 
+        if (!person) {
+            throw new Error('Pessoa não encontrada');
+        }
+
         return person;
     }
 
@@ -172,7 +181,7 @@ class PersonsService {
             throw new Error('Insira um e-mail valido');
         }
 
-        const organization = new OrganizationsRepository().findOne({
+        const organization = this.organizationsRepository.findOne({
             where: { id_organization},
         });
 
@@ -180,7 +189,7 @@ class PersonsService {
             throw new Error('Organização não encontrada');
         }
 
-        const persona = new PersonasRepository().findOne({
+        const persona = this.personasRepository.findOne({
             where: { id_persona},
         });
 
@@ -197,7 +206,7 @@ class PersonsService {
         }
 
         const registeredPerson = await this.personsRepository.findOne({
-            where: {user, id_organization},
+            where: {user},
         });
 
         if (registeredPerson && registeredPerson.id_person !== id_person) {

@@ -1,4 +1,6 @@
 import { getCustomRepository, Repository } from 'typeorm';
+import { Organization } from '../entities/Organization';
+import { Person } from '../entities/Person';
 import { Portfolio } from '../entities/Portfolio';
 import { OrganizationsRepository } from '../repositories/OrganizationsRepository';
 import { PersonsRepository } from '../repositories/PersonsRepository';
@@ -6,9 +8,13 @@ import { PortfoliosRepository } from '../repositories/PortfoliosRepository';
 
 class PortfoliosService {
     private portfoliosRepository: Repository<Portfolio>;
+    private personsRepository: Repository<Person>;
+    private organizationsRepository: Repository<Organization>;
 
     constructor() {
         this.portfoliosRepository = getCustomRepository(PortfoliosRepository);
+        this.personsRepository = getCustomRepository(PersonsRepository);
+        this.organizationsRepository = getCustomRepository(OrganizationsRepository);
     }
 
     async create(id_organization: number, id_person: number, description: string, objective: string ): Promise<Portfolio> {
@@ -25,7 +31,7 @@ class PortfoliosService {
             throw new Error('Pessoa inválida');
         }
 
-        const organization = new OrganizationsRepository().findOne({
+        const organization = this.organizationsRepository.findOne({
             where: { id_organization},
         });
 
@@ -33,7 +39,7 @@ class PortfoliosService {
             throw new Error('Organização não encontrada');
         }
 
-        const person = new PersonsRepository().findOne({
+        const person = this.personsRepository.findOne({
             where: { id_person},
         });
 

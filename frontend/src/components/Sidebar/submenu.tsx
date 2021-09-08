@@ -7,6 +7,7 @@ import styles from './styles.module.scss';
 
 type subMenuProps = {
     item: navItem;
+    toggle: () => void;
 }
 
 type navItem = {
@@ -24,7 +25,7 @@ type subnavItem = {
     path: string;
 };
 
-export default function Submenu ({ item }: subMenuProps): JSX.Element {
+export default function Submenu ({ item, toggle }: subMenuProps): JSX.Element {
     const router = useRouter();
 
     const [subnav, setSubnav] = useState(false);
@@ -35,6 +36,7 @@ export default function Submenu ({ item }: subMenuProps): JSX.Element {
 
     function redirect(link: string) {
         router.push(link);
+        toggle();
     }
   
     return (

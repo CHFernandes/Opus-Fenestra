@@ -31,6 +31,7 @@ function MyApp({ Component, pageProps }: AppProps): JSX.Element {
                             <Toaster 
                                 position='bottom-center'
                                 toastOptions={{
+                                    duration: 6000,
                                     success: {
                                         style: {
                                             background: 'green',
