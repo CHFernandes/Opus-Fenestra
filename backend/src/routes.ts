@@ -47,6 +47,7 @@ routes.get('/projects/:id', projectsController.showById);
 routes.put('/projects/:id', projectsController.updateById);
 routes.delete('/projects/:id', projectsController.deleteById);
 routes.get('/registeredProjects/:id', projectsController.showRegistered);
+routes.get('/evaluatedProjects/:id', projectsController.showEvaluated);
 routes.get('/registeredProject/:id', projectsController.showRegisteredProject);
 
 routes.post('/evaluation', evaluationsController.evaluate);

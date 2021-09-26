@@ -3,19 +3,33 @@ import { Person } from '../entities/Person';
 import { Portfolio } from '../entities/Portfolio';
 import { Project } from '../entities/Project';
 import { Status } from '../entities/Status';
+import { Evaluation } from '../entities/Evaluation';
 import { PersonsRepository } from '../repositories/PersonsRepository';
 import { PortfoliosRepository } from '../repositories/PortfoliosRepository';
 import { ProjectsRepository } from '../repositories/ProjectsRepository';
+import { EvaluationsRepository } from '../repositories/EvaluationsRepository';
+
+type EvaluatedProject = {
+    id_project: number;
+    id_portfolio: number;
+    description: string;
+    name: string;
+    planned_start_date: Date;
+    planned_end_date: Date;
+    grade: number;
+}
 
 class ProjectsService {
     private projectsRepository: Repository<Project>;
     private portfoliosRepository: Repository<Portfolio>
     private personsRepository: Repository<Person>
+    private evaluationsRepository: Repository<Evaluation>
 
     constructor() {
         this.projectsRepository = getCustomRepository(ProjectsRepository);
         this.portfoliosRepository = getCustomRepository(PortfoliosRepository);
         this.personsRepository = getCustomRepository(PersonsRepository);
+        this.evaluationsRepository = getCustomRepository(EvaluationsRepository);
     }
 
     async create(id_portfolio: number, submitter: number, name: string, description: string, plannedStartDateAsString: string, plannedEndDateAsString: string): Promise<Project> {
@@ -279,6 +293,74 @@ class ProjectsService {
         }
 
         return project;
+    }
+
+    async findEvaluatedProjects(id_portfolio: number): Promise<EvaluatedProject[]> {
+        if(!id_portfolio) {
+            throw new Error('Campos obrigatórios não preenchidos');
+        }
+
+        if (Number.isNaN(id_portfolio)) {
+            throw new Error('Portfólio inválido');
+        }
+
+        const portfolio = await this.portfoliosRepository.findOne({
+            where: {id_portfolio},
+        });
+
+        if(!portfolio) {
+            throw new Error('Portfólio não existe');
+        }
+
+        const projectList = await this.projectsRepository.find({
+            where: {
+                id_portfolio,
+                id_status: 2,
+            }
+        });
+
+        if (projectList.length < 1) {
+            throw new Error('Nenhum projeto foi avaliado');
+        }
+
+        const evaluatedProjectsList = await Promise.all(projectList.map(async (project) => {
+            const {
+                id_project,
+                id_portfolio,
+                description,
+                name,
+                planned_end_date,
+                planned_start_date,
+            } = project;
+
+            const evaluations = await this.evaluationsRepository.find({
+                where: {
+                    id_project
+                }
+            });
+
+            const gradesArray = evaluations.map((evaluation) => {
+                return evaluation.value;
+            });
+
+            const finalGrade = gradesArray.reduce((previous, next) => {
+                return Number(previous) + Number(next);
+            });
+
+            const returnProject = {
+                id_project,
+                id_portfolio,
+                description,
+                name,
+                planned_end_date,
+                planned_start_date,
+                grade: finalGrade,
+            };
+
+            return returnProject;
+        }));
+
+        return evaluatedProjectsList;
     }
 }
 

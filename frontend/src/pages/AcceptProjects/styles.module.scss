@@ -1,0 +1,29 @@
+.listProjects {
+    padding: 0 4rem;
+    height: calc(100vh - 15rem);
+    display: flex;
+    flex-direction: column;
+
+    .dataTableContainer {
+        height: calc(100vh - 18rem);
+        width: 100%;
+    }
+}
+
+.approve {
+    &:hover {
+        color: var(--green-500);
+    }
+}
+
+.ask {
+    &:hover {
+        color: var(--warning);
+    }
+}
+
+.reject {
+    &:hover {
+        color: var(--red-error);
+    }
+}

@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useContext } from 'react';
 import { useRouter } from 'next/router';
 
-import { Button, IconButton } from '@material-ui/core';
+import { IconButton, Tooltip } from '@material-ui/core';
 import { DataGrid, GridColDef} from '@material-ui/data-grid';
 import * as MI from '@material-ui/icons';
 
@@ -13,33 +13,34 @@ import styles from './styles.module.scss';
 import { AuthContext } from '../../contexts/AuthContext';
 import toast from 'react-hot-toast';
 
-type Project = {
+type EvaluatedProject = {
     id: number;
-    idProject: number;
     idPortfolio: number;
     name: string;
     description: string;
+    grade: number;
     plannedStartDateAsString: string;
     plannedEndDateAsString: string;
 }
 
 
-export default function ListProjects(): JSX.Element  {
+export default function AcceptProjects(): JSX.Element  {
     const { isAuthenticated, user } = useContext(AuthContext);
-    const [project, setProjects] = useState<Project[]>([]);
+    const [project, setProjects] = useState<EvaluatedProject[]>([]);
 
     useEffect(() => {
         async function getProjects() {
             try {
                 const { data:portfolioData } = await api.get(`/portfolios/${user.idOrganization}`);
                 const portfolioId = portfolioData.id_portfolio;
-                const { data } = await api.get(`/registeredProjects/${portfolioId}`);
+                const { data } = await api.get(`/evaluatedProjects/${portfolioId}`);
                 const projects = data.map((project) => {
                     return {
                         id: project.id_project,
                         idPortfolio: project.id_portfolio,
                         name: project.name,
                         description: project.description,
+                        grade: project.grade,
                         plannedStartDateAsString: format(new Date(project.planned_start_date), 'dd/MM/yyyy', {
                             locale: ptBR,
                         }),
@@ -88,12 +89,17 @@ export default function ListProjects(): JSX.Element  {
         {
             field: 'plannedStartDateAsString',
             headerName: 'Data de inicio planejada',
-            flex: 2.5,
+            flex: 1.8,
         },
         {
             field: 'plannedEndDateAsString',
             headerName: 'Data de fim planejada',
-            flex: 2.5,
+            flex: 1.8,
+        },
+        {
+            field: 'grade',
+            headerName: 'Nota da avaliação',
+            flex: 1.5,
         },
         {
             field: '',
@@ -101,45 +107,70 @@ export default function ListProjects(): JSX.Element  {
             sortable: false,
             headerAlign: 'center',
             align: 'center',
-            flex: 1,
+            flex: 1.25,
             disableClickEventBubbling: true,
             renderCell: function getCell (params) {
-                const onClickEvaluate = () => {
-                    return handleEvaluateOne(params.row.id);
+                const onClickApprove = () => {
+                    return handleApprove(params.row.id);
+                };
+
+                const onClickAsk = () => {
+                    return handleAsk(params.row.id);
+                };
+
+                const onClickReject = () => {
+                    return handleReject(params.row.id);
                 };
         
                 return (
                     <>
-                        <IconButton onClick={onClickEvaluate} aria-label='Avaliar este projeto' >
-                            <MI.ListAlt />
-                        </IconButton>
+                        <Tooltip title='Aprovar Projeto'>
+                            <IconButton 
+                                className={styles.approve}
+                                onClick={onClickApprove}
+                                aria-label='Aprovar Projeto'
+                            >
+                                <MI.Check />
+                            </IconButton>
+                        </Tooltip>
+                        <Tooltip title='Pedir mais informações'>
+                            <IconButton
+                                className={styles.ask}
+                                onClick={onClickAsk} 
+                                aria-label='Pedir mais informações' 
+                            >
+                                <MI.Autorenew />
+                            </IconButton>
+                        </Tooltip>
+                        <Tooltip title='Rejeitar projeto'>
+                            <IconButton
+                                className={styles.reject}
+                                onClick={onClickReject} 
+                                aria-label='Rejeitar projeto' 
+                            >
+                                <MI.Block />
+                            </IconButton>
+                        </Tooltip>
                     </>
                 );
             }
         },
     ];
 
-    function handleEvaluateAll () {
-        router.push('/EvaluateProjects/-1');
+    function handleApprove(id: number) {
+        alert(`Aprovando ${id}`);
     }
 
-    function handleEvaluateOne (id: number) {
-        const idCriteria = String(id);
-        router.push(`/EvaluateProjects/${idCriteria}`);
+    function handleAsk(id: number) {
+        alert(`Perguntando ${id}`);
+    }
+
+    function handleReject (id: number) {
+        alert(`Rejeitando ${id}`);
     }
 
     return (
         <div className={styles.listProjects}>
-            <div className={styles.buttonHeadbar}>
-                <Button
-                    variant='contained'
-                    color='primary'
-                    size='large'
-                    onClick={handleEvaluateAll}
-                >
-                    Avaliar todos os projetos
-                </Button>
-            </div>
             <div className={styles.dataTableContainer} >
                 <DataGrid disableColumnSelector={true} disableSelectionOnClick={true} rows={projectList} columns={columns} pageSize={15} />
             </div>

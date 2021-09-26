@@ -191,8 +191,6 @@ export default function RegisterOrganizationWizard(): JSX.Element {
                 };
 
                 await api.post('evaluation', evaluationObject);
-
-                console.log(evaluationObject);
             });
 
             if (projectsArray.length -1 > activeStep) {
