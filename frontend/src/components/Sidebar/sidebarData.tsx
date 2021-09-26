@@ -69,6 +69,11 @@ export const SidebarData = [
           path: '/RegisterCriteria/-1',
           icon: <MI.RateReview />,
         },
+        {
+          title: 'Projetos a serem avaliados',
+          path: '/ListRegisteredProjects',
+          icon: <MI.RateReview />,
+        },
       ]
     },    
 ];

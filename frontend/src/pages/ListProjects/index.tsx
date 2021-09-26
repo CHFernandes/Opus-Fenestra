@@ -159,7 +159,7 @@ export default function ListProjects(): JSX.Element  {
           },
       ];
 
-    function handleNewCriteria () {
+    function handleNewProject () {
         router.push('/RegisterProjects/-1');
     }
 
@@ -225,7 +225,7 @@ export default function ListProjects(): JSX.Element  {
                     variant='contained'
                     color='primary'
                     size='large'
-                    onClick={handleNewCriteria}
+                    onClick={handleNewProject}
                 >
                     Adicionar novo Projeto
                 </Button>

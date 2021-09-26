@@ -48,7 +48,7 @@ class ProjectsService {
             throw new Error('Data final deve ser depois da data inicial');
         }
 
-        const portfolio = this.portfoliosRepository.findOne({
+        const portfolio = await this.portfoliosRepository.findOne({
             where: {id_portfolio},
         });
 
@@ -56,7 +56,7 @@ class ProjectsService {
             throw new Error('Portfólio não existe');
         }
 
-        const person = this.personsRepository.findOne({
+        const person = await this.personsRepository.findOne({
             where: {id_person: submitter},
         });
 
@@ -90,7 +90,7 @@ class ProjectsService {
             throw new Error('Portfólio inválido');
         }
 
-        const portfolio = this.portfoliosRepository.findOne({
+        const portfolio = await this.portfoliosRepository.findOne({
             where: {id_portfolio},
         });
 
@@ -223,6 +223,62 @@ class ProjectsService {
         await this.projectsRepository.delete(id_project);
 
         return true;
+    }
+
+    async findRegisteredProjects(id_portfolio: number): Promise<Project[]> {
+        if(!id_portfolio) {
+            throw new Error('Campos obrigatórios não preenchidos');
+        }
+
+        if (Number.isNaN(id_portfolio)) {
+            throw new Error('Portfólio inválido');
+        }
+
+        const portfolio = await this.portfoliosRepository.findOne({
+            where: {id_portfolio},
+        });
+
+        if(!portfolio) {
+            throw new Error('Portfólio não existe');
+        }
+
+        const projectList = await this.projectsRepository.find({
+            where: {
+                id_portfolio,
+                id_status: 1,
+            }
+        });
+
+        if (projectList.length < 1) {
+            throw new Error('Nenhum projeto está com estado de cadastrado');
+        }
+        return projectList;
+    }
+
+    async findRegisteredProject(id_project: number): Promise<Project> {
+        if(!id_project) {
+            throw new Error('Campos obrigatórios não preenchidos');
+        }
+
+        if (Number.isNaN(id_project)) {
+            throw new Error('Projeto inválido');
+        }
+
+        const project = await this.projectsRepository.findOne({
+            where: {
+                id_project
+            },
+        });
+
+        if(!project) {
+            throw new Error('Projeto não existe');
+        }
+
+        if(project.id_status !== 1) {
+            throw new Error('Projeto com estado inválido para avaliação');
+        }
+
+        return project;
     }
 }
 

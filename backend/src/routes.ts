@@ -6,6 +6,7 @@ import { OrganizationsController } from './controllers/OrganizationsController';
 import { PersonsController } from './controllers/PersonsController';
 import { PortfoliosController } from './controllers/PortfoliosController';
 import { AuthenticationController } from './controllers/AuthenticationController';
+import { EvaluationsController } from './controllers/EvaluationsController';
 
 const routes = Router();
 
@@ -15,6 +16,7 @@ const organizationsController = new OrganizationsController();
 const personsController = new PersonsController();
 const portfoliosController = new PortfoliosController();
 const authenticationController = new AuthenticationController();
+const evaluationsController = new EvaluationsController();
 
 routes.post('/login', authenticationController.login);
 routes.get('/login', authenticationController.getUser);
@@ -44,5 +46,9 @@ routes.get('/projectsPortfolio/:id', projectsController.show);
 routes.get('/projects/:id', projectsController.showById);
 routes.put('/projects/:id', projectsController.updateById);
 routes.delete('/projects/:id', projectsController.deleteById);
+routes.get('/registeredProjects/:id', projectsController.showRegistered);
+routes.get('/registeredProject/:id', projectsController.showRegisteredProject);
+
+routes.post('/evaluation', evaluationsController.evaluate);
 
 export {routes};

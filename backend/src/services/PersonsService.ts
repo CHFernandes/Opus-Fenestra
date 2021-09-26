@@ -38,7 +38,7 @@ class PersonsService {
             throw new Error('Insira um e-mail valido');
         }
 
-        const organization = this.organizationsRepository.findOne({
+        const organization = await this.organizationsRepository.findOne({
             where: { id_organization},
         });
 
@@ -46,7 +46,7 @@ class PersonsService {
             throw new Error('Organização não encontrada');
         }
 
-        const persona = this.personasRepository.findOne({
+        const persona = await this.personasRepository.findOne({
             where: { id_persona},
         });
 
@@ -98,7 +98,7 @@ class PersonsService {
             throw new Error('Organização inválida');
         }
 
-        const organization = this.organizationsRepository.findOne({
+        const organization = await this.organizationsRepository.findOne({
             where: { id_organization},
         });
 
@@ -181,7 +181,7 @@ class PersonsService {
             throw new Error('Insira um e-mail valido');
         }
 
-        const organization = this.organizationsRepository.findOne({
+        const organization = await this.organizationsRepository.findOne({
             where: { id_organization},
         });
 
@@ -189,7 +189,7 @@ class PersonsService {
             throw new Error('Organização não encontrada');
         }
 
-        const persona = this.personasRepository.findOne({
+        const persona = await this.personasRepository.findOne({
             where: { id_persona},
         });
 

@@ -101,6 +101,32 @@ class ProjectsController {
         
     }
 
+    async showRegistered(request: Request, response: Response): Promise<Response> {
+        const {id} = request.params;
+        try {
+            const list = await singletonProject.getInstance().findRegisteredProjects(Number(id));
+
+            return response.json(list);
+        } catch (err) {
+            return response.status(400).json({
+                message: err.message,
+            });
+        }
+    }
+
+    async showRegisteredProject (request: Request, response: Response): Promise<Response> {
+        const {id} = request.params;
+        try {
+            const project = await singletonProject.getInstance().findRegisteredProject(Number(id));
+
+            return response.json(project);
+        } catch (err) {
+            return response.status(400).json({
+                message: err.message,
+            });
+        }
+    }
+
 }
 
 export {ProjectsController};

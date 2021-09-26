@@ -31,7 +31,7 @@ class PortfoliosService {
             throw new Error('Pessoa inválida');
         }
 
-        const organization = this.organizationsRepository.findOne({
+        const organization = await this.organizationsRepository.findOne({
             where: { id_organization},
         });
 
@@ -39,7 +39,7 @@ class PortfoliosService {
             throw new Error('Organização não encontrada');
         }
 
-        const person = this.personsRepository.findOne({
+        const person = await this.personsRepository.findOne({
             where: { id_person},
         });
 

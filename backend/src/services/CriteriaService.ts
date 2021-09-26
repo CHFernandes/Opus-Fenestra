@@ -34,7 +34,7 @@ class CriteriaService {
             throw new Error('Unidades inválidas');
         }
 
-        const portfolio =this.portfoliosRepository.findOne({
+        const portfolio = await this.portfoliosRepository.findOne({
             where: { id_portfolio},
         });
 
@@ -42,7 +42,7 @@ class CriteriaService {
             throw new Error('Portfólio não encontrado');
         }
 
-        const unit = this.unitiesRepository.findOne({
+        const unit = await this.unitiesRepository.findOne({
             where: { id_unities},
         });
 
@@ -72,7 +72,7 @@ class CriteriaService {
             throw new Error('Portfolio inválido');
         }
 
-        const portfolio = this.portfoliosRepository.findOne({
+        const portfolio = await this.portfoliosRepository.findOne({
             where: { id_portfolio},
         });
 
@@ -154,7 +154,7 @@ class CriteriaService {
             throw new Error('Critério inválido');
         }
 
-        const portfolio = this.portfoliosRepository.findOne({
+        const portfolio = await this.portfoliosRepository.findOne({
             where: { id_portfolio},
         });
 
@@ -162,7 +162,7 @@ class CriteriaService {
             throw new Error('Portfólio não encontrado');
         }
 
-        const unit = this.unitiesRepository.findOne({
+        const unit = await this.unitiesRepository.findOne({
             where: { id_unities},
         });
 
