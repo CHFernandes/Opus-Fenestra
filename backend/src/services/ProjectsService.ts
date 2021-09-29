@@ -442,6 +442,190 @@ class ProjectsService {
 
         return updatedProject;
     }
+
+    async acceptProject(id_project: number): Promise<Project> {
+        if(!id_project) {
+            throw new Error('Campos obrigatórios não preenchidos');
+        }
+
+        if (Number.isNaN(id_project)) {
+            throw new Error('Projeto inválido');
+        }
+
+        const project = await this.projectsRepository.findOne({
+            where: {
+                id_project
+            },
+        });
+
+        if(!project) {
+            throw new Error('Projeto não existe');
+        }
+
+        if(project.id_status !== 2) {
+            throw new Error('Projeto com estado inválido para esta operação');
+        }
+
+        project.id_status = 3;
+
+        const updatedProject = await this.projectsRepository.save(project);
+
+        return updatedProject;
+    }
+
+    async rejectProject(id_project: number): Promise<Project> {
+        if(!id_project) {
+            throw new Error('Campos obrigatórios não preenchidos');
+        }
+
+        if (Number.isNaN(id_project)) {
+            throw new Error('Projeto inválido');
+        }
+
+        const project = await this.projectsRepository.findOne({
+            where: {
+                id_project
+            },
+        });
+
+        if(!project) {
+            throw new Error('Projeto não existe');
+        }
+
+        if(project.id_status !== 2) {
+            throw new Error('Projeto com estado inválido para esta operação');
+        }
+
+        project.id_status = 7;
+
+        const updatedProject = await this.projectsRepository.save(project);
+
+        return updatedProject;
+    }
+
+    async beginProject(id_project: number): Promise<Project> {
+        if(!id_project) {
+            throw new Error('Campos obrigatórios não preenchidos');
+        }
+
+        if (Number.isNaN(id_project)) {
+            throw new Error('Projeto inválido');
+        }
+
+        const project = await this.projectsRepository.findOne({
+            where: {
+                id_project
+            },
+        });
+
+        if(!project) {
+            throw new Error('Projeto não existe');
+        }
+
+        if(project.id_status !== 3 && project.id_status !== 8) {
+            throw new Error('Projeto com estado inválido para esta operação');
+        }
+
+        project.id_status = 4;
+
+        const updatedProject = await this.projectsRepository.save(project);
+
+        return updatedProject;
+    }
+
+    async stopProject(id_project: number): Promise<Project> {
+        if(!id_project) {
+            throw new Error('Campos obrigatórios não preenchidos');
+        }
+
+        if (Number.isNaN(id_project)) {
+            throw new Error('Projeto inválido');
+        }
+
+        const project = await this.projectsRepository.findOne({
+            where: {
+                id_project
+            },
+        });
+
+        if(!project) {
+            throw new Error('Projeto não existe');
+        }
+
+        if(project.id_status !== 4) {
+            throw new Error('Projeto com estado inválido para esta operação');
+        }
+
+        project.id_status = 8;
+
+        const updatedProject = await this.projectsRepository.save(project);
+
+        return updatedProject;
+    }
+
+    async cancelProject(id_project: number): Promise<Project> {
+        if(!id_project) {
+            throw new Error('Campos obrigatórios não preenchidos');
+        }
+
+        if (Number.isNaN(id_project)) {
+            throw new Error('Projeto inválido');
+        }
+
+        const project = await this.projectsRepository.findOne({
+            where: {
+                id_project
+            },
+        });
+
+        if(!project) {
+            throw new Error('Projeto não existe');
+        }
+
+        if(project.id_status !== 8) {
+            throw new Error('Projeto com estado inválido para esta operação');
+        }
+
+        project.id_status = 9;
+
+        const updatedProject = await this.projectsRepository.save(project);
+
+        return updatedProject;
+    }
+
+    async finishProject(id_project: number): Promise<Project> {
+        if(!id_project) {
+            throw new Error('Campos obrigatórios não preenchidos');
+        }
+
+        if (Number.isNaN(id_project)) {
+            throw new Error('Projeto inválido');
+        }
+
+        const project = await this.projectsRepository.findOne({
+            where: {
+                id_project
+            },
+        });
+
+        if(!project) {
+            throw new Error('Projeto não existe');
+        }
+
+        if(project.id_status !== 4) {
+            throw new Error('Projeto com estado inválido para esta operação');
+        }
+
+        if(project.completion !== 100) {
+            throw new Error('Para ser finalizado projeto precisa estar 100% completado');
+        }
+
+        project.id_status = 5;
+
+        const updatedProject = await this.projectsRepository.save(project);
+
+        return updatedProject;
+    }
 }
 
 export {ProjectsService};

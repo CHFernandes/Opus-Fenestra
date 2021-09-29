@@ -156,8 +156,14 @@ export default function AcceptProjects(): JSX.Element  {
         },
     ];
 
-    function handleApprove(id: number) {
-        alert(`Aprovando ${id}`);
+    async function handleApprove(id: number) {
+        try {
+            await api.put(`acceptProject/${id}`);
+            toast.success('Projeto aprovado');
+            reload();
+        } catch (error) {
+            toast.error(error.response.data.message);
+        }
     }
 
     async function handleAsk(id: number) {
@@ -168,11 +174,16 @@ export default function AcceptProjects(): JSX.Element  {
         } catch (error) {
             toast.error(error.response.data.message);
         }
-        
     }
 
-    function handleReject (id: number) {
-        alert(`Rejeitando ${id}`);
+    async function handleReject (id: number) {
+        try {
+            await api.put(`rejectProject/${id}`);
+            toast.success('Projeto Rejeitado');
+            reload();
+        } catch (error) {
+            toast.error(error.response.data.message);
+        }
     }
 
     async function reload() {

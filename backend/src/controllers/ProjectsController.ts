@@ -157,9 +157,87 @@ class ProjectsController {
     async updateProjectAskInformation(request: Request, response: Response): Promise<Response> {
         const {id} = request.params;
         try {
-            const list = await singletonProject.getInstance().askProjectMoreInformation(Number(id));
+            const project = await singletonProject.getInstance().askProjectMoreInformation(Number(id));
 
-            return response.json(list);
+            return response.json(project);
+        } catch (err) {
+            return response.status(400).json({
+                message: err.message,
+            });
+        }
+    }
+
+    async acceptProject(request: Request, response: Response): Promise<Response> {
+        const {id} = request.params;
+        try {
+            const project = await singletonProject.getInstance().acceptProject(Number(id));
+
+            return response.json(project);
+        } catch (err) {
+            return response.status(400).json({
+                message: err.message,
+            });
+        }
+    }
+
+    async rejectProject(request: Request, response: Response): Promise<Response> {
+        const {id} = request.params;
+        try {
+            const project = await singletonProject.getInstance().rejectProject(Number(id));
+
+            return response.json(project);
+        } catch (err) {
+            return response.status(400).json({
+                message: err.message,
+            });
+        }
+    }
+
+    async beginProject(request: Request, response: Response): Promise<Response> {
+        const {id} = request.params;
+        try {
+            const project = await singletonProject.getInstance().beginProject(Number(id));
+
+            return response.json(project);
+        } catch (err) {
+            return response.status(400).json({
+                message: err.message,
+            });
+        }
+    }
+
+    async stopProject(request: Request, response: Response): Promise<Response> {
+        const {id} = request.params;
+        try {
+            const project = await singletonProject.getInstance().stopProject(Number(id));
+
+            return response.json(project);
+        } catch (err) {
+            return response.status(400).json({
+                message: err.message,
+            });
+        }
+    }
+
+    async cancelProject(request: Request, response: Response): Promise<Response> {
+        const {id} = request.params;
+        try {
+            const project = await singletonProject.getInstance().cancelProject(Number(id));
+
+            return response.json(project);
+        } catch (err) {
+            return response.status(400).json({
+                message: err.message,
+            });
+        }
+    }
+
+    async finishProject(request: Request, response: Response): Promise<Response> {
+        const {id} = request.params;
+        try {
+            const project = await singletonProject.getInstance().finishProject(Number(id));
+
+            return response.json(project);
         } catch (err) {
             return response.status(400).json({
                 message: err.message,

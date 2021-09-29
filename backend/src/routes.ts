@@ -51,6 +51,12 @@ routes.get('/evaluatedProjects/:id', projectsController.showEvaluated);
 routes.get('/registeredProject/:id', projectsController.showRegisteredProject);
 routes.get('/askForProjectInformation/:id', projectsController.showProjectsAskInformation);
 routes.put('/askForProjectInformation/:id', projectsController.updateProjectAskInformation);
+routes.put('/acceptProject/:id', projectsController.acceptProject);
+routes.put('/rejectProject/:id', projectsController.rejectProject);
+routes.put('/beginProject/:id', projectsController.beginProject);
+routes.put('/stopProject/:id', projectsController.stopProject);
+routes.put('/cancelProject/:id', projectsController.cancelProject);
+routes.put('/finishProject/:id', projectsController.finishProject);
 
 routes.post('/evaluation', evaluationsController.evaluate);
 
