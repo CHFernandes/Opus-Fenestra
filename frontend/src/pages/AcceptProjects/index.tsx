@@ -23,7 +23,6 @@ type EvaluatedProject = {
     plannedEndDateAsString: string;
 }
 
-
 export default function AcceptProjects(): JSX.Element  {
     const { isAuthenticated, user } = useContext(AuthContext);
     const [project, setProjects] = useState<EvaluatedProject[]>([]);
@@ -161,12 +160,50 @@ export default function AcceptProjects(): JSX.Element  {
         alert(`Aprovando ${id}`);
     }
 
-    function handleAsk(id: number) {
-        alert(`Perguntando ${id}`);
+    async function handleAsk(id: number) {
+        try {
+            await api.put(`askForProjectInformation/${id}`);
+            toast.success('Projeto atualizado para pedir mais informações');
+            reload();
+        } catch (error) {
+            toast.error(error.response.data.message);
+        }
+        
     }
 
     function handleReject (id: number) {
         alert(`Rejeitando ${id}`);
+    }
+
+    async function reload() {
+        try {
+            const { data:portfolioData } = await api.get(`/portfolios/${user.idOrganization}`);
+            const portfolioId = portfolioData.id_portfolio;
+            const { data } = await api.get(`/evaluatedProjects/${portfolioId}`);
+            const projects = data.map((project) => {
+                return {
+                    id: project.id_project,
+                    idPortfolio: project.id_portfolio,
+                    name: project.name,
+                    description: project.description,
+                    grade: project.grade,
+                    plannedStartDateAsString: format(new Date(project.planned_start_date), 'dd/MM/yyyy', {
+                        locale: ptBR,
+                    }),
+                    plannedEndDateAsString: format(new Date(project.planned_end_date), 'dd/MM/yyyy', {
+                        locale: ptBR,
+                    }),
+
+                };
+            });
+            setProjects(projects);
+        } catch (error) {
+            toast.error(error.response.data.message);
+            const errorMessage = error.response.data.message;
+            if (errorMessage === 'Todos os projetos foram avaliados') {
+                setProjects([]);
+            }
+        }
     }
 
     return (

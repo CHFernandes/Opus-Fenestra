@@ -62,6 +62,23 @@ class EvaluationsService {
 
         const evaluation_date = new Date(evaluation_date_string);
 
+        const existentEvaluation = await this.evaluationsRepository.findOne({
+            where: {id_criteria, id_project}
+        });
+
+        if (existentEvaluation) {
+            existentEvaluation.evaluation_date = evaluation_date;
+            existentEvaluation.value = value;
+
+            const updatedEvaluation = await this.evaluationsRepository.save(existentEvaluation);
+
+            project.id_status = 2;
+
+            await this.projectsRepository.save(project);
+
+            return updatedEvaluation;
+        }
+
         const evaluation = this.evaluationsRepository.create({
             id_project,
             id_criteria,

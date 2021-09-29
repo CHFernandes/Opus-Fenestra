@@ -198,6 +198,7 @@ export default function RegisterOrganizationWizard(): JSX.Element {
                 handleNext();
             } else {
                 toast.success('Avaliação finalizada, redirecionando para a aprovação de projetos');
+                router.push('/AcceptProjects');
             }
         } catch (error) {
             toast.error(error.response.data.message);

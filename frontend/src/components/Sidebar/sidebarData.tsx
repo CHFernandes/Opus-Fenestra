@@ -48,7 +48,12 @@ export const SidebarData = [
           title: 'Criação de Projetos',
           path: '/RegisterProjects/-1',
           icon: <MI.LibraryAdd />
-        }
+        },
+        {
+          title: 'Projetos pendentes',
+          path: '/PendingProjects',
+          icon: <MI.RateReview />,
+        },
       ]
     },
     {

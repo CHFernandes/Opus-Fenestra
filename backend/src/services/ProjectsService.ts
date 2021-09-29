@@ -160,7 +160,7 @@ class ProjectsService {
         return project;
     }
 
-    async updateById (id_project: number,  name: string, completionString: string, description: string, plannedStartDateAsString: string, plannedEndDateAsString: string): Promise<Project>{
+    async updateById (id_project: number,  name: string, completionString: string, description: string, plannedStartDateAsString: string, plannedEndDateAsString: string, status?: number): Promise<Project>{
 
         if(!id_project || !description || !name || !plannedStartDateAsString || !plannedEndDateAsString) {
             throw new Error('Campos obrigatórios não preenchidos');
@@ -211,6 +211,10 @@ class ProjectsService {
         project.completion = completion;
         project.planned_start_date = planned_start_date;
         project.planned_end_date = planned_end_date;
+
+        if(status) {
+            project.id_status = status;
+        }
 
         const updatedProject = await this.projectsRepository.save(project);
 
@@ -320,7 +324,7 @@ class ProjectsService {
         });
 
         if (projectList.length < 1) {
-            throw new Error('Nenhum projeto foi avaliado');
+            throw new Error('Todos os projetos foram avaliados');
         }
 
         const evaluatedProjectsList = await Promise.all(projectList.map(async (project) => {
@@ -361,6 +365,82 @@ class ProjectsService {
         }));
 
         return evaluatedProjectsList;
+    }
+
+    async findAskedProjects(id_portfolio: number): Promise<Project[]> {
+        if(!id_portfolio) {
+            throw new Error('Campos obrigatórios não preenchidos');
+        }
+
+        if (Number.isNaN(id_portfolio)) {
+            throw new Error('Portfólio inválido');
+        }
+
+        const portfolio = await this.portfoliosRepository.findOne({
+            where: {id_portfolio},
+        });
+
+        if(!portfolio) {
+            throw new Error('Portfólio não existe');
+        }
+
+        const list = await getConnection()
+        .createQueryBuilder(Project, 'project')
+        .select('project.id_project', 'id_project')
+        .addSelect('project.id_status', 'id_status')
+        .addSelect('project.id_category', 'id_category')
+        .addSelect('project.id_portfolio', 'id_portfolio')
+        .addSelect('project.description', 'description')
+        .addSelect('project.name', 'name')
+        .addSelect('project.responsible', 'responsible')
+        .addSelect('project.submitter', 'submitter_id')
+        .addSelect('project.document', 'document')
+        .addSelect('project.completion', 'completion')
+        .addSelect('project.planned_start_date', 'planned_start_date')
+        .addSelect('project.planned_end_date', 'planned_end_date')
+        .addSelect('project.actual_start_date', 'actual_start_date')
+        .addSelect('project.actual_end_date', 'actual_end_date')
+        .addSelect('person.user', 'submitter')
+        .leftJoin(Person, 'person', 'project.submitter = person.id_person')
+        .where('project.id_portfolio = :id_portfolio', { id_portfolio })
+        .andWhere('project.id_status = 6')
+        .getRawMany();
+
+        if (list.length < 1) {
+            throw new Error('Nenhum projeto está pendente');
+        }
+
+        return list;
+    }
+
+    async askProjectMoreInformation(id_project: number): Promise<Project> {
+        if(!id_project) {
+            throw new Error('Campos obrigatórios não preenchidos');
+        }
+
+        if (Number.isNaN(id_project)) {
+            throw new Error('Projeto inválido');
+        }
+
+        const project = await this.projectsRepository.findOne({
+            where: {
+                id_project
+            },
+        });
+
+        if(!project) {
+            throw new Error('Projeto não existe');
+        }
+
+        if(project.id_status !== 2) {
+            throw new Error('Projeto com estado inválido para esta operação');
+        }
+
+        project.id_status = 6;
+
+        const updatedProject = await this.projectsRepository.save(project);
+
+        return updatedProject;
     }
 }
 

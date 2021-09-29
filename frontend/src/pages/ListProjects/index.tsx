@@ -147,10 +147,10 @@ export default function ListProjects(): JSX.Element  {
         
                 return (
                     <>
-                        <IconButton onClick={onClickEdit} aria-label='Editar Critério' >
+                        <IconButton onClick={onClickEdit} aria-label='Editar Projeto' >
                             <MI.Edit />
                         </IconButton>
-                        <IconButton onClick={onClickDelete} aria-label='Excluir Critério' >
+                        <IconButton onClick={onClickDelete} aria-label='Excluir Projeto' >
                             <MI.Delete />
                         </IconButton>
                     </>

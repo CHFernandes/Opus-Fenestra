@@ -74,11 +74,12 @@ class ProjectsController {
             description,
             completion,
             plannedStartDate,
-            plannedEndDate
+            plannedEndDate,
+            status
         } = request.body;
 
         try {
-            const updatedProject = await singletonProject.getInstance().updateById(Number(id), name, completion,description, plannedStartDate, plannedEndDate);
+            const updatedProject = await singletonProject.getInstance().updateById(Number(id), name, completion,description, plannedStartDate, plannedEndDate, Number(status));
 
             return response.json(updatedProject);
         } catch (err) {
@@ -131,6 +132,32 @@ class ProjectsController {
         const {id} = request.params;
         try {
             const list = await singletonProject.getInstance().findEvaluatedProjects(Number(id));
+
+            return response.json(list);
+        } catch (err) {
+            return response.status(400).json({
+                message: err.message,
+            });
+        }
+    }
+
+    async showProjectsAskInformation(request: Request, response: Response): Promise<Response> {
+        const {id} = request.params;
+        try {
+            const list = await singletonProject.getInstance().findAskedProjects(Number(id));
+
+            return response.json(list);
+        } catch (err) {
+            return response.status(400).json({
+                message: err.message,
+            });
+        }
+    }
+
+    async updateProjectAskInformation(request: Request, response: Response): Promise<Response> {
+        const {id} = request.params;
+        try {
+            const list = await singletonProject.getInstance().askProjectMoreInformation(Number(id));
 
             return response.json(list);
         } catch (err) {

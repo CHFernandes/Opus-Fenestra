@@ -29,6 +29,17 @@ type FormData = {
     plannedEndDate: Date;
 }
 
+type RequestData = {
+    portfolioId: number;
+    submitter: number;
+    name: string;
+    description: string;
+    completion: number;
+    plannedStartDate: string;
+    plannedEndDate: string;
+    status?: number;
+}
+
 export default function RegisterProjects(): JSX.Element {
     const { isAuthenticated, user } = useContext(AuthContext);
     const router = useRouter();
@@ -75,7 +86,7 @@ export default function RegisterProjects(): JSX.Element {
                     id: data.idProject,
                     name: data.name,
                     description: data.description,
-                    status: 1,
+                    status: data.id_status,
                     completion: data.completion ? data.completion : 0,
                     plannedStartDate: new Date(data.planned_start_date),
                     plannedEndDate: new Date(data.planned_end_date)
@@ -98,11 +109,12 @@ export default function RegisterProjects(): JSX.Element {
     }, []);
 
     useEffect(() => {
-        const { name, description, completion, plannedStartDate, plannedEndDate } = formData;
+        const { name, description, completion, plannedStartDate, plannedEndDate, status } = formData;
 
         setValue('name', name);
         setValue('description', description);
         setValue('completion', completion);
+        setValue('status', status);
         setValue('plannedStartDate', plannedStartDate);
         setValue('plannedEndDate', plannedEndDate);
 
@@ -110,6 +122,7 @@ export default function RegisterProjects(): JSX.Element {
 
     async function onSubmit(data: FormData) {
         try{
+
             const { data:portfolioData } = await api.get(`/portfolios/${user.idOrganization}`);
 
             const portfolioId = portfolioData.id_portfolio;
@@ -118,8 +131,8 @@ export default function RegisterProjects(): JSX.Element {
 
             const { name, description, completion, plannedStartDate, plannedEndDate } = data;
 
-            const requestData = {
-                portfolioId,
+            const requestData: RequestData = {
+                portfolioId: Number(portfolioId),
                 submitter,
                 name,
                 description,
@@ -133,6 +146,10 @@ export default function RegisterProjects(): JSX.Element {
             };
 
             if (Number(slug) > -1) {
+                if (data.status && data.status === 6){
+                    requestData.status = 1;
+                }
+
                 await api.put(`projects/${slug}`, requestData);
 
                 toast.success('Projeto atualizado com sucesso');
