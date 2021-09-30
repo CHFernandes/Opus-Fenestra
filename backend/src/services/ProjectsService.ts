@@ -367,6 +367,37 @@ class ProjectsService {
         return evaluatedProjectsList;
     }
 
+    async findApprovedProjects(id_portfolio: number): Promise<Project[]> {
+        if(!id_portfolio) {
+            throw new Error('Campos obrigatórios não preenchidos');
+        }
+
+        if (Number.isNaN(id_portfolio)) {
+            throw new Error('Portfólio inválido');
+        }
+
+        const portfolio = await this.portfoliosRepository.findOne({
+            where: {id_portfolio},
+        });
+
+        if(!portfolio) {
+            throw new Error('Portfólio não existe');
+        }
+
+        const projectList = await this.projectsRepository.find({
+            where: {
+                id_portfolio,
+                id_status: 3,
+            }
+        });
+
+        if (projectList.length < 1) {
+            throw new Error('Nenhum projeto aprovado está pendente');
+        }
+
+        return projectList;
+    }
+
     async findAskedProjects(id_portfolio: number): Promise<Project[]> {
         if(!id_portfolio) {
             throw new Error('Campos obrigatórios não preenchidos');
@@ -503,13 +534,17 @@ class ProjectsService {
         return updatedProject;
     }
 
-    async beginProject(id_project: number): Promise<Project> {
-        if(!id_project) {
+    async beginProject(id_project: number, id_person: number): Promise<Project> {
+        if(!id_project || !id_person) {
             throw new Error('Campos obrigatórios não preenchidos');
         }
 
         if (Number.isNaN(id_project)) {
             throw new Error('Projeto inválido');
+        }
+
+        if (Number.isNaN(id_person)) {
+            throw new Error('Responsável inválido');
         }
 
         const project = await this.projectsRepository.findOne({
@@ -526,7 +561,16 @@ class ProjectsService {
             throw new Error('Projeto com estado inválido para esta operação');
         }
 
+        const person = await this.personsRepository.findOne({
+            where: {id_person}
+        });
+
+        if(!person) {
+            throw new Error('Pessoa não existe');
+        }
+
         project.id_status = 4;
+        project.responsible = id_person;
 
         const updatedProject = await this.projectsRepository.save(project);
 

@@ -1,0 +1,38 @@
+.listProjects {
+    padding: 0 4rem;
+    height: calc(100vh - 15rem);
+    display: flex;
+    flex-direction: column;
+
+    .dataTableContainer {
+        height: calc(100vh - 18rem);
+        width: 100%;
+    }
+}
+
+.dialog {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    max-width: 120rem;
+
+    .field {
+        display: flex;
+        justify-content: center;
+        flex-direction: row;
+        margin-bottom: 1rem;
+        width: 100%;
+        
+
+        label {
+            margin-left: 0.3rem;
+        }
+    }
+
+    .buttonWrapper {
+        display: flex;
+        justify-content: center;
+        flex-direction: row;
+        margin-bottom: 1rem;
+    }
+}

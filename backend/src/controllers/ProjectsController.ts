@@ -141,6 +141,19 @@ class ProjectsController {
         }
     }
 
+    async showApproved(request: Request, response: Response): Promise<Response> {
+        const {id} = request.params;
+        try {
+            const list = await singletonProject.getInstance().findApprovedProjects(Number(id));
+
+            return response.json(list);
+        } catch (err) {
+            return response.status(400).json({
+                message: err.message,
+            });
+        }
+    }
+
     async showProjectsAskInformation(request: Request, response: Response): Promise<Response> {
         const {id} = request.params;
         try {
@@ -195,8 +208,13 @@ class ProjectsController {
 
     async beginProject(request: Request, response: Response): Promise<Response> {
         const {id} = request.params;
+
+        const {
+            responsibleId,
+        } = request.body;
+
         try {
-            const project = await singletonProject.getInstance().beginProject(Number(id));
+            const project = await singletonProject.getInstance().beginProject(Number(id), Number(responsibleId));
 
             return response.json(project);
         } catch (err) {
