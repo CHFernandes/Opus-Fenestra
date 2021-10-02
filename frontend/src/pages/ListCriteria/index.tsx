@@ -88,12 +88,12 @@ export default function ListCriteria(): JSX.Element  {
         },
         {
             field: 'bestValue',
-            headerName: 'Valor mais esperado',
+            headerName: 'Valor máximo',
             flex: 2,
         },
         {
             field: 'worstValue',
-            headerName: 'Valor menos esperado',
+            headerName: 'Valor mínimo',
             flex: 2,
         },
         {

@@ -59,6 +59,11 @@ export const SidebarData = [
           path: '/ApprovedProjects',
           icon: <MI.RateReview />,
         },
+        {
+          title: 'Projetos em execução',
+          path: '/RunningProjects',
+          icon: <MI.RateReview />,
+        },
       ]
     },
     {

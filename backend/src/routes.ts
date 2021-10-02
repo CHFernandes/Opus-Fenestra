@@ -51,11 +51,13 @@ routes.get('/evaluatedProjects/:id', projectsController.showEvaluated);
 routes.get('/approvedProjects/:id', projectsController.showApproved);
 routes.get('/registeredProject/:id', projectsController.showRegisteredProject);
 routes.get('/askForProjectInformation/:id', projectsController.showProjectsAskInformation);
+routes.get('/runningProjects/:id', projectsController.showRunningProjects);
 routes.put('/askForProjectInformation/:id', projectsController.updateProjectAskInformation);
 routes.put('/acceptProject/:id', projectsController.acceptProject);
 routes.put('/rejectProject/:id', projectsController.rejectProject);
 routes.put('/beginProject/:id', projectsController.beginProject);
 routes.put('/stopProject/:id', projectsController.stopProject);
+routes.put('/restartProject/:id', projectsController.restartProject);
 routes.put('/cancelProject/:id', projectsController.cancelProject);
 routes.put('/finishProject/:id', projectsController.finishProject);
 

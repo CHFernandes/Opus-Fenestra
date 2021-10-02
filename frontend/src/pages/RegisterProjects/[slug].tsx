@@ -16,6 +16,14 @@ import styles from './styles.module.scss';
 import { Controller, useForm } from 'react-hook-form';
 import { AuthContext } from '../../contexts/AuthContext';
 import toast from 'react-hot-toast';
+import { CancelConfirmation } from '../../components/CancelConfirmation';
+import { FinishConfirmation } from '../../components/FinishConfirmation';
+import { Autocomplete } from '@material-ui/lab';
+
+type Person = {
+    personId: number;
+    name: string;
+}
 
 type FormData = {
     portfolioId?: number;
@@ -27,6 +35,7 @@ type FormData = {
     completion: number;
     plannedStartDate: Date;
     plannedEndDate: Date;
+    responsible?: Person;
 }
 
 type RequestData = {
@@ -45,6 +54,31 @@ export default function RegisterProjects(): JSX.Element {
     const router = useRouter();
     const { slug } = router.query;
 
+    const newDate = new Date();
+    const parsed = newDate.setMonth(newDate.getMonth() + 3);
+    const standardEndDate = new Date(parsed);
+
+    const startingForm = {
+        name: '',
+        description: '',
+        status: 1,
+        completion: 0,
+        responsible: {
+            personId: 0,
+            name: '',
+        },
+        plannedStartDate: new Date(),
+        plannedEndDate: standardEndDate,
+    };
+
+    const [persons, setPersons] = useState<Person[]>([]);
+    const [formData, setFormData] = useState<FormData>(startingForm);
+
+    const { handleSubmit, control, getValues, setValue} = useForm<FormData>({
+        mode: 'all',
+        defaultValues: startingForm,
+    });
+
     const completionValidation = Number(slug) > -1 ? { 
         required: 'Campo obrigatório', 
         validate: { 
@@ -57,36 +91,34 @@ export default function RegisterProjects(): JSX.Element {
         }
     } : {};
 
-    const newDate = new Date();
-    const parsed = newDate.setMonth(newDate.getMonth() + 3);
-    const standardEndDate = new Date(parsed);
-
-    const startingForm = {
-        name: '',
-        description: '',
-        status: 1,
-        completion: 0,
-        plannedStartDate: new Date(),
-        plannedEndDate: standardEndDate,
-    };
-
-    const [formData, setFormData] = useState<FormData>(startingForm);
-
-    const { handleSubmit, control, getValues, setValue} = useForm<FormData>({
-        mode: 'all',
-        defaultValues: startingForm,
-    });
+    const responsibleValidation = (Number(slug) > -1 && formData.status === 4) ? {
+        required: 'Campo obrigatório'
+    } : {};
 
     useEffect(() => {
         async function getProject() {
             try {
+                const { data:personResponse } = await api.get(`/personsOrganization/${user.idOrganization}`);
+                const personData = personResponse.map((person) => {
+                    return {
+                        personId: person.id_person,
+                        name: person.name,
+                    };
+                });
+    
+                setPersons(personData);
+
+
                 const { data } = await api.get(`/projects/${slug}`);
+
+                const responsible: Person = personData.find((person) => person.personId === data.responsible);
 
                 const project = {
                     id: data.idProject,
                     name: data.name,
                     description: data.description,
                     status: data.id_status,
+                    responsible: responsible,
                     completion: data.completion ? data.completion : 0,
                     plannedStartDate: new Date(data.planned_start_date),
                     plannedEndDate: new Date(data.planned_end_date)
@@ -109,12 +141,13 @@ export default function RegisterProjects(): JSX.Element {
     }, []);
 
     useEffect(() => {
-        const { name, description, completion, plannedStartDate, plannedEndDate, status } = formData;
+        const { name, description, completion, plannedStartDate, plannedEndDate, status, responsible } = formData;
 
         setValue('name', name);
         setValue('description', description);
         setValue('completion', completion);
         setValue('status', status);
+        setValue('responsible', responsible);
         setValue('plannedStartDate', plannedStartDate);
         setValue('plannedEndDate', plannedEndDate);
 
@@ -165,8 +198,111 @@ export default function RegisterProjects(): JSX.Element {
         } 
     }
 
+    async function stopProject() {
+        try{
+            await api.put(`stopProject/${slug}`);
+
+            toast.success('Projeto paralisado com sucesso');
+            router.push('/ListProjects');
+        } catch (error) {
+            toast.error(error.response.data.message);
+        }
+    }
+
+    async function finishProject() {
+        const response = await FinishConfirmation();
+
+        if(!response){
+            return;
+        }
+
+        try{
+            await api.put(`finishProject/${slug}`);
+
+            toast.success('Projeto Finalizado com sucesso');
+            router.push('/ListProjects');
+        } catch (error) {
+            toast.error(error.response.data.message);
+        }
+    }
+
+    async function restartProject() {
+        try{
+            await api.put(`restartProject/${slug}`);
+
+            toast.success('Projeto retomado com sucesso');
+            router.push('/ListProjects');
+        } catch (error) {
+            toast.error(error.response.data.message);
+        }
+    }
+
+    async function cancelProject() {
+        const response = await CancelConfirmation();
+
+        if(!response){
+            return;
+        }
+
+        try{
+            await api.put(`cancelProject/${slug}`);
+
+            toast.success('Projeto cancelado com sucesso');
+            router.push('/ListProjects');
+        } catch (error) {
+            toast.error(error.response.data.message);
+        }
+    }
+
     return (
         <div className={styles.registerProject}>
+            <div className={styles.buttonHeadbar}>
+                {
+                    (formData.status === 4) && (
+                        <>
+                            <Button
+                                variant='contained'
+                                color='secondary'
+                                size='large'
+                                onClick={stopProject}
+                            >
+                                Paralisar Projeto
+                            </Button>
+                            <Button
+                                variant='contained'
+                                color='primary'
+                                size='large'
+                                disabled={(formData.completion !== 100)}
+                                onClick={finishProject}
+                            >
+                                Finalizar Projeto
+                            </Button>
+                        </>
+                    )
+                }
+                {
+                    (formData.status === 8) && (
+                        <>
+                            <Button
+                                variant='contained'
+                                color='primary'
+                                size='large'
+                                onClick={restartProject}
+                            >
+                                Retomar Projeto
+                            </Button>
+                            <Button
+                                variant='contained'
+                                color='secondary'
+                                size='large'
+                                onClick={cancelProject}
+                            >
+                                Cancelar Projeto
+                            </Button>
+                        </>
+                    )
+                }
+            </div>
             <form onSubmit={handleSubmit(onSubmit)}>
                 { 
                     Number(slug) > -1 ? (
@@ -226,29 +362,58 @@ export default function RegisterProjects(): JSX.Element {
                     </div>
 
                     {
-                        Number(slug) > -1 && (
-                            <div className={styles.field}>
-                                <Controller 
-                                    name='completion'
-                                    control={control}
-                                    defaultValue={0}
-                                    rules={completionValidation}
-                                    render={ ({ field: { onChange, onBlur, value}, fieldState: { error } }) => (
-                                        <TextField
-                                            type='number'
-                                            label='Completude do projeto'
-                                            variant='outlined'
-                                            onBlur={onBlur}
-                                            onChange={onChange}
-                                            fullWidth
-                                            InputProps={{endAdornment:<InputAdornment position='end'>%</InputAdornment>}}
-                                            value={value}
-                                            error={!!error}
-                                            helperText={!!error && error.message}
-                                        />
-                                    ) }
-                                />
-                            </div>
+                        (Number(slug) > -1 && formData.status === 4) && (
+                            <>
+                                <div className={styles.field}>
+                                    <Controller 
+                                        name='responsible'
+                                        control={control}
+                                        rules={responsibleValidation}
+                                        render={ ({ field: { onChange, onBlur, value}, fieldState: { error } }) => (
+                                            <Autocomplete
+                                                value={value}
+                                                options={persons}
+                                                getOptionLabel={(option) => option.name}
+                                                onBlur={onBlur}
+                                                fullWidth
+                                                onChange={(e, data) => onChange(data)}
+                                                renderInput={ (params) => 
+                                                    <TextField 
+                                                        {...params}
+                                                        label='Responsável'
+                                                        variant='outlined'
+                                                        className={styles.textField}
+                                                        error={!!error}
+                                                        helperText={!!error && error.message}
+                                                    />
+                                                }
+                                            />
+                                        ) }
+                                    />
+                                </div>
+                                <div className={styles.field}>
+                                    <Controller 
+                                        name='completion'
+                                        control={control}
+                                        defaultValue={0}
+                                        rules={completionValidation}
+                                        render={ ({ field: { onChange, onBlur, value}, fieldState: { error } }) => (
+                                            <TextField
+                                                type='number'
+                                                label='Completude do projeto'
+                                                variant='outlined'
+                                                onBlur={onBlur}
+                                                onChange={onChange}
+                                                fullWidth
+                                                InputProps={{endAdornment:<InputAdornment position='end'>%</InputAdornment>}}
+                                                value={value}
+                                                error={!!error}
+                                                helperText={!!error && error.message}
+                                            />
+                                        ) }
+                                    />
+                                </div>
+                            </>
                         )
                     }
                     
