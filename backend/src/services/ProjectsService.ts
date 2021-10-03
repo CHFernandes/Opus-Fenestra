@@ -19,6 +19,12 @@ type EvaluatedProject = {
     grade: number;
 }
 
+type ProjectEvaluation = {
+    id_project: number;
+    evaluation_date: Date;
+    finalGrade: number;
+}
+
 class ProjectsService {
     private projectsRepository: Repository<Project>;
     private portfoliosRepository: Repository<Portfolio>
@@ -327,6 +333,16 @@ class ProjectsService {
             throw new Error('Todos os projetos foram avaliados');
         }
 
+        // SELECT e1.id_project, e1.evaluation_date, sum(e1.value) as finalGrade 
+        // from evaluation e1
+        // join (
+        // 	select id_project, Max(evaluation_date) as max_date
+        // 		from evaluation e2
+        // 		group by id_project
+        // ) as e2 where e1.id_project = e2.id_project and e1.evaluation_date = e2.max_date
+        // group by e1.id_project, e1.evaluation_date;
+        // <- retorna as avaliações mais recentes do projeto
+
         const evaluatedProjectsList = await Promise.all(projectList.map(async (project) => {
             const {
                 id_project,
@@ -337,19 +353,24 @@ class ProjectsService {
                 planned_start_date,
             } = project;
 
-            const evaluations = await this.evaluationsRepository.find({
-                where: {
-                    id_project
-                }
-            });
+            const subquery = getConnection()
+            .createQueryBuilder(Evaluation, 'e2')
+            .select('id_project')
+            .addSelect('max(evaluation_date)', 'max_date')
+            .groupBy('id_project');
 
-            const gradesArray = evaluations.map((evaluation) => {
-                return evaluation.value;
-            });
+            const evaluation = await getConnection()
+            .createQueryBuilder(Evaluation, 'e1')
+            .select('e1.id_project', 'id_project')
+            .addSelect('e1.evaluation_date', 'id_project')
+            .addSelect('sum(value)', 'finalGrade')
+            .leftJoin(`(${subquery.getQuery()})`, 'e2')
+            .where('e1.id_project = e2.id_project')
+            .andWhere('e1.evaluation_date = e2.max_date')
+            .andWhere('e1.id_project = :id_project', { id_project })
+            .getRawOne();
 
-            const finalGrade = gradesArray.reduce((previous, next) => {
-                return Number(previous) + Number(next);
-            });
+            const finalGrade = evaluation.finalGrade;
 
             const returnProject = {
                 id_project,
@@ -365,6 +386,43 @@ class ProjectsService {
         }));
 
         return evaluatedProjectsList;
+    }
+
+    async findProjectEvaluations(id_project: number): Promise<ProjectEvaluation[]>{
+        if(!id_project) {
+            throw new Error('Campos obrigatórios não preenchidos');
+        }
+
+        if (Number.isNaN(id_project)) {
+            throw new Error('Projeto inválido');
+        }
+
+        const project = await this.projectsRepository.findOne({
+            where: {id_project},
+        });
+
+        if(!project) {
+            throw new Error('Projeto não existe');
+        }
+
+        // SELECT id_project, evaluation_date, sum(value) as finalGrade from evaluation group by id_project, evaluation_date; <- retorna todas as avaliações do projeto
+
+        const evaluations = await getConnection()
+        .createQueryBuilder(Evaluation, 'evaluation')
+        .select('id_project')
+        .addSelect('evaluation_date')
+        .addSelect('sum(value)', 'finalGrade')
+        .where('id_project = :id_project', {id_project})
+        .groupBy('id_project')
+        .addGroupBy('evaluation_date')
+        .getRawMany();
+
+        if (evaluations.length < 1) {
+            throw new Error('Projeto não foi avaliado');
+        }
+
+        return evaluations;
+
     }
 
     async findApprovedProjects(id_portfolio: number): Promise<Project[]> {

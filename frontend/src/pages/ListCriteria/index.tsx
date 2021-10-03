@@ -28,6 +28,7 @@ type Criterion = {
 export default function ListCriteria(): JSX.Element  {
     const { isAuthenticated, user } = useContext(AuthContext);
     const [criteria, setCriteria] = useState<Criterion[]>([]);
+    const [criteriaSum, setCriteriaSum] = useState<number>(0);
 
     useEffect(() => {
         async function getCriteria() {
@@ -46,6 +47,17 @@ export default function ListCriteria(): JSX.Element  {
                         worstValue: criterion.worst_manual_value,
                     };
                 });
+
+                const criteriaSum = criteria.reduce((sum, criterion) => {
+                    const weightSum = Number(criterion.weight);
+                    if (!Number.isNaN(weightSum)) {
+                        sum += weightSum;
+                    }
+            
+                    return sum;
+                }, 0);
+
+                setCriteriaSum(criteriaSum);
 
                 setCriteria(criteria);
             } catch (error) {
@@ -179,6 +191,10 @@ export default function ListCriteria(): JSX.Element  {
     return (
         <div className={styles.listCriteria}>
             <div className={styles.buttonHeadbar}>
+                <div className={styles.weightInformation}>
+                    <h3>Somente será possível realizar avaliações quando a soma dos pesos dos critérios for 10</h3>
+                    <p>No momento a soma total dos pesos é: {criteriaSum}</p>
+                </div>
                 <Button
                     variant='contained'
                     color='primary'

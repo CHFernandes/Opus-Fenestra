@@ -44,7 +44,7 @@ class PortfoliosService {
         });
 
         if (!person) {
-            throw new Error('Persona não encontrada');
+            throw new Error('Pessoa não encontrada');
         }
 
         const portfolio = this.portfoliosRepository.create({

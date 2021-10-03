@@ -2,7 +2,7 @@ import React, { useState, useEffect, useContext } from 'react';
 import { useRouter } from 'next/router';
 
 import { Button, Step, Stepper, StepLabel, TextField, } from '@material-ui/core';
-import { useForm, Controller, useFieldArray } from 'react-hook-form';
+import { useForm, Controller, useFieldArray, useWatch, Control } from 'react-hook-form';
 import * as MI from '@material-ui/icons/';
 
 import { format } from 'date-fns';
@@ -45,6 +45,20 @@ type EvaluationForm = {
 
 type EvaluationFormArray = {
     evaluation: EvaluationForm[];
+}
+
+function Total ({control}: { control: Control<EvaluationFormArray>}): JSX.Element {
+    const fields = useWatch({ control, name: 'evaluation', defaultValue: []});
+    const total = fields?.reduce((sum, field) => {
+        const amount = Number(field.insertedValue) * Number(field.weight) / 10;
+        if (!Number.isNaN(amount)) {
+            sum += amount;
+        }
+
+        return sum;
+    }, 0);
+
+    return <p>Nota total: {total}</p>;
 }
 
 export default function RegisterOrganizationWizard(): JSX.Element {
@@ -131,6 +145,22 @@ export default function RegisterOrganizationWizard(): JSX.Element {
                         worstValue: criterion.worst_manual_value,
                     };
                 });
+
+                const weightSum = criteria.reduce((sum, criterion) => {
+                    const weight = Number(criterion.weight);
+                    if (!Number.isNaN(weight)) {
+                        sum += weight;
+                    }
+                    return sum;
+                }, 0);
+
+                if (weightSum !== 10) {
+                    toast.error('Soma dos pesos está diferente de 10, não será possível prosseguir com a avaliação');
+                    toast.error('Por favor atualize o peso de seus critérios');
+                    router.push('/ListCriteria');
+                    return;
+                }
+
                 setCriteriaArray(criteria);
                 setIsRendered(true);
                 remove();
@@ -206,7 +236,7 @@ export default function RegisterOrganizationWizard(): JSX.Element {
     }
 
     function calculate(evaluation: EvaluationForm ) {
-        evaluation.realValue = Number(evaluation.insertedValue) * Number(evaluation.weight);
+        evaluation.realValue = Number(evaluation.insertedValue) * Number(evaluation.weight) / 10;
         return evaluation;
     }
 
@@ -237,6 +267,9 @@ export default function RegisterOrganizationWizard(): JSX.Element {
                                 </div>
                                 <div className={styles.subTitle}>
                                     <h4>{field.unitDescription}</h4>
+                                </div>
+                                <div className={styles.subTitle}>
+                                    <h4>Peso: {field.weight}</h4>
                                 </div>
                                 <div className={styles.formFields}>
                                     <div className={styles.field}>
@@ -278,6 +311,9 @@ export default function RegisterOrganizationWizard(): JSX.Element {
                             </div>
                         </div>
                     ))}
+                    <div className={styles.total}>
+                        <Total control={control} />
+                    </div>
                 </fieldset>
                 <div className={styles.buttonWrapper}>
                     <Button

@@ -50,6 +50,24 @@ class CriteriaService {
             throw new Error('Unidade não encontrada');
         }
 
+        const criteriaArray = await this.criteriaRepository.find({
+            where: {
+                id_portfolio
+            }
+        });
+
+        const totalWeight = criteriaArray.reduce((sum, criterion) => {
+            const weight = Number(criterion.weight);
+            if (!Number.isNaN(weight)) {
+                sum += weight;
+            }
+            return sum;
+        }, 0);
+
+        if(Number(totalWeight) + Number(weight) > 10) {
+            throw new Error('Soma dos pesos dos critérios maior que 10, operação será abortada');
+        }
+
         const criterion = this.criteriaRepository.create({
             id_portfolio,
             description,
@@ -176,6 +194,24 @@ class CriteriaService {
 
         if (!criterion) {
             throw new Error('Critério não existe');
+        }
+
+        const criteriaArray = await this.criteriaRepository.find({
+            where: {
+                id_portfolio
+            }
+        });
+
+        const totalWeight = criteriaArray.reduce((sum, criterion) => {
+            const weight = Number(criterion.weight);
+            if (!Number.isNaN(weight)) {
+                sum += weight;
+            }
+            return sum;
+        }, 0);
+
+        if(Number(totalWeight) + Number(weight) - Number(criterion.weight) > 10) {
+            throw new Error('Soma dos pesos dos critérios maior que 10, operação será abortada');
         }
 
         criterion.description = description;

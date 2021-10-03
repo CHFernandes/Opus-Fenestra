@@ -112,8 +112,8 @@ export default function RegisterCriteria(): JSX.Element {
                 toast.success('Critério criado com sucesso');
                 router.push('/ListCriteria');
             }
-        } catch (err) {
-            toast.error(err.message);
+        } catch (error) {
+            toast.error(error.response.data.message);
         }
     }
 
