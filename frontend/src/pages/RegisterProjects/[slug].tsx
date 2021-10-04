@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useContext } from 'react';
 import { useRouter } from 'next/router';
 
-import { Button, InputAdornment, TextField } from '@material-ui/core';
+import { Button, Dialog, InputAdornment, List, ListItemText, Paper, TextField, DialogTitle } from '@material-ui/core';
 import { KeyboardDatePicker, MuiPickersUtilsProvider } from '@material-ui/pickers';
 import * as MI from '@material-ui/icons/';
 
@@ -49,6 +49,11 @@ type RequestData = {
     status?: number;
 }
 
+type Evaluation = {
+    evaluationDate: string;
+    grade: string;
+}
+
 export default function RegisterProjects(): JSX.Element {
     const { isAuthenticated, user } = useContext(AuthContext);
     const router = useRouter();
@@ -73,6 +78,8 @@ export default function RegisterProjects(): JSX.Element {
 
     const [persons, setPersons] = useState<Person[]>([]);
     const [formData, setFormData] = useState<FormData>(startingForm);
+    const [showDialogEvaluation, setShowDialogEvaluation] = useState<boolean>(false);
+    const [evaluations, setEvaluations] = useState<Evaluation[]>([]);
 
     const { handleSubmit, control, getValues, setValue} = useForm<FormData>({
         mode: 'all',
@@ -152,6 +159,26 @@ export default function RegisterProjects(): JSX.Element {
         setValue('plannedEndDate', plannedEndDate);
 
     }, [formData]);
+
+    useEffect(() => {
+        async function getProjectEvaluation() {
+            const { data } = await api.get(`/projectsEvaluations/${slug}`);
+
+            const evaluations = data.map((evaluation) => {
+                return {
+                    evaluationDate: format(new Date(evaluation.evaluation_date), 'dd/MM/yyyy', {
+                        locale: ptBR,
+                    }),
+                    grade: `${evaluation.finalGrade}`.replace('.', ',')
+                };
+            });
+            setEvaluations(evaluations);
+        }
+
+        if (showDialogEvaluation){
+            getProjectEvaluation();
+        }
+    }, [showDialogEvaluation]);
 
     async function onSubmit(data: FormData) {
         try{
@@ -254,267 +281,308 @@ export default function RegisterProjects(): JSX.Element {
         }
     }
 
+    function showEvaluations() {
+        setShowDialogEvaluation(true);
+    }
+
+    function handleClose() {
+        setShowDialogEvaluation(false);
+    }
+
     return (
-        <div className={styles.registerProject}>
-            <div className={styles.buttonHeadbar}>
-                {
-                    (formData.status === 4) && (
-                        <>
-                            <Button
-                                variant='contained'
-                                color='secondary'
-                                size='large'
-                                onClick={stopProject}
-                            >
-                                Paralisar Projeto
-                            </Button>
-                            <Button
-                                variant='contained'
-                                color='primary'
-                                size='large'
-                                disabled={(formData.completion !== 100)}
-                                onClick={finishProject}
-                            >
-                                Finalizar Projeto
-                            </Button>
-                        </>
-                    )
-                }
-                {
-                    (formData.status === 8) && (
-                        <>
-                            <Button
-                                variant='contained'
-                                color='primary'
-                                size='large'
-                                onClick={restartProject}
-                            >
-                                Retomar Projeto
-                            </Button>
-                            <Button
-                                variant='contained'
-                                color='secondary'
-                                size='large'
-                                onClick={cancelProject}
-                            >
-                                Cancelar Projeto
-                            </Button>
-                        </>
-                    )
-                }
-            </div>
-            <form onSubmit={handleSubmit(onSubmit)}>
-                { 
-                    Number(slug) > -1 ? (
-                        <h1>Atualização de Projeto</h1>
-                    ) : (
-                        <h1>Cadastro de Projeto</h1>
-                    )
-                }           
-
-                <fieldset>
-                    <legend>
-                        <h2>Projeto</h2>
-                    </legend>
-
-                    <div className={styles.field}>
-                        <Controller 
-                            name='name'
-                            control={control}
-                            defaultValue=''
-                            rules={{ required: 'Campo obrigatório' }}
-                            render={ ({ field: { onChange, onBlur, value}, fieldState: { error } }) => (
-                                <TextField
-                                    type='text'
-                                    label='Nome do Projeto'
-                                    variant='outlined'
-                                    onBlur={onBlur}
-                                    onChange={onChange}
-                                    fullWidth
-                                    value={value}
-                                    error={!!error}
-                                    helperText={!!error && error.message}
-                                />
-                            ) }
-                        />
-                    </div>
-                    
-                    <div className={styles.field}>
-                        <Controller 
-                            name='description'
-                            control={control}
-                            defaultValue=''
-                            rules={{ required: 'Campo obrigatório' }}
-                            render={ ({ field: { onChange, onBlur, value}, fieldState: { error } }) => (
-                                <TextField
-                                    type='text'
-                                    label='Descrição breve do Projeto'
-                                    variant='outlined'
-                                    onBlur={onBlur}
-                                    onChange={onChange}
-                                    fullWidth
-                                    value={value}
-                                    error={!!error}
-                                    helperText={!!error && error.message}
-                                />
-                            ) }
-                        />
-                    </div>
-
+        <>
+            <div className={styles.registerProject}>
+                <div className={styles.buttonHeadbar}>
                     {
-                        (Number(slug) > -1 && formData.status === 4) && (
+                        (Number(slug) > -1 && formData.status !== 1) && (
+                            <Button
+                                size='large'
+                                onClick={showEvaluations}
+                            >
+                                Ver Avaliações
+                            </Button>
+                        )
+                    }
+                    {
+                        (formData.status === 4) && (
                             <>
-                                <div className={styles.field}>
-                                    <Controller 
-                                        name='responsible'
-                                        control={control}
-                                        rules={responsibleValidation}
-                                        render={ ({ field: { onChange, onBlur, value}, fieldState: { error } }) => (
-                                            <Autocomplete
-                                                value={value}
-                                                options={persons}
-                                                getOptionLabel={(option) => option.name}
-                                                onBlur={onBlur}
-                                                fullWidth
-                                                onChange={(e, data) => onChange(data)}
-                                                renderInput={ (params) => 
-                                                    <TextField 
-                                                        {...params}
-                                                        label='Responsável'
-                                                        variant='outlined'
-                                                        className={styles.textField}
-                                                        error={!!error}
-                                                        helperText={!!error && error.message}
-                                                    />
-                                                }
-                                            />
-                                        ) }
-                                    />
-                                </div>
-                                <div className={styles.field}>
-                                    <Controller 
-                                        name='completion'
-                                        control={control}
-                                        defaultValue={0}
-                                        rules={completionValidation}
-                                        render={ ({ field: { onChange, onBlur, value}, fieldState: { error } }) => (
-                                            <TextField
-                                                type='number'
-                                                label='Completude do projeto'
-                                                variant='outlined'
-                                                onBlur={onBlur}
-                                                onChange={onChange}
-                                                fullWidth
-                                                InputProps={{endAdornment:<InputAdornment position='end'>%</InputAdornment>}}
-                                                value={value}
-                                                error={!!error}
-                                                helperText={!!error && error.message}
-                                            />
-                                        ) }
-                                    />
-                                </div>
+                                <Button
+                                    variant='contained'
+                                    color='secondary'
+                                    size='large'
+                                    onClick={stopProject}
+                                >
+                                    Paralisar Projeto
+                                </Button>
+                                <Button
+                                    variant='contained'
+                                    color='primary'
+                                    size='large'
+                                    disabled={(formData.completion !== 100)}
+                                    onClick={finishProject}
+                                >
+                                    Finalizar Projeto
+                                </Button>
                             </>
                         )
                     }
-                    
-                    <div className={styles.field}>
-                        <Controller 
-                            name='plannedStartDate'
-                            control={control}
-                            defaultValue={newDate}
-                            rules={{
-                                required: 'Campo obrigatório',
-                                validate: { 
-                                    isValid: (value) => {
-                                        return  !!value.getTime() || 'Insira uma data válida';
-                                    },
-                                    validateStartDateAfterEndDate: (value) => {
-                                        const { plannedEndDate } = getValues();
-                                        return value.getTime() <= plannedEndDate.getTime() || 'Insira uma data antes da data de encerramento';
-                                    },
-                                }
-                            }}
-                            render={ ({ field: { onChange, onBlur, value}, fieldState: { error } }) => (
-                                <MuiPickersUtilsProvider utils={DateFnsUtils} locale={ptBR} >
-                                    <KeyboardDatePicker
-                                        disableToolbar
-                                        variant='inline'
-                                        inputVariant='outlined'
-                                        format='dd/MM/yyyy'
-                                        label='Data de início planejada'
-                                        onBlur={onBlur}
-                                        onChange={onChange}
-                                        value={value}
-                                        fullWidth
-                                        KeyboardButtonProps={{
-                                            'aria-label': 'change date',
-                                        }}
-                                        error={!!error}
-                                        helperText={!!error && error.message}
-                                    />
-                                </ MuiPickersUtilsProvider>
-                            ) }
-                        />
-                    </div>
-
-                    <div className={styles.field}>
-                        <Controller 
-                            name='plannedEndDate'
-                            control={control}
-                            defaultValue={standardEndDate}
-                            rules={{ 
-                                required: 'Campo obrigatório',
-                                validate: { 
-                                    isValid: (value) => {
-                                        return !!value.getTime() || 'Insira uma data válida';
-                                    }, 
-                                    validateEndDateBeforeStartDate: (value) => {
-                                        const { plannedStartDate } = getValues();
-                                        return value.getTime() >= plannedStartDate.getTime() || 'Insira uma data depois da data de início';
-                                    },
-                                }
-                            }}
-                            render={ ({ field: { onChange, onBlur, value}, fieldState: { error } }) => (
-                                <MuiPickersUtilsProvider utils={DateFnsUtils} locale={ptBR} >
-                                    <KeyboardDatePicker
-                                        disableToolbar
-                                        variant='inline'
-                                        inputVariant='outlined'
-                                        format='dd/MM/yyyy'
-                                        label='Data de encerramento planejado'
-                                        onBlur={onBlur}
-                                        onChange={onChange}
-                                        value={value}
-                                        fullWidth
-                                        KeyboardButtonProps={{
-                                            'aria-label': 'change date',
-                                        }}
-                                        error={!!error}
-                                        helperText={!!error && error.message}
-                                    />
-                                </ MuiPickersUtilsProvider>
-                            ) }
-                        />
-                    </div>
-
-                </fieldset>
-
-                <Button
-                    variant='contained'
-                    color='primary'
-                    size='large'
-                    startIcon={<MI.Save />}
-                    type='submit'
-                >
+                    {
+                        (formData.status === 8) && (
+                            <>
+                                <Button
+                                    variant='contained'
+                                    color='primary'
+                                    size='large'
+                                    onClick={restartProject}
+                                >
+                                    Retomar Projeto
+                                </Button>
+                                <Button
+                                    variant='contained'
+                                    color='secondary'
+                                    size='large'
+                                    onClick={cancelProject}
+                                >
+                                    Cancelar Projeto
+                                </Button>
+                            </>
+                        )
+                    }
+                </div>
+                <form onSubmit={handleSubmit(onSubmit)}>
                     { 
                         Number(slug) > -1 ? (
-                            <span>Atualizar Projeto</span>
+                            <h1>Atualização de Projeto</h1>
                         ) : (
-                            <span>Cadastrar Projeto</span>
+                            <h1>Cadastro de Projeto</h1>
                         )
-                    }   
-                </Button>
-            </form>
-        </div>
+                    }           
+
+                    <fieldset>
+                        <legend>
+                            <h2>Projeto</h2>
+                        </legend>
+
+                        <div className={styles.field}>
+                            <Controller 
+                                name='name'
+                                control={control}
+                                defaultValue=''
+                                rules={{ required: 'Campo obrigatório' }}
+                                render={ ({ field: { onChange, onBlur, value}, fieldState: { error } }) => (
+                                    <TextField
+                                        type='text'
+                                        label='Nome do Projeto'
+                                        variant='outlined'
+                                        onBlur={onBlur}
+                                        onChange={onChange}
+                                        fullWidth
+                                        value={value}
+                                        error={!!error}
+                                        helperText={!!error && error.message}
+                                    />
+                                ) }
+                            />
+                        </div>
+                        
+                        <div className={styles.field}>
+                            <Controller 
+                                name='description'
+                                control={control}
+                                defaultValue=''
+                                rules={{ required: 'Campo obrigatório' }}
+                                render={ ({ field: { onChange, onBlur, value}, fieldState: { error } }) => (
+                                    <TextField
+                                        type='text'
+                                        label='Descrição breve do Projeto'
+                                        variant='outlined'
+                                        onBlur={onBlur}
+                                        onChange={onChange}
+                                        fullWidth
+                                        value={value}
+                                        error={!!error}
+                                        helperText={!!error && error.message}
+                                    />
+                                ) }
+                            />
+                        </div>
+
+                        {
+                            (Number(slug) > -1 && formData.status === 4) && (
+                                <>
+                                    <div className={styles.field}>
+                                        <Controller 
+                                            name='responsible'
+                                            control={control}
+                                            rules={responsibleValidation}
+                                            render={ ({ field: { onChange, onBlur, value}, fieldState: { error } }) => (
+                                                <Autocomplete
+                                                    value={value}
+                                                    options={persons}
+                                                    getOptionLabel={(option) => option.name}
+                                                    onBlur={onBlur}
+                                                    fullWidth
+                                                    onChange={(e, data) => onChange(data)}
+                                                    renderInput={ (params) => 
+                                                        <TextField 
+                                                            {...params}
+                                                            label='Responsável'
+                                                            variant='outlined'
+                                                            className={styles.textField}
+                                                            error={!!error}
+                                                            helperText={!!error && error.message}
+                                                        />
+                                                    }
+                                                />
+                                            ) }
+                                        />
+                                    </div>
+                                    <div className={styles.field}>
+                                        <Controller 
+                                            name='completion'
+                                            control={control}
+                                            defaultValue={0}
+                                            rules={completionValidation}
+                                            render={ ({ field: { onChange, onBlur, value}, fieldState: { error } }) => (
+                                                <TextField
+                                                    type='number'
+                                                    label='Completude do projeto'
+                                                    variant='outlined'
+                                                    onBlur={onBlur}
+                                                    onChange={onChange}
+                                                    fullWidth
+                                                    InputProps={{endAdornment:<InputAdornment position='end'>%</InputAdornment>}}
+                                                    value={value}
+                                                    error={!!error}
+                                                    helperText={!!error && error.message}
+                                                />
+                                            ) }
+                                        />
+                                    </div>
+                                </>
+                            )
+                        }
+                        
+                        <div className={styles.field}>
+                            <Controller 
+                                name='plannedStartDate'
+                                control={control}
+                                defaultValue={newDate}
+                                rules={{
+                                    required: 'Campo obrigatório',
+                                    validate: { 
+                                        isValid: (value) => {
+                                            return  !!value.getTime() || 'Insira uma data válida';
+                                        },
+                                        validateStartDateAfterEndDate: (value) => {
+                                            const { plannedEndDate } = getValues();
+                                            return value.getTime() <= plannedEndDate.getTime() || 'Insira uma data antes da data de encerramento';
+                                        },
+                                    }
+                                }}
+                                render={ ({ field: { onChange, onBlur, value}, fieldState: { error } }) => (
+                                    <MuiPickersUtilsProvider utils={DateFnsUtils} locale={ptBR} >
+                                        <KeyboardDatePicker
+                                            disableToolbar
+                                            variant='inline'
+                                            inputVariant='outlined'
+                                            format='dd/MM/yyyy'
+                                            label='Data de início planejada'
+                                            onBlur={onBlur}
+                                            onChange={onChange}
+                                            value={value}
+                                            fullWidth
+                                            KeyboardButtonProps={{
+                                                'aria-label': 'change date',
+                                            }}
+                                            error={!!error}
+                                            helperText={!!error && error.message}
+                                        />
+                                    </ MuiPickersUtilsProvider>
+                                ) }
+                            />
+                        </div>
+
+                        <div className={styles.field}>
+                            <Controller 
+                                name='plannedEndDate'
+                                control={control}
+                                defaultValue={standardEndDate}
+                                rules={{ 
+                                    required: 'Campo obrigatório',
+                                    validate: { 
+                                        isValid: (value) => {
+                                            return !!value.getTime() || 'Insira uma data válida';
+                                        }, 
+                                        validateEndDateBeforeStartDate: (value) => {
+                                            const { plannedStartDate } = getValues();
+                                            return value.getTime() >= plannedStartDate.getTime() || 'Insira uma data depois da data de início';
+                                        },
+                                    }
+                                }}
+                                render={ ({ field: { onChange, onBlur, value}, fieldState: { error } }) => (
+                                    <MuiPickersUtilsProvider utils={DateFnsUtils} locale={ptBR} >
+                                        <KeyboardDatePicker
+                                            disableToolbar
+                                            variant='inline'
+                                            inputVariant='outlined'
+                                            format='dd/MM/yyyy'
+                                            label='Data de encerramento planejado'
+                                            onBlur={onBlur}
+                                            onChange={onChange}
+                                            value={value}
+                                            fullWidth
+                                            KeyboardButtonProps={{
+                                                'aria-label': 'change date',
+                                            }}
+                                            error={!!error}
+                                            helperText={!!error && error.message}
+                                        />
+                                    </ MuiPickersUtilsProvider>
+                                ) }
+                            />
+                        </div>
+
+                    </fieldset>
+
+                    <Button
+                        variant='contained'
+                        color='primary'
+                        size='large'
+                        startIcon={<MI.Save />}
+                        type='submit'
+                    >
+                        { 
+                            Number(slug) > -1 ? (
+                                <span>Atualizar Projeto</span>
+                            ) : (
+                                <span>Cadastrar Projeto</span>
+                            )
+                        }   
+                    </Button>
+                </form>
+            </div>
+            <Dialog className={styles.dialog} onClose={handleClose} aria-labelledby='show-evaluations' open={showDialogEvaluation}>
+                <DialogTitle>
+                    Avaliações do projeto
+                </DialogTitle>
+                <Paper elevation={3}>
+                    <List className={styles.dataList}>
+                        {
+                            evaluations.map((evaluation, index) => {
+                                return (
+                                    <ListItemText 
+                                        key={index}
+                                        primary={`
+                                            Avaliado em: ${evaluation.evaluationDate} - Nota: ${evaluation.grade}
+                                        `} 
+                                    />
+                                );
+                            })
+                        }
+                    </List>
+                </Paper>
+            </Dialog>
+        </>
     );
 }

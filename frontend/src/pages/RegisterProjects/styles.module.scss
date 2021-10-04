@@ -69,3 +69,28 @@
         margin-top: 1rem;
     }
 }
+
+.dialog {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    h2 {
+        display: flex;
+        justify-content: center;
+    }
+
+    .dataList {
+        align-self: center;
+        color: #000;
+        
+        margin-bottom: 1rem;
+        margin-top: 1.25rem;
+        margin-left: 3rem;
+        margin-right: 3rem;
+    
+        div {
+            margin-bottom: 1rem;
+        }
+    }
+}
