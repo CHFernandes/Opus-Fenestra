@@ -63,5 +63,6 @@ routes.put('/cancelProject/:id', projectsController.cancelProject);
 routes.put('/finishProject/:id', projectsController.finishProject);
 
 routes.post('/evaluation', evaluationsController.evaluate);
+routes.get('/showLastEvaluations/:id', evaluationsController.showLastEvaluations);
 
 export {routes};

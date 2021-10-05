@@ -162,17 +162,21 @@ export default function RegisterProjects(): JSX.Element {
 
     useEffect(() => {
         async function getProjectEvaluation() {
-            const { data } = await api.get(`/projectsEvaluations/${slug}`);
+            try {
+                const { data } = await api.get(`/projectsEvaluations/${slug}`);
 
-            const evaluations = data.map((evaluation) => {
-                return {
-                    evaluationDate: format(new Date(evaluation.evaluation_date), 'dd/MM/yyyy', {
-                        locale: ptBR,
-                    }),
-                    grade: `${evaluation.finalGrade}`.replace('.', ',')
-                };
-            });
-            setEvaluations(evaluations);
+                const evaluations = data.map((evaluation) => {
+                    return {
+                        evaluationDate: format(new Date(evaluation.evaluation_date), 'dd/MM/yyyy', {
+                            locale: ptBR,
+                        }),
+                        grade: `${evaluation.finalGrade}`.replace('.', ',')
+                    };
+                });
+                setEvaluations(evaluations);
+            } catch (error) {
+                toast.error(error.response.data.message);
+            } 
         }
 
         if (showDialogEvaluation){

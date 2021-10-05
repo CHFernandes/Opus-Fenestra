@@ -1,20 +1,32 @@
-import { getCustomRepository, Repository } from 'typeorm';
+import { getConnection, getCustomRepository, Repository } from 'typeorm';
 import { Criterion } from '../entities/Criterion';
 import { Project } from '../entities/Project';
 import { Evaluation } from '../entities/Evaluation';
 import { CriteriaRepository } from '../repositories/CriteriaRepository';
 import { ProjectsRepository } from '../repositories/ProjectsRepository'; 
 import { EvaluationsRepository } from '../repositories/EvaluationsRepository'; 
+import { Portfolio } from '../entities/Portfolio';
+import { PortfoliosRepository } from '../repositories/PortfoliosRepository';
+
+type RecentEvaluation = {
+    id_project: number;
+    evaluation_date: Date;
+    id_portfolio: number;
+    name: string;
+    grade: number;
+}
 
 class EvaluationsService {
     private criteriaRepository: Repository<Criterion>;
     private projectsRepository: Repository<Project>;
     private evaluationsRepository: Repository<Evaluation>;
+    private portfoliosRepository: Repository<Portfolio>;
 
     constructor() {
         this.criteriaRepository = getCustomRepository(CriteriaRepository);
         this.projectsRepository = getCustomRepository(ProjectsRepository);
         this.evaluationsRepository = getCustomRepository(EvaluationsRepository);
+        this.portfoliosRepository = getCustomRepository(PortfoliosRepository);
     }
 
     async evaluate(id_project: number, id_criteria: number, evaluation_date_string: string, value: number): Promise<Evaluation> {
@@ -76,6 +88,44 @@ class EvaluationsService {
         await this.projectsRepository.save(project);
 
         return evaluationResponse;
+    }
+
+    async getLastEvaluations(id_portfolio: number): Promise<RecentEvaluation[]> {
+        if (!id_portfolio) {
+            throw new Error('Campos obrigatórios não preenchidos');
+        }
+
+        if (Number.isNaN(id_portfolio)) {
+            throw new Error('Portfólio inválido');
+        }
+
+        const portfolio = await this.portfoliosRepository.findOne({
+            where: {id_portfolio},
+        });
+
+        if (!portfolio) {
+            throw new Error('Portfólio inexistente');
+        }
+
+        const list = await getConnection()
+        .createQueryBuilder(Evaluation, 'evaluation')
+        .select('evaluation.id_project', 'id_project')
+        .addSelect('evaluation.evaluation_date', 'evaluation_date')
+        .addSelect('sum(evaluation.value)', 'grade')
+        .addSelect('project.id_portfolio', 'id_portfolio')
+        .addSelect('project.name', 'name')
+        .leftJoin(Project, 'project', 'evaluation.id_project = project.id_project')
+        .where('project.id_portfolio = :id_portfolio', { id_portfolio })
+        .groupBy('evaluation.id_project, evaluation.evaluation_date')
+        .orderBy('evaluation.evaluation_date', 'DESC')
+        .limit(5)
+        .getRawMany();
+
+        if (list.length < 1) {
+            throw new Error('Nenhum projeto foi avaliado');
+        }
+
+        return list;
     }
 }
 

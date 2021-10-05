@@ -39,6 +39,21 @@ class EvaluationsController {
             });
         }
     }
+
+    async showLastEvaluations(request: Request, response: Response): Promise<Response> {
+        const {id} = request.params;
+
+        try {
+            const list = await singletonEvaluations.getInstance().getLastEvaluations(Number(id));
+
+            return response.json(list);
+
+        } catch (err) {
+            return response.status(400).json({
+                message: err.message,
+            });
+        }
+    }
 }
 
 export { EvaluationsController };
