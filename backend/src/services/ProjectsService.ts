@@ -800,6 +800,125 @@ class ProjectsService {
 
         return updatedProject;
     }
+
+    async projectsInRisk(id_portfolio: number): Promise<Project[]> {
+        if(!id_portfolio) {
+            throw new Error('Campos obrigatórios não preenchidos');
+        }
+
+        if (Number.isNaN(id_portfolio)) {
+            throw new Error('Portfólio inválido');
+        }
+
+        const portfolio = await this.portfoliosRepository.findOne({
+            where: {id_portfolio},
+        });
+
+        if(!portfolio) {
+            throw new Error('Portfólio não existe');
+        }
+
+        const list = await getConnection()
+        .createQueryBuilder(Project, 'project')
+        .select('project.id_project', 'id_project')
+        .addSelect('project.id_category', 'id_category')
+        .addSelect('project.description', 'description')
+        .addSelect('project.name', 'name')
+        .addSelect('project.responsible', 'responsible_id')
+        .addSelect('project.completion', 'completion')
+        .addSelect('project.planned_start_date', 'planned_start_date')
+        .addSelect('project.planned_end_date', 'planned_end_date')
+        .addSelect('project.actual_start_date', 'actual_start_date')
+        .addSelect('person.name', 'responsible')
+        .leftJoin(Person, 'person', 'project.responsible = person.id_person')
+        .where('project.id_portfolio = :id_portfolio', { id_portfolio })
+        .andWhere('project.id_status = 4')
+        .getRawMany();
+
+        if (list.length < 1) {
+            throw new Error('Nenhum projeto está em execução');
+        }
+
+        const filteredList = list.filter((project) => {
+            const today = new Date();
+
+            const projectEndDate = new Date(project.planned_end_date);
+
+            const months3 = new Date(projectEndDate);
+            months3.setMonth(months3.getMonth() - 3);
+
+            const months2 = new Date(projectEndDate);
+            months2.setMonth(months2.getMonth() - 2);
+
+            const months1 = new Date(projectEndDate);
+            months1.setMonth(months1.getMonth() - 1);
+
+            if(((today.getTime() > months3.getTime()) && (project.completion < 70))) {
+                return project;
+            }
+
+            if(((today.getTime() > months2.getTime()) && (project.completion < 80))) {
+                return project;
+            }
+
+            if(((today.getTime() > months1.getTime()) && (project.completion < 90))) {
+                return project;
+            }
+        });
+
+        return filteredList;
+    }
+
+    async overdueProjects(id_portfolio: number): Promise<Project[]> {
+        if(!id_portfolio) {
+            throw new Error('Campos obrigatórios não preenchidos');
+        }
+
+        if (Number.isNaN(id_portfolio)) {
+            throw new Error('Portfólio inválido');
+        }
+
+        const portfolio = await this.portfoliosRepository.findOne({
+            where: {id_portfolio},
+        });
+
+        if(!portfolio) {
+            throw new Error('Portfólio não existe');
+        }
+
+        const list = await getConnection()
+        .createQueryBuilder(Project, 'project')
+        .select('project.id_project', 'id_project')
+        .addSelect('project.id_category', 'id_category')
+        .addSelect('project.description', 'description')
+        .addSelect('project.name', 'name')
+        .addSelect('project.responsible', 'responsible_id')
+        .addSelect('project.completion', 'completion')
+        .addSelect('project.planned_start_date', 'planned_start_date')
+        .addSelect('project.planned_end_date', 'planned_end_date')
+        .addSelect('project.actual_start_date', 'actual_start_date')
+        .addSelect('person.name', 'responsible')
+        .leftJoin(Person, 'person', 'project.responsible = person.id_person')
+        .where('project.id_portfolio = :id_portfolio', { id_portfolio })
+        .andWhere('project.id_status = 4')
+        .getRawMany();
+
+        if (list.length < 1) {
+            throw new Error('Nenhum projeto está em execução');
+        }
+
+        const filteredList = list.filter((project) => {
+            const today = new Date();
+
+            const projectEndDate = new Date(project.planned_end_date);
+
+            if(today.getTime() > projectEndDate.getTime()) {
+                return project;
+            }
+        });
+
+        return filteredList;
+    }
 }
 
 export {ProjectsService};

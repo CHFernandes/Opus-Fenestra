@@ -53,6 +53,8 @@ routes.get('/approvedProjects/:id', projectsController.showApproved);
 routes.get('/registeredProject/:id', projectsController.showRegisteredProject);
 routes.get('/askForProjectInformation/:id', projectsController.showProjectsAskInformation);
 routes.get('/runningProjects/:id', projectsController.showRunningProjects);
+routes.get('/projectsInRisk/:id', projectsController.showProjectsInRisk);
+routes.get('/overdueProjects/:id', projectsController.showOverdueProjects);
 routes.put('/askForProjectInformation/:id', projectsController.updateProjectAskInformation);
 routes.put('/acceptProject/:id', projectsController.acceptProject);
 routes.put('/rejectProject/:id', projectsController.rejectProject);

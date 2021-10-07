@@ -4,8 +4,11 @@ import { useRouter } from 'next/router';
 import { AuthContext } from '../../contexts/AuthContext';
 
 import styles from './styles.module.scss';
-import Main from './Main';
-import LastEvaluations from './LastEvaluations';
+import Main from './main';
+import LastEvaluations from './lastEvaluations';
+import CurrentProjects from './currentProjects';
+import ProjectsInRisk from './projectsInRisk';
+import OverdueProjects from './overdueProjects';
 
 export default function Dashboard(): JSX.Element {
     const { isAuthenticated, user } = useContext(AuthContext);
@@ -28,9 +31,16 @@ export default function Dashboard(): JSX.Element {
                     Abaixo estão as informações da sua organização
                 </h2>
             </div>
-            <div className={styles.dashboards}>
-                <LastEvaluations />
-                <Main />
+            <div className={styles.dashboardGrid}>
+                <div className={styles.dashboards}>
+                    <LastEvaluations />
+                    <Main />
+                </div>
+                <div className={styles.dashboards}>
+                    <CurrentProjects />
+                    <ProjectsInRisk />
+                    <OverdueProjects />
+                </div>
             </div>
         </div>
     );
