@@ -33,6 +33,13 @@ export default function AcceptProjects(): JSX.Element  {
                 const { data:portfolioData } = await api.get(`/portfolios/${user.idOrganization}`);
                 const portfolioId = portfolioData.id_portfolio;
                 const { data } = await api.get(`/evaluatedProjects/${portfolioId}`);
+
+                if (data.length < 1) {
+                    setProjects([]);
+                    toast.error('Todos os projetos foram avaliados');
+                    return;
+                }
+
                 const projects = data.map((project) => {
                     return {
                         id: project.id_project,
@@ -213,6 +220,13 @@ export default function AcceptProjects(): JSX.Element  {
             const { data:portfolioData } = await api.get(`/portfolios/${user.idOrganization}`);
             const portfolioId = portfolioData.id_portfolio;
             const { data } = await api.get(`/evaluatedProjects/${portfolioId}`);
+
+            if (data.length < 1) {
+                setProjects([]);
+                toast.error('Todos os projetos foram avaliados');
+                return;
+            }
+
             const projects = data.map((project) => {
                 return {
                     id: project.id_project,
@@ -232,10 +246,6 @@ export default function AcceptProjects(): JSX.Element  {
             setProjects(projects);
         } catch (error) {
             toast.error(error.response.data.message);
-            const errorMessage = error.response.data.message;
-            if (errorMessage === 'Todos os projetos foram avaliados') {
-                setProjects([]);
-            }
         }
     }
 

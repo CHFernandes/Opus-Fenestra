@@ -106,6 +106,13 @@ export default function RegisterProjects(): JSX.Element {
         async function getProject() {
             try {
                 const { data:personResponse } = await api.get(`/personsOrganization/${user.idOrganization}`);
+
+                if(personResponse.length < 1) {
+                    toast.error('Nenhuma pessoa está cadastrada');
+                    setPersons([]);
+                    return;
+                }
+
                 const personData = personResponse.map((person) => {
                     return {
                         personId: person.id_person,
@@ -114,7 +121,6 @@ export default function RegisterProjects(): JSX.Element {
                 });
     
                 setPersons(personData);
-
 
                 const { data } = await api.get(`/projects/${slug}`);
 
@@ -164,6 +170,12 @@ export default function RegisterProjects(): JSX.Element {
         async function getProjectEvaluation() {
             try {
                 const { data } = await api.get(`/projectsEvaluations/${slug}`);
+
+                if (data.length < 1) {
+                    setEvaluations([]);
+                    toast.error('Projeto não foi avaliado');
+                    return;
+                }
 
                 const evaluations = data.map((evaluation) => {
                     return {

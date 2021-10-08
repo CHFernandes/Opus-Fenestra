@@ -113,10 +113,6 @@ class CriteriaService {
         .where('criteria.id_portfolio = :id_portfolio', { id_portfolio })
         .getRawMany();
 
-        if (list.length < 1) {
-            throw new Error('Nenhum critério está cadastrado');
-        }
-
         return list;
     }
 

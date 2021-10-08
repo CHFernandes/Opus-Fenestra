@@ -156,9 +156,6 @@ class ProjectsService {
         .where('project.id_portfolio = :id_portfolio', { id_portfolio })
         .getRawMany();
 
-        if (list.length < 1) {
-            throw new Error('Nenhum projeto está cadastrado');
-        }
         return list;
     }
 
@@ -290,9 +287,6 @@ class ProjectsService {
             }
         });
 
-        if (projectList.length < 1) {
-            throw new Error('Nenhum projeto está com estado de cadastrado');
-        }
         return projectList;
     }
 
@@ -345,10 +339,6 @@ class ProjectsService {
                 id_status: 2,
             }
         });
-
-        if (projectList.length < 1) {
-            throw new Error('Todos os projetos foram avaliados');
-        }
 
         // SELECT e1.id_project, e1.evaluation_date, sum(e1.value) as finalGrade 
         // from evaluation e1
@@ -434,12 +424,7 @@ class ProjectsService {
         .addGroupBy('evaluation_date')
         .getRawMany();
 
-        if (evaluations.length < 1) {
-            throw new Error('Projeto não foi avaliado');
-        }
-
         return evaluations;
-
     }
 
     async findApprovedProjects(id_portfolio: number): Promise<Project[]> {
@@ -465,10 +450,6 @@ class ProjectsService {
                 id_status: 3,
             }
         });
-
-        if (projectList.length < 1) {
-            throw new Error('Nenhum projeto aprovado está pendente');
-        }
 
         return projectList;
     }
@@ -512,10 +493,6 @@ class ProjectsService {
         .andWhere('project.id_status = 6')
         .getRawMany();
 
-        if (list.length < 1) {
-            throw new Error('Nenhum projeto está pendente');
-        }
-
         return list;
     }
 
@@ -552,10 +529,6 @@ class ProjectsService {
         .where('project.id_portfolio = :id_portfolio', { id_portfolio })
         .andWhere('project.id_status = 4')
         .getRawMany();
-
-        if (list.length < 1) {
-            throw new Error('Nenhum projeto está em execução');
-        }
 
         return list;
     }
@@ -940,10 +913,6 @@ class ProjectsService {
         .andWhere('project.id_status = 4')
         .getRawMany();
 
-        if (list.length < 1) {
-            throw new Error('Nenhum projeto está em execução');
-        }
-
         const filteredList = list.filter((project) => {
             const today = new Date();
 
@@ -1008,10 +977,6 @@ class ProjectsService {
         .andWhere('project.id_status = 4')
         .getRawMany();
 
-        if (list.length < 1) {
-            throw new Error('Nenhum projeto está em execução');
-        }
-
         const filteredList = list.filter((project) => {
             const today = new Date();
 
@@ -1023,6 +988,43 @@ class ProjectsService {
         });
 
         return filteredList;
+    }
+
+    async stoppedProjects(id_portfolio: number): Promise<Project[]> {
+        if(!id_portfolio) {
+            throw new Error('Campos obrigatórios não preenchidos');
+        }
+
+        if (Number.isNaN(id_portfolio)) {
+            throw new Error('Portfólio inválido');
+        }
+
+        const portfolio = await this.portfoliosRepository.findOne({
+            where: {id_portfolio},
+        });
+
+        if(!portfolio) {
+            throw new Error('Portfólio não existe');
+        }
+
+        const list = await getConnection()
+        .createQueryBuilder(Project, 'project')
+        .select('project.id_project', 'id_project')
+        .addSelect('project.id_category', 'id_category')
+        .addSelect('project.description', 'description')
+        .addSelect('project.name', 'name')
+        .addSelect('project.responsible', 'responsible_id')
+        .addSelect('project.completion', 'completion')
+        .addSelect('project.planned_start_date', 'planned_start_date')
+        .addSelect('project.planned_end_date', 'planned_end_date')
+        .addSelect('project.actual_start_date', 'actual_start_date')
+        .addSelect('person.name', 'responsible')
+        .leftJoin(Person, 'person', 'project.responsible = person.id_person')
+        .where('project.id_portfolio = :id_portfolio', { id_portfolio })
+        .andWhere('project.id_status = 8')
+        .getRawMany();
+
+        return list;
     }
 }
 

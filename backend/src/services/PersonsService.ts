@@ -119,10 +119,6 @@ class PersonsService {
         .where('person.id_organization = :id_organization', { id_organization})
         .getRawMany();
 
-        if (list.length < 1) {
-            throw new Error('Nenhuma pessoa está cadastrada');
-        }
-
         return list;
     }
 

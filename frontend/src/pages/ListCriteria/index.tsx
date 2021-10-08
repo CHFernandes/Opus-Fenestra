@@ -37,6 +37,13 @@ export default function ListCriteria(): JSX.Element  {
                 const portfolioId = portfolioData.id_portfolio;
                 const { data } = await api.get(`criteriaPortfolio/${portfolioId}`);
 
+                if(data.length < 1) {
+                    toast.error('Nenhum critério está cadastrado');
+                    setCriteriaSum(0);
+                    setCriteria([]);
+                    return;
+                }
+
                 const criteria = data.map((criterion) => {
                     return {
                         id: criterion.id_criteria,
@@ -169,6 +176,12 @@ export default function ListCriteria(): JSX.Element  {
             const { data:portfolioData } = await api.get(`/portfolios/${user.idOrganization}`);
             const portfolioId = portfolioData.id_portfolio;
             const { data } = await api.get(`criteriaPortfolio/${portfolioId}`);
+
+            if(data.length < 1) {
+                toast.error('Nenhum critério está cadastrado');
+                setCriteria([]);
+                return;
+            }
 
             if (data) {
                 const criteria = data.map((criterion) => {

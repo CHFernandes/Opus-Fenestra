@@ -32,6 +32,12 @@ export default function LastEvaluations(): JSX.Element {
 
                 const { data } = await api.get(`/showLastEvaluations/${portfolioId}`);
 
+                if (data.length < 1) {
+                    toast.error('Nenhum projeto foi avaliado');
+                    setEvaluations([]);
+                    return;
+                }
+
                 const evaluations = data.map((evaluation) => {
                     return {
                         projectId: evaluation.id_project,

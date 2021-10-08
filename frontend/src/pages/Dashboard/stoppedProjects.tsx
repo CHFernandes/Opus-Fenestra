@@ -1,19 +1,17 @@
 import React, { useState, useEffect, useContext } from 'react';
-import { useRouter } from 'next/router';
 
-import { Card, CardContent, IconButton, Table, TableBody, TableCell, TableContainer, TableRow, Tooltip, Typography } from '@material-ui/core';
+import { Card, CardContent, Table, TableBody, TableCell, TableContainer, TableRow, Typography } from '@material-ui/core';
 
 import { format } from 'date-fns';
 import ptBR from 'date-fns/locale/pt-BR';
 
 import { AuthContext } from '../../contexts/AuthContext';
-import * as MI from '@material-ui/icons/';
 
 import styles from './styles.module.scss';
 import { api } from '../../services/api';
 import toast from 'react-hot-toast';
 
-type OverdueProject = {
+type StoppedProject = {
     projectId: number;
     name: string;
     description: string;
@@ -24,22 +22,21 @@ type OverdueProject = {
     responsible: string;
 }
 
-export default function OverdueProjects(): JSX.Element {
+export default function StoppedProjects(): JSX.Element {
     const { user } = useContext(AuthContext);
-    const [overdueProjects, setOverdueProjects] = useState<OverdueProject[]>([]);
-    const router = useRouter();
+    const [stoppedProjects, setStoppedProjects] = useState<StoppedProject[]>([]);
 
     useEffect(() => {
-        async function getOverdueProjects() {
+        async function getStoppedProjects() {
             try {
                 const { data:portfolioData } = await api.get(`/portfolios/${user.idOrganization}`);
                 const portfolioId = portfolioData.id_portfolio;
 
-                const { data } = await api.get(`/overdueProjects/${portfolioId}`);
+                const { data } = await api.get(`/stoppedProjects/${portfolioId}`);
 
                 if (data.length < 1) {
-                    setOverdueProjects([]);
-                    toast.error('Nenhum projeto está atrasado');
+                    setStoppedProjects([]);
+                    toast.error('Nenhum projeto está paralisado');
                     return;
                 }
 
@@ -64,19 +61,14 @@ export default function OverdueProjects(): JSX.Element {
                     return projectObject;
                 });
 
-                setOverdueProjects(projects);
+                setStoppedProjects(projects);
             } catch (error) {
                 toast.error(error.response?.data.message);
             }
         }
 
-        getOverdueProjects();
+        getStoppedProjects();
     }, []);
-
-    function handleEdit (id: number) {
-        const idCriteria = String(id);
-        router.push(`/RegisterProjects/${idCriteria}`);
-    }
 
     return(
         <>
@@ -85,14 +77,14 @@ export default function OverdueProjects(): JSX.Element {
                     <div className={styles.contentWrapper}>
                         <div className={styles.titleWrapper}>
                             <Typography className={styles.title} component='h1'>
-                                Projetos em risco
+                                Projetos Paralisados
                             </Typography>
                         </div>
                         <TableContainer>
                             <Table size='small'>
                                 <TableBody>
                                 {
-                                    overdueProjects.map((project, index) => {
+                                    stoppedProjects.map((project, index) => {
                                         return(
                                             <TableRow key={index}>
                                                 <TableCell align='left'>
@@ -109,13 +101,6 @@ export default function OverdueProjects(): JSX.Element {
                                                 </TableCell>
                                                 <TableCell align='left'>
                                                     Progresso - {project.completion}%
-                                                </TableCell>
-                                                <TableCell align='right'>
-                                                    <Tooltip title='Visualizar Projeto'>
-                                                        <IconButton onClick={() => handleEdit(project.projectId)} aria-label='Editar Projeto' >
-                                                            <MI.Visibility />
-                                                        </IconButton>
-                                                    </Tooltip>
                                                 </TableCell>
                                             </TableRow>
                                         );

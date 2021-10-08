@@ -32,6 +32,12 @@ export default function ListPersons(): JSX.Element {
 
                 const { data } = await api.get(`personsOrganization/${idOrganization}`);
 
+                if(data.length < 1) {
+                    toast.error('Nenhuma pessoa está cadastrada');
+                    setPersons([]);
+                    return;
+                }
+
                 const persons = data.map((person => {
                     return {
                         id: person.id_person,
@@ -145,6 +151,12 @@ export default function ListPersons(): JSX.Element {
 
             const { idOrganization } = user;
             const { data } = await api.get(`personsOrganization/${idOrganization}`);
+
+            if(data.length < 1) {
+                toast.error('Nenhuma pessoa está cadastrada');
+                setPersons([]);
+                return;
+            }
 
             if (data) {
                 const persons = data.map((person => {

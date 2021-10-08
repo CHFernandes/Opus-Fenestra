@@ -92,6 +92,13 @@ export default function RegisterOrganizationWizard(): JSX.Element {
             try {
                 const portfolioId = await getPortfolio();
                 const { data } = await api.get(`/registeredProjects/${portfolioId}`);
+
+                if (data.length < 1) {
+                    setProjectsArray([]);
+                    toast.error('Nenhum projeto está com estado de cadastrado');
+                    return;
+                }
+
                 const projects = data.map((project) => {
                     return {
                         projectId: project.id_project,
@@ -135,6 +142,12 @@ export default function RegisterOrganizationWizard(): JSX.Element {
             try {
                 const portfolioId = await getPortfolio();
                 const { data } = await api.get(`criteriaPortfolio/${portfolioId}`);
+                if(data.length < 1) {
+                    toast.error('Nenhum critério está cadastrado');
+                    toast.error('Por favor cadastre critérios');
+                    router.push('/ListCriteria');
+                    return;
+                }
                 const criteria = data.map((criterion) => {
                     return {
                         criterionId: criterion.id_criteria,

@@ -9,6 +9,7 @@ import LastEvaluations from './lastEvaluations';
 import CurrentProjects from './currentProjects';
 import ProjectsInRisk from './projectsInRisk';
 import OverdueProjects from './overdueProjects';
+import StoppedProjects from './stoppedProjects';
 
 export default function Dashboard(): JSX.Element {
     const { isAuthenticated, user } = useContext(AuthContext);
@@ -40,6 +41,9 @@ export default function Dashboard(): JSX.Element {
                     <CurrentProjects />
                     <ProjectsInRisk />
                     <OverdueProjects />
+                </div>
+                <div className={styles.dashboards}>
+                    <StoppedProjects />
                 </div>
             </div>
         </div>

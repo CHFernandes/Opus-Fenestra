@@ -26,16 +26,22 @@ type ProjectInRisk = {
 
 export default function ProjectsInRisk(): JSX.Element {
     const { user } = useContext(AuthContext);
-    const [runningProjects, setRunningProjects] = useState<ProjectInRisk[]>([]);
+    const [projectsInRisk, setProjectsInRisk] = useState<ProjectInRisk[]>([]);
     const router = useRouter();
 
     useEffect(() => {
-        async function getRunningProjects() {
+        async function getProjectsInRisk() {
             try {
                 const { data:portfolioData } = await api.get(`/portfolios/${user.idOrganization}`);
                 const portfolioId = portfolioData.id_portfolio;
 
                 const { data } = await api.get(`/projectsInRisk/${portfolioId}`);
+
+                if (data.length < 1) {
+                    setProjectsInRisk([]);
+                    toast.error('Nenhum projeto está em risco');
+                    return;
+                }
 
                 const projects = data.map((project) => {
                     const projectObject = {
@@ -58,13 +64,13 @@ export default function ProjectsInRisk(): JSX.Element {
                     return projectObject;
                 });
 
-                setRunningProjects(projects);
+                setProjectsInRisk(projects);
             } catch (error) {
                 toast.error(error.response?.data.message);
             }
         }
 
-        getRunningProjects();
+        getProjectsInRisk();
     }, []);
 
     function handleEdit (id: number) {
@@ -86,7 +92,7 @@ export default function ProjectsInRisk(): JSX.Element {
                             <Table size='small'>
                                 <TableBody>
                                 {
-                                    runningProjects.map((project, index) => {
+                                    projectsInRisk.map((project, index) => {
                                         return(
                                             <TableRow key={index}>
                                                 <TableCell align='left'>

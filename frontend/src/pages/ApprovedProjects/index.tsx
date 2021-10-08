@@ -41,6 +41,13 @@ export default function ApprovedProjects(): JSX.Element  {
                 const { data:portfolioData } = await api.get(`/portfolios/${user.idOrganization}`);
                 const portfolioId = portfolioData.id_portfolio;
                 const { data } = await api.get(`/approvedProjects/${portfolioId}`);
+
+                if (data.length < 1) {
+                    setProjects([]);
+                    toast.error('Nenhum projeto aprovado está pendente');
+                    return;
+                }
+
                 const projects = data.map((project) => {
                     return {
                         id: project.id_project,
@@ -63,15 +70,26 @@ export default function ApprovedProjects(): JSX.Element  {
         }
 
         async function getPersons() {
-            const { data } = await api.get(`/personsOrganization/${user.idOrganization}`);
-            const personData = data.map((person) => {
-                return {
-                    personId: person.id_person,
-                    name: person.name,
-                };
-            });
+            try {
+                const { data } = await api.get(`/personsOrganization/${user.idOrganization}`);
 
-            setPersons(personData);
+                if(data.length < 1) {
+                    toast.error('Nenhuma pessoa está cadastrada');
+                    setPersons([]);
+                    return;
+                }
+
+                const personData = data.map((person) => {
+                    return {
+                        personId: person.id_person,
+                        name: person.name,
+                    };
+                });
+
+                setPersons(personData);
+            } catch (error) {
+                toast.error(error.response.data.message);
+            }
         }
 
         if (!isAuthenticated) {
@@ -148,6 +166,13 @@ export default function ApprovedProjects(): JSX.Element  {
             const { data:portfolioData } = await api.get(`/portfolios/${user.idOrganization}`);
             const portfolioId = portfolioData.id_portfolio;
             const { data } = await api.get(`/approvedProjects/${portfolioId}`);
+
+            if (data.length < 1) {
+                setProjects([]);
+                toast.error('Nenhum projeto aprovado está pendente');
+                return;
+            }
+
             const projects = data.map((project) => {
                 return {
                     id: project.id_project,
@@ -164,10 +189,6 @@ export default function ApprovedProjects(): JSX.Element  {
             setProjects(projects);
         } catch (error) {
             toast.error(error.response.data.message);
-            const errorMessage = error.response.data.message;
-            if (errorMessage === 'Nenhum projeto aprovado está pendente') {
-                setProjects([]);
-            }
         }
     }
 

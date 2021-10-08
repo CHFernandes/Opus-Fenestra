@@ -5,7 +5,6 @@
     flex-direction: column;
     align-items: center;
     width: 100%;
-    max-width: 100%;
 
     .dashboardHeader {
         display: flex;
@@ -38,13 +37,13 @@
     display: flex;
     justify-content: center;
     align-items: center;
-    width: 40%;
+    width: 25%;
     margin: 1rem;
     padding: 1rem;
     height: 100%;
-    width: 100%;
-    overflow-y: auto;
-    overflow-x: auto;
+    //width: 100%;
+    overflow: auto !important;
+
 
     .contentWrapper {
         display: flex;

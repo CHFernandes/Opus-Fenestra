@@ -137,10 +137,6 @@ class EvaluationsService {
         .limit(5)
         .getRawMany();
 
-        if (list.length < 1) {
-            throw new Error('Nenhum projeto foi avaliado');
-        }
-
         return list;
     }
 }

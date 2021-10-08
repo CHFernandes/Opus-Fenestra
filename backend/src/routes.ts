@@ -55,6 +55,7 @@ routes.get('/askForProjectInformation/:id', projectsController.showProjectsAskIn
 routes.get('/runningProjects/:id', projectsController.showRunningProjects);
 routes.get('/projectsInRisk/:id', projectsController.showProjectsInRisk);
 routes.get('/overdueProjects/:id', projectsController.showOverdueProjects);
+routes.get('/stoppedProjects/:id', projectsController.showStoppedProjects);
 routes.put('/askForProjectInformation/:id', projectsController.updateProjectAskInformation);
 routes.put('/acceptProject/:id', projectsController.acceptProject);
 routes.put('/rejectProject/:id', projectsController.rejectProject);

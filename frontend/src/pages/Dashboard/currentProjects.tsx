@@ -37,6 +37,12 @@ export default function CurrentProjects(): JSX.Element {
 
                 const { data } = await api.get(`/runningProjects/${portfolioId}`);
 
+                if (data.length < 1) {
+                    setRunningProjects([]);
+                    toast.error('Nenhum projeto está em execução');
+                    return;
+                }
+
                 const projects = data.map((project) => {
                     const projectObject = {
                         projectId: project.id_project,

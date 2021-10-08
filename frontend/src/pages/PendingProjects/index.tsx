@@ -33,6 +33,13 @@ export default function AcceptProjects(): JSX.Element  {
                 const { data:portfolioData } = await api.get(`/portfolios/${user.idOrganization}`);
                 const portfolioId = portfolioData.id_portfolio;
                 const { data } = await api.get(`/askForProjectInformation/${portfolioId}`);
+
+                if (data.length < 1) {
+                    setProjects([]);
+                    toast.error('Nenhum projeto está pendente');
+                    return;
+                }
+
                 const projects = data.map((project) => {
                     return {
                         id: project.id_project,

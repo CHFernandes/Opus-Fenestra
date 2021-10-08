@@ -61,10 +61,6 @@ class PortfoliosService {
 
     async list(): Promise<Portfolio[]> {
         const list = await this.portfoliosRepository.find();
-
-        if (list.length < 1) {
-            throw new Error('Nenhum portfólio está cadastrado');
-        }
         
         return list;
     }

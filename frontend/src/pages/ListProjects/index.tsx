@@ -41,6 +41,13 @@ export default function ListProjects(): JSX.Element  {
                 const { data:portfolioData } = await api.get(`/portfolios/${user.idOrganization}`);
                 const portfolioId = portfolioData.id_portfolio;
                 const { data } = await api.get(`/projectsPortfolio/${portfolioId}`);
+
+                if(data.length < 1) {
+                    setProjects([]);
+                    toast.error('Nenhum projeto está cadastrado');
+                    return;
+                }
+
                 const projects = data.map((project) => {
                     return {
                         id: project.id_project,
@@ -187,6 +194,13 @@ export default function ListProjects(): JSX.Element  {
             const { data:portfolioData } = await api.get(`/portfolios/${user.idOrganization}`);
             const portfolioId = portfolioData.id_portfolio;
             const { data } = await api.get(`/projectsPortfolio/${portfolioId}`);
+
+            if(data.length < 1) {
+                setProjects([]);
+                toast.success('Projeto Excluído');
+                toast.error('Nenhum projeto está cadastrado');
+                return;
+            }
             
             if (data) {
                 const projects = data.map((project) => {

@@ -28,9 +28,6 @@ class OrganizationsService {
 
     async list(): Promise<Organization[]> {
         const list = await this.organizationsRepository.find();
-        if (list.length < 1) {
-            throw new Error('Nenhuma organização está cadastrada');
-        }
         return list;
     }
 
