@@ -230,8 +230,15 @@ export default function RegisterProjects(): JSX.Element {
     }
 
     async function stopProject() {
+
+        const personId = user.id;
+
+        const requestData = {
+            personId,
+        };
+
         try{
-            await api.put(`stopProject/${slug}`);
+            await api.put(`stopProject/${slug}`, requestData);
 
             toast.success('Projeto paralisado com sucesso');
             router.push('/ListProjects');
@@ -241,14 +248,20 @@ export default function RegisterProjects(): JSX.Element {
     }
 
     async function finishProject() {
-        const response = await FinishConfirmation();
-
-        if(!response){
-            return;
-        }
-
         try{
-            await api.put(`finishProject/${slug}`);
+
+            const response = await FinishConfirmation();
+
+            if(!response){
+                return;
+            }
+
+            const personId = user.id;
+
+            const requestData = {
+                personId,
+            };
+            await api.put(`finishProject/${slug}`, requestData);
 
             toast.success('Projeto Finalizado com sucesso');
             router.push('/ListProjects');
@@ -258,8 +271,15 @@ export default function RegisterProjects(): JSX.Element {
     }
 
     async function restartProject() {
+
+        const personId = user.id;
+
+        const requestData = {
+            personId,
+        };
+
         try{
-            await api.put(`restartProject/${slug}`);
+            await api.put(`restartProject/${slug}`, requestData);
 
             toast.success('Projeto retomado com sucesso');
             router.push('/ListProjects');
@@ -269,14 +289,22 @@ export default function RegisterProjects(): JSX.Element {
     }
 
     async function cancelProject() {
-        const response = await CancelConfirmation();
-
-        if(!response){
-            return;
-        }
-
         try{
-            await api.put(`cancelProject/${slug}`);
+
+            const response = await CancelConfirmation();
+
+
+            if(!response){
+                return;
+            }
+
+            const personId = user.id;
+
+            const requestData = {
+                personId,
+            };
+
+            await api.put(`cancelProject/${slug}`, requestData);
 
             toast.success('Projeto cancelado com sucesso');
             router.push('/ListProjects');

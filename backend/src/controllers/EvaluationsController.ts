@@ -26,10 +26,11 @@ class EvaluationsController {
             criteriaId,
             evaluationDate,
             value,
+            idPerson
         } = request.body;
 
         try {
-            const evaluation = await singletonEvaluations.getInstance().evaluate(Number(projectId), Number(criteriaId), evaluationDate, Number(value));
+            const evaluation = await singletonEvaluations.getInstance().evaluate(Number(projectId), Number(criteriaId), evaluationDate, Number(value), Number(idPerson));
 
             return response.json(evaluation);
 

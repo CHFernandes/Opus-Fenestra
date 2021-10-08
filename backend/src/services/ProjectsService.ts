@@ -8,6 +8,8 @@ import { PersonsRepository } from '../repositories/PersonsRepository';
 import { PortfoliosRepository } from '../repositories/PortfoliosRepository';
 import { ProjectsRepository } from '../repositories/ProjectsRepository';
 import { EvaluationsRepository } from '../repositories/EvaluationsRepository';
+import { ProjectStatus } from '../entities/ProjectStatus';
+import { ProjectsStatusRepository } from '../repositories/ProjectsStatusRepository';
 
 type EvaluatedProject = {
     id_project: number;
@@ -30,12 +32,16 @@ class ProjectsService {
     private portfoliosRepository: Repository<Portfolio>
     private personsRepository: Repository<Person>
     private evaluationsRepository: Repository<Evaluation>
+    private projectsStatusRepository: Repository<ProjectStatus>
+    
 
     constructor() {
         this.projectsRepository = getCustomRepository(ProjectsRepository);
         this.portfoliosRepository = getCustomRepository(PortfoliosRepository);
         this.personsRepository = getCustomRepository(PersonsRepository);
         this.evaluationsRepository = getCustomRepository(EvaluationsRepository);
+        this.projectsStatusRepository = getCustomRepository(ProjectsStatusRepository);
+
     }
 
     async create(id_portfolio: number, submitter: number, name: string, description: string, plannedStartDateAsString: string, plannedEndDateAsString: string): Promise<Project> {
@@ -95,7 +101,18 @@ class ProjectsService {
             planned_end_date
         });
 
-        await this.projectsRepository.save(project);
+        const newProject = await this.projectsRepository.save(project);
+
+        const projectStatus = this.projectsStatusRepository.create({
+
+            id_person: submitter,
+            id_status,
+            id_project: newProject.id_project,
+            changed_time: new Date()
+
+        });
+
+        await this.projectsStatusRepository.save(projectStatus);
 
         return project;
     }
@@ -543,8 +560,8 @@ class ProjectsService {
         return list;
     }
 
-    async askProjectMoreInformation(id_project: number): Promise<Project> {
-        if(!id_project) {
+    async askProjectMoreInformation(id_project: number, id_person: number): Promise<Project> {
+        if(!id_project || !id_person) {
             throw new Error('Campos obrigatórios não preenchidos');
         }
 
@@ -570,11 +587,22 @@ class ProjectsService {
 
         const updatedProject = await this.projectsRepository.save(project);
 
+        const projectStatus = this.projectsStatusRepository.create({
+
+            id_person,
+            id_status: project.id_status,
+            id_project: project.id_project,
+            changed_time: new Date()
+
+        });
+        
+        await this.projectsStatusRepository.save(projectStatus);
+
         return updatedProject;
     }
 
-    async acceptProject(id_project: number): Promise<Project> {
-        if(!id_project) {
+    async acceptProject(id_project: number, id_person: number): Promise<Project> {
+        if(!id_project || !id_person) {
             throw new Error('Campos obrigatórios não preenchidos');
         }
 
@@ -600,11 +628,22 @@ class ProjectsService {
 
         const updatedProject = await this.projectsRepository.save(project);
 
+        const projectStatus = this.projectsStatusRepository.create({
+
+            id_person,
+            id_status: project.id_status,
+            id_project: project.id_project,
+            changed_time: new Date()
+
+        });
+        
+        await this.projectsStatusRepository.save(projectStatus);
+
         return updatedProject;
     }
 
-    async rejectProject(id_project: number): Promise<Project> {
-        if(!id_project) {
+    async rejectProject(id_project: number, id_person: number): Promise<Project> {
+        if(!id_project || !id_person) {
             throw new Error('Campos obrigatórios não preenchidos');
         }
 
@@ -630,11 +669,22 @@ class ProjectsService {
 
         const updatedProject = await this.projectsRepository.save(project);
 
+        const projectStatus = this.projectsStatusRepository.create({
+
+            id_person,
+            id_status: project.id_status,
+            id_project: project.id_project,
+            changed_time: new Date()
+
+        });
+        
+        await this.projectsStatusRepository.save(projectStatus);
+
         return updatedProject;
     }
 
-    async beginProject(id_project: number, id_person: number): Promise<Project> {
-        if(!id_project || !id_person) {
+    async beginProject(id_project: number, id_person: number, id_update_person: number): Promise<Project> {
+        if(!id_project || !id_person || !id_update_person) {
             throw new Error('Campos obrigatórios não preenchidos');
         }
 
@@ -674,11 +724,22 @@ class ProjectsService {
 
         const updatedProject = await this.projectsRepository.save(project);
 
+        const projectStatus = this.projectsStatusRepository.create({
+
+            id_person: id_update_person,
+            id_status: project.id_status,
+            id_project: project.id_project,
+            changed_time: new Date()
+
+        });
+        
+        await this.projectsStatusRepository.save(projectStatus);
+
         return updatedProject;
     }
 
-    async stopProject(id_project: number): Promise<Project> {
-        if(!id_project) {
+    async stopProject(id_project: number, id_person: number): Promise<Project> {
+        if(!id_project || !id_person) {
             throw new Error('Campos obrigatórios não preenchidos');
         }
 
@@ -704,11 +765,22 @@ class ProjectsService {
 
         const updatedProject = await this.projectsRepository.save(project);
 
+        const projectStatus = this.projectsStatusRepository.create({
+
+            id_person,
+            id_status: project.id_status,
+            id_project: project.id_project,
+            changed_time: new Date()
+
+        });
+        
+        await this.projectsStatusRepository.save(projectStatus);
+
         return updatedProject;
     }
 
-    async restartProject(id_project: number): Promise<Project> {
-        if(!id_project) {
+    async restartProject(id_project: number, id_person: number): Promise<Project> {
+        if(!id_project || !id_person) {
             throw new Error('Campos obrigatórios não preenchidos');
         }
 
@@ -734,11 +806,22 @@ class ProjectsService {
 
         const updatedProject = await this.projectsRepository.save(project);
 
+        const projectStatus = this.projectsStatusRepository.create({
+
+            id_person,
+            id_status: project.id_status,
+            id_project: project.id_project,
+            changed_time: new Date()
+
+        });
+        
+        await this.projectsStatusRepository.save(projectStatus);
+
         return updatedProject;
     }
 
-    async cancelProject(id_project: number): Promise<Project> {
-        if(!id_project) {
+    async cancelProject(id_project: number, id_person: number): Promise<Project> {
+        if(!id_project || !id_person) {
             throw new Error('Campos obrigatórios não preenchidos');
         }
 
@@ -764,11 +847,22 @@ class ProjectsService {
 
         const updatedProject = await this.projectsRepository.save(project);
 
+        const projectStatus = this.projectsStatusRepository.create({
+
+            id_person,
+            id_status: project.id_status,
+            id_project: project.id_project,
+            changed_time: new Date()
+
+        });
+        
+        await this.projectsStatusRepository.save(projectStatus);
+
         return updatedProject;
     }
 
-    async finishProject(id_project: number): Promise<Project> {
-        if(!id_project) {
+    async finishProject(id_project: number, id_person: number): Promise<Project> {
+        if(!id_project || !id_person) {
             throw new Error('Campos obrigatórios não preenchidos');
         }
 
@@ -797,6 +891,17 @@ class ProjectsService {
         project.id_status = 5;
 
         const updatedProject = await this.projectsRepository.save(project);
+
+        const projectStatus = this.projectsStatusRepository.create({
+
+            id_person,
+            id_status: project.id_status,
+            id_project: project.id_project,
+            changed_time: new Date()
+
+        });
+        
+        await this.projectsStatusRepository.save(projectStatus);
 
         return updatedProject;
     }

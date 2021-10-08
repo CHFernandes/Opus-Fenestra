@@ -195,8 +195,13 @@ class ProjectsController {
 
     async updateProjectAskInformation(request: Request, response: Response): Promise<Response> {
         const {id} = request.params;
+
+        const {
+            personId,
+        } = request.body;
+
         try {
-            const project = await singletonProject.getInstance().askProjectMoreInformation(Number(id));
+            const project = await singletonProject.getInstance().askProjectMoreInformation(Number(id), Number(personId));
 
             return response.json(project);
         } catch (err) {
@@ -208,8 +213,13 @@ class ProjectsController {
 
     async acceptProject(request: Request, response: Response): Promise<Response> {
         const {id} = request.params;
+
+        const {
+            personId,
+        } = request.body;
+
         try {
-            const project = await singletonProject.getInstance().acceptProject(Number(id));
+            const project = await singletonProject.getInstance().acceptProject(Number(id), Number(personId));
 
             return response.json(project);
         } catch (err) {
@@ -221,8 +231,13 @@ class ProjectsController {
 
     async rejectProject(request: Request, response: Response): Promise<Response> {
         const {id} = request.params;
+
+        const {
+            personId,
+        } = request.body;
+
         try {
-            const project = await singletonProject.getInstance().rejectProject(Number(id));
+            const project = await singletonProject.getInstance().rejectProject(Number(id), Number(personId));
 
             return response.json(project);
         } catch (err) {
@@ -237,10 +252,11 @@ class ProjectsController {
 
         const {
             responsibleId,
+            personId
         } = request.body;
 
         try {
-            const project = await singletonProject.getInstance().beginProject(Number(id), Number(responsibleId));
+            const project = await singletonProject.getInstance().beginProject(Number(id), Number(responsibleId), Number(personId));
 
             return response.json(project);
         } catch (err) {
@@ -252,8 +268,13 @@ class ProjectsController {
 
     async stopProject(request: Request, response: Response): Promise<Response> {
         const {id} = request.params;
+
+        const {
+            personId,
+        } = request.body;
+
         try {
-            const project = await singletonProject.getInstance().stopProject(Number(id));
+            const project = await singletonProject.getInstance().stopProject(Number(id), Number(personId));
 
             return response.json(project);
         } catch (err) {
@@ -266,8 +287,12 @@ class ProjectsController {
     async restartProject(request: Request, response: Response): Promise<Response> {
         const {id} = request.params;
 
+        const {
+            personId,
+        } = request.body;
+
         try {
-            const project = await singletonProject.getInstance().restartProject(Number(id));
+            const project = await singletonProject.getInstance().restartProject(Number(id), Number(personId));
 
             return response.json(project);
         } catch (err) {
@@ -279,8 +304,13 @@ class ProjectsController {
 
     async cancelProject(request: Request, response: Response): Promise<Response> {
         const {id} = request.params;
+
+        const {
+            personId,
+        } = request.body;
+
         try {
-            const project = await singletonProject.getInstance().cancelProject(Number(id));
+            const project = await singletonProject.getInstance().cancelProject(Number(id), Number(personId));
 
             return response.json(project);
         } catch (err) {
@@ -292,8 +322,13 @@ class ProjectsController {
 
     async finishProject(request: Request, response: Response): Promise<Response> {
         const {id} = request.params;
+
+        const {
+            personId,
+        } = request.body;
+
         try {
-            const project = await singletonProject.getInstance().finishProject(Number(id));
+            const project = await singletonProject.getInstance().finishProject(Number(id), Number(personId));
 
             return response.json(project);
         } catch (err) {

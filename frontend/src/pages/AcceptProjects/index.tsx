@@ -157,8 +157,15 @@ export default function AcceptProjects(): JSX.Element  {
     ];
 
     async function handleApprove(id: number) {
+
+        const personId = user.id;
+
+        const requestData = {
+            personId,
+        };
+
         try {
-            await api.put(`acceptProject/${id}`);
+            await api.put(`acceptProject/${id}`, requestData);
             toast.success('Projeto aprovado');
             reload();
         } catch (error) {
@@ -166,9 +173,17 @@ export default function AcceptProjects(): JSX.Element  {
         }
     }
 
+
     async function handleAsk(id: number) {
+
+        const personId = user.id;
+
+        const requestData = {
+            personId,
+        };
+
         try {
-            await api.put(`askForProjectInformation/${id}`);
+            await api.put(`askForProjectInformation/${id}`, requestData);
             toast.success('Projeto atualizado para pedir mais informações');
             reload();
         } catch (error) {
@@ -177,8 +192,15 @@ export default function AcceptProjects(): JSX.Element  {
     }
 
     async function handleReject (id: number) {
+
+        const personId = user.id;
+
+        const requestData = {
+            personId,
+        };
+
         try {
-            await api.put(`rejectProject/${id}`);
+            await api.put(`rejectProject/${id}`, requestData);
             toast.success('Projeto Rejeitado');
             reload();
         } catch (error) {

@@ -7,6 +7,8 @@ import { ProjectsRepository } from '../repositories/ProjectsRepository';
 import { EvaluationsRepository } from '../repositories/EvaluationsRepository'; 
 import { Portfolio } from '../entities/Portfolio';
 import { PortfoliosRepository } from '../repositories/PortfoliosRepository';
+import { ProjectStatus } from '../entities/ProjectStatus';
+import {ProjectsStatusRepository} from '../repositories/ProjectsStatusRepository';
 
 type RecentEvaluation = {
     id_project: number;
@@ -21,15 +23,18 @@ class EvaluationsService {
     private projectsRepository: Repository<Project>;
     private evaluationsRepository: Repository<Evaluation>;
     private portfoliosRepository: Repository<Portfolio>;
+    private projectsStatusRepository: Repository<ProjectStatus>
+    
 
     constructor() {
         this.criteriaRepository = getCustomRepository(CriteriaRepository);
         this.projectsRepository = getCustomRepository(ProjectsRepository);
         this.evaluationsRepository = getCustomRepository(EvaluationsRepository);
         this.portfoliosRepository = getCustomRepository(PortfoliosRepository);
+        this.projectsStatusRepository = getCustomRepository(ProjectsStatusRepository);
     }
 
-    async evaluate(id_project: number, id_criteria: number, evaluation_date_string: string, value: number): Promise<Evaluation> {
+    async evaluate(id_project: number, id_criteria: number, evaluation_date_string: string, value: number, id_person: number): Promise<Evaluation> {
         if(!id_project || !id_criteria || !evaluation_date_string || !value) {
             throw new Error('Campos obrigatórios não preenchidos');
         }
@@ -86,6 +91,17 @@ class EvaluationsService {
         project.id_status = 2;
 
         await this.projectsRepository.save(project);
+
+        const projectStatus = this.projectsStatusRepository.create({
+
+            id_person,
+            id_status: project.id_status,
+            id_project: project.id_project,
+            changed_time: new Date()
+
+        });
+        
+        await this.projectsStatusRepository.save(projectStatus);
 
         return evaluationResponse;
     }

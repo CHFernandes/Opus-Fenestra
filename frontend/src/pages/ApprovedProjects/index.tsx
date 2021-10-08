@@ -187,10 +187,13 @@ export default function ApprovedProjects(): JSX.Element  {
                 return;
             }
             const responsibleId = responsible.personId;
+            const personId = user.id;
 
             const requestData = {
-                responsibleId
+                responsibleId,
+                personId
             };
+
             const id = currentProjectId;
             await api.put(`beginProject/${id}`, requestData);
             handleClose();
