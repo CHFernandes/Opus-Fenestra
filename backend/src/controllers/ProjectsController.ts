@@ -75,11 +75,12 @@ class ProjectsController {
             completion,
             plannedStartDate,
             plannedEndDate,
-            status
+            status,
+            personId
         } = request.body;
 
         try {
-            const updatedProject = await singletonProject.getInstance().updateById(Number(id), name, completion,description, plannedStartDate, plannedEndDate, Number(status));
+            const updatedProject = await singletonProject.getInstance().updateById(Number(id), name, completion,description, plannedStartDate, plannedEndDate, Number(status), Number(personId));
 
             return response.json(updatedProject);
         } catch (err) {

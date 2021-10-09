@@ -7,6 +7,7 @@ import { PersonsController } from './controllers/PersonsController';
 import { PortfoliosController } from './controllers/PortfoliosController';
 import { AuthenticationController } from './controllers/AuthenticationController';
 import { EvaluationsController } from './controllers/EvaluationsController';
+import { ProjectsStatusController } from './controllers/ProjectsStatusController';
 
 const routes = Router();
 
@@ -17,6 +18,7 @@ const personsController = new PersonsController();
 const portfoliosController = new PortfoliosController();
 const authenticationController = new AuthenticationController();
 const evaluationsController = new EvaluationsController();
+const projectsStatusController = new ProjectsStatusController();
 
 routes.post('/login', authenticationController.login);
 routes.get('/login', authenticationController.getUser);
@@ -65,8 +67,11 @@ routes.put('/restartProject/:id', projectsController.restartProject);
 routes.put('/cancelProject/:id', projectsController.cancelProject);
 routes.put('/finishProject/:id', projectsController.finishProject);
 
-
 routes.post('/evaluation', evaluationsController.evaluate);
+routes.post('/updateEvaluation', evaluationsController.updateEvaluation);
 routes.get('/showLastEvaluations/:id', evaluationsController.showLastEvaluations);
+
+routes.get('/lastProjectsChanged/:id', projectsStatusController.lastChanged);
+routes.get('/lastProjectsChangedById/:id', projectsStatusController.lastChangedById);
 
 export {routes};

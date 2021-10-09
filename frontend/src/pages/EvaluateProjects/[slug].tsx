@@ -223,18 +223,27 @@ export default function RegisterOrganizationWizard(): JSX.Element {
         try {
             const evaluations = data.evaluation.map(calculate);
 
+            const evaluationDate = format(new Date(), 'yyyy-MM-dd HH:mm:ss:SSS', {
+                locale: ptBR,
+            });
+
             evaluations.forEach(async (evaluation) => {
                 const evaluationObject = {
                     projectId: projectsArray[activeStep].projectId,
                     criteriaId: evaluation.criterionId,
-                    evaluationDate: format(new Date(), 'yyyy-MM-dd', {
-                        locale: ptBR,
-                    }),
+                    evaluationDate,
                     value: evaluation.realValue,
                 };
 
                 await api.post('evaluation', evaluationObject);
             });
+
+            const updateEvaluation = {
+                projectId: projectsArray[activeStep].projectId,
+                personId: user.id,
+            };
+
+            await api.post('updateEvaluation', updateEvaluation);
 
             if (projectsArray.length -1 > activeStep) {
                 remove();

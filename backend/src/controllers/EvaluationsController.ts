@@ -26,13 +26,30 @@ class EvaluationsController {
             criteriaId,
             evaluationDate,
             value,
-            idPerson
         } = request.body;
 
         try {
-            const evaluation = await singletonEvaluations.getInstance().evaluate(Number(projectId), Number(criteriaId), evaluationDate, Number(value), Number(idPerson));
+            const evaluation = await singletonEvaluations.getInstance().evaluate(Number(projectId), Number(criteriaId), evaluationDate, Number(value));
 
             return response.json(evaluation);
+
+        } catch (err) {
+            return response.status(400).json({
+                message: err.message,
+            });
+        }
+    }
+
+    async updateEvaluation(request: Request, response: Response): Promise<Response> {
+        const { 
+            projectId,
+            personId
+        } = request.body;
+
+        try {
+            const updatedEvaluation = await singletonEvaluations.getInstance().updateEvaluation(Number(projectId), Number(personId));
+
+            return response.json(updatedEvaluation);
 
         } catch (err) {
             return response.status(400).json({

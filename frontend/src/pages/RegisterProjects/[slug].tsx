@@ -47,11 +47,24 @@ type RequestData = {
     plannedStartDate: string;
     plannedEndDate: string;
     status?: number;
+    personId?: number;
 }
 
 type Evaluation = {
     evaluationDate: string;
     grade: string;
+}
+
+type ChangedProjectHistory = {
+    projectStatusId: number;
+    personId: number;
+    person: string;
+    projectId: number;
+    project: string;
+    statusId: number;
+    status: string;
+    changedDate: Date;
+    changedDateAsString: string;
 }
 
 export default function RegisterProjects(): JSX.Element {
@@ -79,7 +92,9 @@ export default function RegisterProjects(): JSX.Element {
     const [persons, setPersons] = useState<Person[]>([]);
     const [formData, setFormData] = useState<FormData>(startingForm);
     const [showDialogEvaluation, setShowDialogEvaluation] = useState<boolean>(false);
+    const [showDialogStatus, setShowDialogStatus] = useState<boolean>(false);
     const [evaluations, setEvaluations] = useState<Evaluation[]>([]);
+    const [history, setHistory] = useState<ChangedProjectHistory[]>([]);
 
     const { handleSubmit, control, getValues, setValue} = useForm<FormData>({
         mode: 'all',
@@ -196,6 +211,43 @@ export default function RegisterProjects(): JSX.Element {
         }
     }, [showDialogEvaluation]);
 
+    useEffect(() => {
+        async function getProjectStatusHistory() {
+            try {
+                const { data } = await api.get(`/lastProjectsChangedById/${slug}`);
+
+                if (data.length < 1) {
+                    setHistory([]);
+                    toast.error('Projeto não possui histórico');
+                    return;
+                }
+
+                const entries = data.map((entry) => {
+                    return {
+                        projectStatusId: entry.id_project_status,
+                        personId: entry.id_person,
+                        person: entry.person_name,
+                        projectId: entry.id_project,
+                        project: entry.project_name,
+                        statusId: entry.id_status,
+                        status: entry.status_name,
+                        changedDate: new Date(entry.changed_time),
+                        changedDateAsString: format(new Date(entry.changed_time), 'dd/MM/yyyy', {
+                            locale: ptBR,
+                        }),
+                    };
+                });
+                setHistory(entries);
+            } catch (error) {
+                toast.error(error.response.data.message);
+            } 
+        }
+
+        if (showDialogStatus){
+            getProjectStatusHistory();
+        }
+    }, [showDialogStatus]);
+
     async function onSubmit(data: FormData) {
         try{
 
@@ -224,6 +276,7 @@ export default function RegisterProjects(): JSX.Element {
             if (Number(slug) > -1) {
                 if (data.status && data.status === 6){
                     requestData.status = 1;
+                    requestData.personId = user.id;
                 }
 
                 await api.put(`projects/${slug}`, requestData);
@@ -329,8 +382,16 @@ export default function RegisterProjects(): JSX.Element {
         setShowDialogEvaluation(true);
     }
 
-    function handleClose() {
+    function handleEvaluationClose() {
         setShowDialogEvaluation(false);
+    }
+
+    function showStatus() {
+        setShowDialogStatus(true);
+    }
+
+    function handleStatusClose() {
+        setShowDialogStatus(false);
     }
 
     return (
@@ -339,12 +400,20 @@ export default function RegisterProjects(): JSX.Element {
                 <div className={styles.buttonHeadbar}>
                     {
                         (Number(slug) > -1 && formData.status !== 1) && (
-                            <Button
-                                size='large'
-                                onClick={showEvaluations}
-                            >
-                                Ver Avaliações
-                            </Button>
+                            <>
+                                <Button
+                                    size='large'
+                                    onClick={showEvaluations}
+                                >
+                                    Ver Avaliações
+                                </Button>
+                                <Button
+                                    size='large'
+                                    onClick={showStatus}
+                                >
+                                    Ver Histórico de status
+                                </Button>
+                            </>
                         )
                     }
                     {
@@ -606,7 +675,7 @@ export default function RegisterProjects(): JSX.Element {
                     </Button>
                 </form>
             </div>
-            <Dialog className={styles.dialog} onClose={handleClose} aria-labelledby='show-evaluations' open={showDialogEvaluation}>
+            <Dialog className={styles.dialog} onClose={handleEvaluationClose} aria-labelledby='show-evaluations' open={showDialogEvaluation}>
                 <DialogTitle>
                     Avaliações do projeto
                 </DialogTitle>
@@ -619,6 +688,27 @@ export default function RegisterProjects(): JSX.Element {
                                         key={index}
                                         primary={`
                                             Avaliado em: ${evaluation.evaluationDate} - Nota: ${evaluation.grade}
+                                        `} 
+                                    />
+                                );
+                            })
+                        }
+                    </List>
+                </Paper>
+            </Dialog>
+            <Dialog className={styles.dialog} onClose={handleStatusClose} aria-labelledby='show-status' open={showDialogStatus}>
+                <DialogTitle>
+                    Histórico de estado do projeto
+                </DialogTitle>
+                <Paper elevation={3}>
+                    <List className={styles.dataList}>
+                        {
+                            history.map((entry, index) => {
+                                return (
+                                    <ListItemText 
+                                        key={index}
+                                        primary={`
+                                            Atualizado por ${entry.person} no dia ${entry.changedDateAsString}  Com o estado de: ${entry.status}
                                         `} 
                                     />
                                 );

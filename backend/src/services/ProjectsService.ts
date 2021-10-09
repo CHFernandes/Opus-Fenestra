@@ -7,7 +7,6 @@ import { Evaluation } from '../entities/Evaluation';
 import { PersonsRepository } from '../repositories/PersonsRepository';
 import { PortfoliosRepository } from '../repositories/PortfoliosRepository';
 import { ProjectsRepository } from '../repositories/ProjectsRepository';
-import { EvaluationsRepository } from '../repositories/EvaluationsRepository';
 import { ProjectStatus } from '../entities/ProjectStatus';
 import { ProjectsStatusRepository } from '../repositories/ProjectsStatusRepository';
 
@@ -31,7 +30,6 @@ class ProjectsService {
     private projectsRepository: Repository<Project>;
     private portfoliosRepository: Repository<Portfolio>
     private personsRepository: Repository<Person>
-    private evaluationsRepository: Repository<Evaluation>
     private projectsStatusRepository: Repository<ProjectStatus>
     
 
@@ -39,7 +37,6 @@ class ProjectsService {
         this.projectsRepository = getCustomRepository(ProjectsRepository);
         this.portfoliosRepository = getCustomRepository(PortfoliosRepository);
         this.personsRepository = getCustomRepository(PersonsRepository);
-        this.evaluationsRepository = getCustomRepository(EvaluationsRepository);
         this.projectsStatusRepository = getCustomRepository(ProjectsStatusRepository);
 
     }
@@ -104,12 +101,10 @@ class ProjectsService {
         const newProject = await this.projectsRepository.save(project);
 
         const projectStatus = this.projectsStatusRepository.create({
-
             id_person: submitter,
             id_status,
             id_project: newProject.id_project,
             changed_time: new Date()
-
         });
 
         await this.projectsStatusRepository.save(projectStatus);
@@ -180,7 +175,7 @@ class ProjectsService {
         return project;
     }
 
-    async updateById (id_project: number,  name: string, completionString: string, description: string, plannedStartDateAsString: string, plannedEndDateAsString: string, status?: number): Promise<Project>{
+    async updateById (id_project: number,  name: string, completionString: string, description: string, plannedStartDateAsString: string, plannedEndDateAsString: string, status?: number, id_person?:number): Promise<Project>{
 
         if(!id_project || !description || !name || !plannedStartDateAsString || !plannedEndDateAsString) {
             throw new Error('Campos obrigatórios não preenchidos');
@@ -226,15 +221,42 @@ class ProjectsService {
             throw new Error('Data final deve ser depois da data inicial');
         }
 
+        if(status) {
+            project.id_status = status;
+
+            if(!id_person) {
+                throw new Error('É obrigatório ter uma pessoa para mudança de status nessa operação');
+            }
+
+            if (Number.isNaN(id_person)) {
+                throw new Error('Pessoa inválida');
+            }
+    
+            const person = await this.personsRepository.findOne({
+                where: {
+                    id_person
+                },
+            });
+    
+            if(!person) {
+                throw new Error('Pessoa não existe');
+            }
+
+            const projectStatus = this.projectsStatusRepository.create({
+                id_person,
+                id_status: project.id_status,
+                id_project: project.id_project,
+                changed_time: new Date()
+            });
+            
+            await this.projectsStatusRepository.save(projectStatus);
+        }
+
         project.name = name;
         project.description = description;
         project.completion = completion;
         project.planned_start_date = planned_start_date;
         project.planned_end_date = planned_end_date;
-
-        if(status) {
-            project.id_status = status;
-        }
 
         const updatedProject = await this.projectsRepository.save(project);
 
@@ -597,17 +619,29 @@ class ProjectsService {
             throw new Error('Projeto com estado inválido para esta operação');
         }
 
+        if (Number.isNaN(id_person)) {
+            throw new Error('Pessoa inválida');
+        }
+
+        const person = await this.personsRepository.findOne({
+            where: {
+                id_person
+            },
+        });
+
+        if(!person) {
+            throw new Error('Pessoa não existe');
+        }
+
         project.id_status = 3;
 
         const updatedProject = await this.projectsRepository.save(project);
 
         const projectStatus = this.projectsStatusRepository.create({
-
             id_person,
             id_status: project.id_status,
             id_project: project.id_project,
             changed_time: new Date()
-
         });
         
         await this.projectsStatusRepository.save(projectStatus);
@@ -638,17 +672,29 @@ class ProjectsService {
             throw new Error('Projeto com estado inválido para esta operação');
         }
 
+        if (Number.isNaN(id_person)) {
+            throw new Error('Pessoa inválida');
+        }
+
+        const person = await this.personsRepository.findOne({
+            where: {
+                id_person
+            },
+        });
+
+        if(!person) {
+            throw new Error('Pessoa não existe');
+        }
+
         project.id_status = 7;
 
         const updatedProject = await this.projectsRepository.save(project);
 
         const projectStatus = this.projectsStatusRepository.create({
-
             id_person,
             id_status: project.id_status,
             id_project: project.id_project,
             changed_time: new Date()
-
         });
         
         await this.projectsStatusRepository.save(projectStatus);
@@ -669,6 +715,10 @@ class ProjectsService {
             throw new Error('Responsável inválido');
         }
 
+        if (Number.isNaN(id_update_person)) {
+            throw new Error('Pessoa inválida');
+        }
+
         const project = await this.projectsRepository.findOne({
             where: {
                 id_project
@@ -683,8 +733,16 @@ class ProjectsService {
             throw new Error('Projeto com estado inválido para esta operação');
         }
 
-        const person = await this.personsRepository.findOne({
+        const personResponsible = await this.personsRepository.findOne({
             where: {id_person}
+        });
+
+        if(!personResponsible) {
+            throw new Error('Pessoa não existe');
+        }
+
+        const person = await this.personsRepository.findOne({
+            where: {id_update_person}
         });
 
         if(!person) {
@@ -698,12 +756,10 @@ class ProjectsService {
         const updatedProject = await this.projectsRepository.save(project);
 
         const projectStatus = this.projectsStatusRepository.create({
-
             id_person: id_update_person,
             id_status: project.id_status,
             id_project: project.id_project,
             changed_time: new Date()
-
         });
         
         await this.projectsStatusRepository.save(projectStatus);
@@ -734,17 +790,29 @@ class ProjectsService {
             throw new Error('Projeto com estado inválido para esta operação');
         }
 
+        if (Number.isNaN(id_person)) {
+            throw new Error('Pessoa inválida');
+        }
+
+        const person = await this.personsRepository.findOne({
+            where: {
+                id_person
+            },
+        });
+
+        if(!person) {
+            throw new Error('Pessoa não existe');
+        }
+
         project.id_status = 8;
 
         const updatedProject = await this.projectsRepository.save(project);
 
         const projectStatus = this.projectsStatusRepository.create({
-
             id_person,
             id_status: project.id_status,
             id_project: project.id_project,
             changed_time: new Date()
-
         });
         
         await this.projectsStatusRepository.save(projectStatus);
@@ -775,17 +843,29 @@ class ProjectsService {
             throw new Error('Projeto com estado inválido para esta operação');
         }
 
+        if (Number.isNaN(id_person)) {
+            throw new Error('Pessoa inválida');
+        }
+
+        const person = await this.personsRepository.findOne({
+            where: {
+                id_person
+            },
+        });
+
+        if(!person) {
+            throw new Error('Pessoa não existe');
+        }
+
         project.id_status = 4;
 
         const updatedProject = await this.projectsRepository.save(project);
 
         const projectStatus = this.projectsStatusRepository.create({
-
             id_person,
             id_status: project.id_status,
             id_project: project.id_project,
             changed_time: new Date()
-
         });
         
         await this.projectsStatusRepository.save(projectStatus);
@@ -816,17 +896,29 @@ class ProjectsService {
             throw new Error('Projeto com estado inválido para esta operação');
         }
 
+        if (Number.isNaN(id_person)) {
+            throw new Error('Pessoa inválida');
+        }
+
+        const person = await this.personsRepository.findOne({
+            where: {
+                id_person
+            },
+        });
+
+        if(!person) {
+            throw new Error('Pessoa não existe');
+        }
+
         project.id_status = 9;
 
         const updatedProject = await this.projectsRepository.save(project);
 
         const projectStatus = this.projectsStatusRepository.create({
-
             id_person,
             id_status: project.id_status,
             id_project: project.id_project,
             changed_time: new Date()
-
         });
         
         await this.projectsStatusRepository.save(projectStatus);
@@ -861,17 +953,29 @@ class ProjectsService {
             throw new Error('Para ser finalizado projeto precisa estar 100% completado');
         }
 
+        if (Number.isNaN(id_person)) {
+            throw new Error('Pessoa inválida');
+        }
+
+        const person = await this.personsRepository.findOne({
+            where: {
+                id_person
+            },
+        });
+
+        if(!person) {
+            throw new Error('Pessoa não existe');
+        }
+
         project.id_status = 5;
 
         const updatedProject = await this.projectsRepository.save(project);
 
         const projectStatus = this.projectsStatusRepository.create({
-
             id_person,
             id_status: project.id_status,
             id_project: project.id_project,
             changed_time: new Date()
-
         });
         
         await this.projectsStatusRepository.save(projectStatus);

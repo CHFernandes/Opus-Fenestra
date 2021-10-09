@@ -9,6 +9,8 @@ import { Portfolio } from '../entities/Portfolio';
 import { PortfoliosRepository } from '../repositories/PortfoliosRepository';
 import { ProjectStatus } from '../entities/ProjectStatus';
 import {ProjectsStatusRepository} from '../repositories/ProjectsStatusRepository';
+import { Person } from '../entities/Person';
+import { PersonsRepository } from '../repositories/PersonsRepository';
 
 type RecentEvaluation = {
     id_project: number;
@@ -24,7 +26,7 @@ class EvaluationsService {
     private evaluationsRepository: Repository<Evaluation>;
     private portfoliosRepository: Repository<Portfolio>;
     private projectsStatusRepository: Repository<ProjectStatus>
-    
+    private personsRepository: Repository<Person>;
 
     constructor() {
         this.criteriaRepository = getCustomRepository(CriteriaRepository);
@@ -32,9 +34,10 @@ class EvaluationsService {
         this.evaluationsRepository = getCustomRepository(EvaluationsRepository);
         this.portfoliosRepository = getCustomRepository(PortfoliosRepository);
         this.projectsStatusRepository = getCustomRepository(ProjectsStatusRepository);
+        this.personsRepository = getCustomRepository(PersonsRepository);
     }
 
-    async evaluate(id_project: number, id_criteria: number, evaluation_date_string: string, value: number, id_person: number): Promise<Evaluation> {
+    async evaluate(id_project: number, id_criteria: number, evaluation_date_string: string, value: number): Promise<Evaluation> {
         if(!id_project || !id_criteria || !evaluation_date_string || !value) {
             throw new Error('Campos obrigatórios não preenchidos');
         }
@@ -92,18 +95,57 @@ class EvaluationsService {
 
         await this.projectsRepository.save(project);
 
+        return evaluationResponse;
+    }
+
+    async updateEvaluation(id_project: number, id_person: number): Promise<ProjectStatus> {
+
+        if(!id_project || !id_person) {
+            throw new Error('Campos obrigatórios não preenchidos');
+        }
+
+        if (Number.isNaN(id_project)) {
+            throw new Error('Projeto inválido');
+        }
+
+        const project = await this.projectsRepository.findOne({
+            where: {
+                id_project
+            },
+        });
+
+        if(!project) {
+            throw new Error('Projeto não existe');
+        }
+
+        if(project.id_status !== 2) {
+            throw new Error('Projeto com estado inválido para esta operação');
+        }
+
+        if (Number.isNaN(id_person)) {
+            throw new Error('Pessoa inválida');
+        }
+
+        const person = await this.personsRepository.findOne({
+            where: {
+                id_person
+            },
+        });
+
+        if(!person) {
+            throw new Error('Pessoa não existe');
+        }
+
         const projectStatus = this.projectsStatusRepository.create({
-
             id_person,
-            id_status: project.id_status,
-            id_project: project.id_project,
+            id_status: 2,
+            id_project,
             changed_time: new Date()
-
         });
         
-        await this.projectsStatusRepository.save(projectStatus);
+        const updatedStatus = await this.projectsStatusRepository.save(projectStatus);
 
-        return evaluationResponse;
+        return updatedStatus;
     }
 
     async getLastEvaluations(id_portfolio: number): Promise<RecentEvaluation[]> {

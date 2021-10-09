@@ -85,7 +85,7 @@ export default function OverdueProjects(): JSX.Element {
                     <div className={styles.contentWrapper}>
                         <div className={styles.titleWrapper}>
                             <Typography className={styles.title} component='h1'>
-                                Projetos em risco
+                                Projetos atrasados
                             </Typography>
                         </div>
                         <TableContainer>
