@@ -468,7 +468,6 @@ export default function RegisterUnities(): JSX.Element {
                                         <div className={styles.field}>
                                             <Controller 
                                                 name={`grades.${index}.description` as `grades.${number}.description`}
-                                                defaultValue={ !field.description ? '' : field.description }
                                                 control={control}
                                                 rules={{ 
                                                     required: 'Campo obrigatório'
@@ -491,7 +490,6 @@ export default function RegisterUnities(): JSX.Element {
                                         <div className={styles.field}>
                                             <Controller 
                                                 name={`grades.${index}.numericValue` as `grades.${number}.numericValue`}
-                                                defaultValue={ !field.numericValue? 0 : Number(field.numericValue)}
                                                 control={control}
                                                 rules={{ 
                                                     required: 'Campo obrigatório',

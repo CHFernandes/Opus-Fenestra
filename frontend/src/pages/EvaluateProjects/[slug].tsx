@@ -68,7 +68,7 @@ function Total ({control}: { control: Control<EvaluationFormArray>}): JSX.Elemen
         return sum;
     }, 0);
 
-    return <p>Nota total: {total}</p>;
+    return <p>Nota total: {total.toFixed(2)}</p>;
 }
 
 export default function RegisterOrganizationWizard(): JSX.Element {

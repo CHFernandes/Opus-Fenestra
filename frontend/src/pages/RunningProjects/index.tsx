@@ -93,7 +93,7 @@ export default function RunningProjects(): JSX.Element  {
         {
             field: 'completion',
             headerName: 'Completude',
-            flex: 1.5,
+            flex: 1.25,
             renderCell: function getCell (params) {
                 return(
                     <>

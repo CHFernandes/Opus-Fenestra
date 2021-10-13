@@ -232,7 +232,7 @@ export default function RegisterProjects(): JSX.Element {
                         statusId: entry.id_status,
                         status: entry.status_name,
                         changedDate: new Date(entry.changed_time),
-                        changedDateAsString: format(new Date(entry.changed_time), 'dd/MM/yyyy', {
+                        changedDateAsString: format(new Date(entry.changed_time), 'dd/MM/yyyy HH:mm', {
                             locale: ptBR,
                         }),
                     };
@@ -675,7 +675,14 @@ export default function RegisterProjects(): JSX.Element {
                     </Button>
                 </form>
             </div>
-            <Dialog className={styles.dialog} onClose={handleEvaluationClose} aria-labelledby='show-evaluations' open={showDialogEvaluation}>
+            <Dialog 
+                fullWidth 
+                maxWidth='md' 
+                className={styles.dialog}
+                onClose={handleEvaluationClose}
+                aria-labelledby='show-evaluations'
+                open={showDialogEvaluation}
+            >
                 <DialogTitle>
                     Avaliações do projeto
                 </DialogTitle>
@@ -696,7 +703,14 @@ export default function RegisterProjects(): JSX.Element {
                     </List>
                 </Paper>
             </Dialog>
-            <Dialog className={styles.dialog} onClose={handleStatusClose} aria-labelledby='show-status' open={showDialogStatus}>
+            <Dialog
+                fullWidth 
+                maxWidth={false}
+                className={styles.dialog} 
+                onClose={handleStatusClose} 
+                aria-labelledby='show-status' 
+                open={showDialogStatus}
+            >
                 <DialogTitle>
                     Histórico de estado do projeto
                 </DialogTitle>
