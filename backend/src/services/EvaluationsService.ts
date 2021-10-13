@@ -38,7 +38,7 @@ class EvaluationsService {
     }
 
     async evaluate(id_project: number, id_criteria: number, evaluation_date_string: string, value: number): Promise<Evaluation> {
-        if(!id_project || !id_criteria || !evaluation_date_string || !value) {
+        if(!id_project || !id_criteria || !evaluation_date_string || (value !== 0 && value == undefined )) {
             throw new Error('Campos obrigatórios não preenchidos');
         }
 
@@ -118,7 +118,7 @@ class EvaluationsService {
             throw new Error('Projeto não existe');
         }
 
-        if(project.id_status !== 2) {
+        if(project.id_status !== 1) {
             throw new Error('Projeto com estado inválido para esta operação');
         }
 

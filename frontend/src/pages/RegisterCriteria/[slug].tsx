@@ -10,6 +10,11 @@ import styles from './styles.module.scss';
 import { AuthContext } from '../../contexts/AuthContext';
 import toast from 'react-hot-toast';
 
+type CriteriaType = {
+    id: number;
+    label: string;
+    value: number;
+}
 
 type FormData = {
     id?: number;
@@ -25,12 +30,6 @@ export default function RegisterCriteria(): JSX.Element {
     const { isAuthenticated, user } = useContext(AuthContext);
     const router = useRouter();
     const { slug } = router.query;
-    const criteriaTypes = [
-        {
-            label: 'Escala 0-10',
-            value: 1,
-        }
-    ];
 
     const startingForm = {
         description: '',
@@ -41,13 +40,37 @@ export default function RegisterCriteria(): JSX.Element {
     };
 
     const [formData, setFormData] = useState<FormData>(startingForm);
-
+    const [criteriaTypes, setCriteriaTypes] = useState<CriteriaType[]>([]);
     const { handleSubmit, control, setValue} = useForm<FormData>({
         mode: 'all',
         defaultValues: startingForm,
     });
 
     useEffect(() => {
+        async function getUnities() {
+            try {
+                const { data } = await api.get('unitiesList');
+
+                if(data.length < 1) {
+                    toast.error('Nenhuma unidade está cadastrada');
+                    setCriteriaTypes([]);
+                    return;
+                }
+
+                const unitArray = data.map((unit) => {
+                    return {
+                        id: Number(unit.id_unities),
+                        label: unit.description,
+                        value: Number(unit.id_unities),
+                    };
+                });
+
+                setCriteriaTypes(unitArray);
+            } catch (error) {
+                toast.error(error.response.data.message);
+            }  
+        }
+
         async function getCriterion() {
             try {
                 const { data } = await api.get(`/criteria/${slug}`);
@@ -71,6 +94,8 @@ export default function RegisterCriteria(): JSX.Element {
             router.push('/Login');
             return;
         }
+
+        getUnities();
 
         if (!isNaN(Number(slug)) && Number(slug) > -1) {
             getCriterion();
@@ -204,11 +229,13 @@ export default function RegisterCriteria(): JSX.Element {
                                     }}
                                 >
                                     <option aria-label='None' value='' />
-                                    {criteriaTypes.map((option) => (
-                                        <option key={option.value} value={option.value}>
-                                            {option.label}
-                                        </option>
-                                    ))}
+                                    {
+                                        criteriaTypes.map((unit) => (
+                                            <option key={unit.id} value={unit.value}>
+                                                {unit.label}
+                                            </option>
+                                        ))
+                                    }
                                 </TextField>
                             ) }
                         />

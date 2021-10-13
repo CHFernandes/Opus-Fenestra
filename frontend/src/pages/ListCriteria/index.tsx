@@ -20,8 +20,8 @@ type Criterion = {
     description: string;
     weight: number;
     unityType: string;
-    bestValue: number;
-    worstValue: number;
+    bestValue: string;
+    worstValue: string;
 }
 
 
@@ -50,8 +50,8 @@ export default function ListCriteria(): JSX.Element  {
                         description: criterion.description,
                         weight: criterion.weight,
                         unityType: criterion.unit_description,
-                        bestValue: criterion.best_manual_value,
-                        worstValue: criterion.worst_manual_value,
+                        bestValue: criterion.is_values_manual ? `${criterion.best_value}` : criterion.best_value,
+                        worstValue: criterion.is_values_manual ? `${criterion.worst_value}` : criterion.worst_value,
                     };
                 });
 
@@ -190,8 +190,8 @@ export default function ListCriteria(): JSX.Element  {
                         description: criterion.description,
                         weight: criterion.weight,
                         unityType: criterion.unit_description,
-                        bestValue: criterion.best_manual_value,
-                        worstValue: criterion.worst_manual_value,
+                        bestValue: criterion.is_values_manual ? `${criterion.best_value}` : criterion.best_value,
+                        worstValue: criterion.is_values_manual ? `${criterion.worst_value}` : criterion.worst_value,
                     };
                 });
                 setCriteria(criteria);

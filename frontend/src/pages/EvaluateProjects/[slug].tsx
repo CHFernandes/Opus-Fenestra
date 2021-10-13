@@ -14,13 +14,21 @@ import styles from './styles.module.scss';
 import toast from 'react-hot-toast';
 import { AuthContext } from '../../contexts/AuthContext';
 
+type Grade = {
+    id_customized_grades: number;
+    numeric_value: number;
+    description: string;
+}
+
 type Criterion = {
     criterionId: number;
     description: string;
     weight: number;
     unitDescription: string;
+    isValuesManual: boolean;
     bestValue: number;
     worstValue: number;
+    gradeList: Grade[];
 }
 
 type Project = {
@@ -41,6 +49,8 @@ type EvaluationForm = {
     description: string;
     unitDescription: string;
     weight: number;
+    isValuesManual: boolean;
+    gradeList: Grade[];
 }
 
 type EvaluationFormArray = {
@@ -154,8 +164,10 @@ export default function RegisterOrganizationWizard(): JSX.Element {
                         description: criterion.description,
                         weight: criterion.weight,
                         unitDescription: criterion.unit_description,
-                        bestValue: criterion.best_manual_value,
-                        worstValue: criterion.worst_manual_value,
+                        isValuesManual: criterion.is_values_manual,
+                        bestValue: criterion.is_values_manual ? criterion.best_value : 10,
+                        worstValue: criterion.is_values_manual ? criterion.worst_value : 0,
+                        gradeList: criterion.grade_list,
                     };
                 });
 
@@ -208,6 +220,8 @@ export default function RegisterOrganizationWizard(): JSX.Element {
                     description: criterion.description,
                     unitDescription: criterion.unitDescription,
                     weight: criterion.weight,
+                    isValuesManual: criterion.isValuesManual,
+                    gradeList: criterion.gradeList,
                     id: criterion.criterionId,
                 };
                 const fieldFound = fields.find(field => field.criterionId === criterion.criterionId);
@@ -295,39 +309,79 @@ export default function RegisterOrganizationWizard(): JSX.Element {
                                 </div>
                                 <div className={styles.formFields}>
                                     <div className={styles.field}>
-                                        {/* 
-                                            Este componente tem um problema de ir de estado não controlado para controlado
-                                            o fix seria assinalar um valor padrão, porém o defaultValue espera um valor do 
-                                            tipo never, ainda é desconhecido o que causa isso e como corrigir
-                                        */}
-                                        <Controller 
-                                            name={`evaluation.${index}.insertedValue` as `evaluation.${number}.insertedValue`}
-                                            control={control}
-                                            rules={{ 
-                                                required: 'Campo obrigatório',
-                                                validate: {
-                                                    isBiggerThanWorstValue: (value) => {
-                                                        return field.worstValue <= value || `Valor minimo para este critério é: ${field.worstValue}`;
-                                                    },
-                                                    isSmallerThanBestValue: (value) => {
-                                                        return field.bestValue >= value || `Valor máximo para este critério é: ${field.bestValue}`;
-                                                    }
-                                                }
-                                            }}
-                                            render={ ({ field: { onChange, onBlur, value}, fieldState: { error } }) => (
-                                                <TextField
-                                                    type='number'
-                                                    label='Avaliação do critério'
-                                                    variant='outlined'
-                                                    onBlur={onBlur}
-                                                    onChange={onChange}
-                                                    fullWidth
-                                                    value={value}
-                                                    error={!!error}
-                                                    helperText={error && error.message}
+                                        {
+                                            field.isValuesManual ? (
+                                                /* 
+                                                Este componente tem um problema de ir de estado não controlado para 
+                                                controlado o fix seria assinalar um valor padrão, porém o defaultValue 
+                                                espera um valor do tipo never, ainda é desconhecido o que causa isso e como 
+                                                corrigir
+                                                */
+                                                <Controller 
+                                                    name={`evaluation.${index}.insertedValue` as `evaluation.${number}.insertedValue`}
+                                                    control={control}
+                                                    rules={{ 
+                                                        required: 'Campo obrigatório',
+                                                        validate: {
+                                                            isBiggerThanWorstValue: (value) => {
+                                                                return field.worstValue <= value || `Valor minimo para este critério é: ${field.worstValue}`;
+                                                            },
+                                                            isSmallerThanBestValue: (value) => {
+                                                                return field.bestValue >= value || `Valor máximo para este critério é: ${field.bestValue}`;
+                                                            }
+                                                        }
+                                                    }}
+                                                    render={ ({ field: { onChange, onBlur, value}, fieldState: { error } }) => (
+                                                        <TextField
+                                                            type='number'
+                                                            label='Avaliação do critério'
+                                                            variant='outlined'
+                                                            onBlur={onBlur}
+                                                            onChange={onChange}
+                                                            fullWidth
+                                                            value={value}
+                                                            error={!!error}
+                                                            helperText={error && error.message}
+                                                        />
+                                                    ) }
                                                 />
-                                            ) }
-                                        />
+                                            ) : (
+                                                <Controller
+                                                    name={`evaluation.${index}.insertedValue` as `evaluation.${number}.insertedValue`}
+                                                    control={control}
+                                                    rules={{ required: 'Campo obrigatório' }}
+                                                    render={ ({ field: { onChange, onBlur, value}, fieldState: { error } }) => (
+                                                        <TextField
+                                                            select
+                                                            label='Avaliação do critério'
+                                                            variant='outlined'
+                                                            onBlur={onBlur}
+                                                            onChange={onChange}
+                                                            fullWidth
+                                                            value={value}
+                                                            error={!!error}
+                                                            helperText={!!error && error.message}
+                                                            SelectProps={{
+                                                                native: true,
+                                                            }}
+                                                        >
+                                                            <option aria-label='None' value='' />
+                                                            {
+                                                                field.gradeList.map((grade) => (
+                                                                    <option 
+                                                                        key={grade.id_customized_grades} 
+                                                                        value={grade.numeric_value}
+                                                                    >
+                                                                        {grade.description}
+                                                                    </option>
+                                                                ))
+                                                            }
+                                                        </TextField>
+                                                    ) }
+                                                />
+                                            )
+                                        }
+                                        
                                     </div>
                                 </div>
                             </div>

@@ -8,6 +8,8 @@ import { PortfoliosController } from './controllers/PortfoliosController';
 import { AuthenticationController } from './controllers/AuthenticationController';
 import { EvaluationsController } from './controllers/EvaluationsController';
 import { ProjectsStatusController } from './controllers/ProjectsStatusController';
+import { UnitiesController } from './controllers/UnitiesController';
+import { CustomizedGradesController } from './controllers/CustomizedGradesController';
 
 const routes = Router();
 
@@ -19,6 +21,8 @@ const portfoliosController = new PortfoliosController();
 const authenticationController = new AuthenticationController();
 const evaluationsController = new EvaluationsController();
 const projectsStatusController = new ProjectsStatusController();
+const unitiesController = new UnitiesController();
+const customizedGradesController = new CustomizedGradesController();
 
 routes.post('/login', authenticationController.login);
 routes.get('/login', authenticationController.getUser);
@@ -73,5 +77,17 @@ routes.get('/showLastEvaluations/:id', evaluationsController.showLastEvaluations
 
 routes.get('/lastProjectsChanged/:id', projectsStatusController.lastChanged);
 routes.get('/lastProjectsChangedById/:id', projectsStatusController.lastChangedById);
+
+routes.post('/unit', unitiesController.create);
+routes.put('/unit/:id', unitiesController.setBestAndWorst);
+routes.put('/updateUnit/:id', unitiesController.updateById);
+routes.get('/unitiesList', unitiesController.list);
+routes.get('/unit/:id', unitiesController.getById);
+routes.delete('/unit/:id', unitiesController.deleteById);
+
+routes.post('/customizedGrades', customizedGradesController.create);
+routes.put('/customizedGrades/:id', customizedGradesController.updateById);
+routes.delete('/customizedGrades/:id', customizedGradesController.deleteById);
+
 
 export {routes};

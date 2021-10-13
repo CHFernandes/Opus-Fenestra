@@ -80,6 +80,11 @@ export const SidebarData = [
           icon: <MI.List />,
         },
         {
+          title: 'Listagem de Unidades',
+          path: '/ListUnities',
+          icon: <MI.List />,
+        },
+        {
           title: 'Criação de Critérios',
           path: '/RegisterCriteria/-1',
           icon: <MI.RateReview />,
