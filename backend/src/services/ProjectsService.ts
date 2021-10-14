@@ -742,7 +742,7 @@ class ProjectsService {
         }
 
         const person = await this.personsRepository.findOne({
-            where: {id_update_person}
+            where: {id_person: id_update_person}
         });
 
         if(!person) {
