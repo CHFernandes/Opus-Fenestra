@@ -1,4 +1,4 @@
-.registerPerson{
+.registerPerson {
     padding: 0 4rem;
     height: calc(100vh - 15rem);
     display: flex;
@@ -6,8 +6,7 @@
     align-items: center;
     justify-content: center;
 
-    form{
-
+    form {
         width: 60%;
 
         fieldset {
@@ -15,8 +14,7 @@
             flex-direction: column;
             padding: 1rem;
 
-            .formFields{
-
+            .formFields {
                 .field {
                     margin-bottom: 1rem;
                     display: block;
@@ -27,7 +25,6 @@
                     }
                 }
             }
-
         }
     }
 

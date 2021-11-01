@@ -54,15 +54,24 @@ routes.put('/projects/:id', projectsController.updateById);
 routes.delete('/projects/:id', projectsController.deleteById);
 routes.get('/registeredProjects/:id', projectsController.showRegistered);
 routes.get('/evaluatedProjects/:id', projectsController.showEvaluated);
-routes.get('/projectsEvaluations/:id', projectsController.showProjectsEvaluations);
+routes.get(
+    '/projectsEvaluations/:id',
+    projectsController.showProjectsEvaluations
+);
 routes.get('/approvedProjects/:id', projectsController.showApproved);
 routes.get('/registeredProject/:id', projectsController.showRegisteredProject);
-routes.get('/askForProjectInformation/:id', projectsController.showProjectsAskInformation);
+routes.get(
+    '/askForProjectInformation/:id',
+    projectsController.showProjectsAskInformation
+);
 routes.get('/runningProjects/:id', projectsController.showRunningProjects);
 routes.get('/projectsInRisk/:id', projectsController.showProjectsInRisk);
 routes.get('/overdueProjects/:id', projectsController.showOverdueProjects);
 routes.get('/stoppedProjects/:id', projectsController.showStoppedProjects);
-routes.put('/askForProjectInformation/:id', projectsController.updateProjectAskInformation);
+routes.put(
+    '/askForProjectInformation/:id',
+    projectsController.updateProjectAskInformation
+);
 routes.put('/acceptProject/:id', projectsController.acceptProject);
 routes.put('/rejectProject/:id', projectsController.rejectProject);
 routes.put('/beginProject/:id', projectsController.beginProject);
@@ -70,13 +79,23 @@ routes.put('/stopProject/:id', projectsController.stopProject);
 routes.put('/restartProject/:id', projectsController.restartProject);
 routes.put('/cancelProject/:id', projectsController.cancelProject);
 routes.put('/finishProject/:id', projectsController.finishProject);
+routes.get(
+    '/getProjectsStatusQuantity/:id',
+    projectsController.getProjectsStatusQuantity
+);
 
 routes.post('/evaluation', evaluationsController.evaluate);
 routes.post('/updateEvaluation', evaluationsController.updateEvaluation);
-routes.get('/showLastEvaluations/:id', evaluationsController.showLastEvaluations);
+routes.get(
+    '/showLastEvaluations/:id',
+    evaluationsController.showLastEvaluations
+);
 
 routes.get('/lastProjectsChanged/:id', projectsStatusController.lastChanged);
-routes.get('/lastProjectsChangedById/:id', projectsStatusController.lastChangedById);
+routes.get(
+    '/lastProjectsChangedById/:id',
+    projectsStatusController.lastChangedById
+);
 
 routes.post('/unit', unitiesController.create);
 routes.put('/unit/:id', unitiesController.setBestAndWorst);
@@ -89,5 +108,4 @@ routes.post('/customizedGrades', customizedGradesController.create);
 routes.put('/customizedGrades/:id', customizedGradesController.updateById);
 routes.delete('/customizedGrades/:id', customizedGradesController.deleteById);
 
-
-export {routes};
+export { routes };

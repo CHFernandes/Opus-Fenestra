@@ -1,8 +1,15 @@
 import React, { useState, useEffect, useContext } from 'react';
 import { useRouter } from 'next/router';
 
-import { Button, Dialog, DialogTitle, IconButton, TextField, Tooltip } from '@material-ui/core';
-import { DataGrid, GridColDef} from '@material-ui/data-grid';
+import {
+    Button,
+    Dialog,
+    DialogTitle,
+    IconButton,
+    TextField,
+    Tooltip,
+} from '@material-ui/core';
+import { DataGrid, GridColDef } from '@material-ui/data-grid';
 import { Autocomplete } from '@material-ui/lab';
 import * as MI from '@material-ui/icons';
 
@@ -20,27 +27,33 @@ type ApprovedProject = {
     description: string;
     plannedStartDateAsString: string;
     plannedEndDateAsString: string;
-}
+};
 
 type Person = {
     personId: number;
     name: string;
-}
+};
 
-export default function ApprovedProjects(): JSX.Element  {
+export default function ApprovedProjects(): JSX.Element {
     const { isAuthenticated, user } = useContext(AuthContext);
     const [project, setProjects] = useState<ApprovedProject[]>([]);
     const [openDialog, setOpenDialog] = useState<boolean>(false);
     const [persons, setPersons] = useState<Person[]>([]);
     const [responsible, setResponsible] = useState<Person | null>(null);
-    const [currentProjectId, setCurrentProjectId] = useState<number | null>(null);
+    const [currentProjectId, setCurrentProjectId] = useState<number | null>(
+        null
+    );
 
     useEffect(() => {
         async function getProjects() {
             try {
-                const { data:portfolioData } = await api.get(`/portfolios/${user.idOrganization}`);
+                const { data: portfolioData } = await api.get(
+                    `/portfolios/${user.idOrganization}`
+                );
                 const portfolioId = portfolioData.id_portfolio;
-                const { data } = await api.get(`/approvedProjects/${portfolioId}`);
+                const { data } = await api.get(
+                    `/approvedProjects/${portfolioId}`
+                );
 
                 if (data.length < 1) {
                     setProjects([]);
@@ -53,17 +66,24 @@ export default function ApprovedProjects(): JSX.Element  {
                         id: project.id_project,
                         name: project.name,
                         description: project.description,
-                        plannedStartDateAsString: format(new Date(project.planned_start_date), 'dd/MM/yyyy', {
-                            locale: ptBR,
-                        }),
-                        plannedEndDateAsString: format(new Date(project.planned_end_date), 'dd/MM/yyyy', {
-                            locale: ptBR,
-                        }),
+                        plannedStartDateAsString: format(
+                            new Date(project.planned_start_date),
+                            'dd/MM/yyyy',
+                            {
+                                locale: ptBR,
+                            }
+                        ),
+                        plannedEndDateAsString: format(
+                            new Date(project.planned_end_date),
+                            'dd/MM/yyyy',
+                            {
+                                locale: ptBR,
+                            }
+                        ),
                     };
                 });
 
                 setProjects(projects);
-
             } catch (error) {
                 toast.error(error.response.data.message);
             }
@@ -71,9 +91,11 @@ export default function ApprovedProjects(): JSX.Element  {
 
         async function getPersons() {
             try {
-                const { data } = await api.get(`/personsOrganization/${user.idOrganization}`);
+                const { data } = await api.get(
+                    `/personsOrganization/${user.idOrganization}`
+                );
 
-                if(data.length < 1) {
+                if (data.length < 1) {
                     toast.error('Nenhuma pessoa está cadastrada');
                     setPersons([]);
                     return;
@@ -139,15 +161,15 @@ export default function ApprovedProjects(): JSX.Element  {
             align: 'center',
             flex: 1.25,
             disableClickEventBubbling: true,
-            renderCell: function getCell (params) {
+            renderCell: function getCell(params) {
                 const onClickStart = () => {
                     return handleClickOpen(params.row.id);
                 };
-        
+
                 return (
                     <>
                         <Tooltip title='Aprovar Projeto'>
-                            <IconButton 
+                            <IconButton
                                 className={styles.approve}
                                 onClick={onClickStart}
                                 aria-label='Aprovar Projeto'
@@ -157,13 +179,15 @@ export default function ApprovedProjects(): JSX.Element  {
                         </Tooltip>
                     </>
                 );
-            }
+            },
         },
     ];
 
     async function reload() {
         try {
-            const { data:portfolioData } = await api.get(`/portfolios/${user.idOrganization}`);
+            const { data: portfolioData } = await api.get(
+                `/portfolios/${user.idOrganization}`
+            );
             const portfolioId = portfolioData.id_portfolio;
             const { data } = await api.get(`/approvedProjects/${portfolioId}`);
 
@@ -178,12 +202,20 @@ export default function ApprovedProjects(): JSX.Element  {
                     id: project.id_project,
                     name: project.name,
                     description: project.description,
-                    plannedStartDateAsString: format(new Date(project.planned_start_date), 'dd/MM/yyyy', {
-                        locale: ptBR,
-                    }),
-                    plannedEndDateAsString: format(new Date(project.planned_end_date), 'dd/MM/yyyy', {
-                        locale: ptBR,
-                    }),
+                    plannedStartDateAsString: format(
+                        new Date(project.planned_start_date),
+                        'dd/MM/yyyy',
+                        {
+                            locale: ptBR,
+                        }
+                    ),
+                    plannedEndDateAsString: format(
+                        new Date(project.planned_end_date),
+                        'dd/MM/yyyy',
+                        {
+                            locale: ptBR,
+                        }
+                    ),
                 };
             });
             setProjects(projects);
@@ -196,7 +228,7 @@ export default function ApprovedProjects(): JSX.Element  {
         setCurrentProjectId(id);
         setOpenDialog(true);
     }
-    
+
     function handleClose() {
         setOpenDialog(false);
     }
@@ -212,7 +244,7 @@ export default function ApprovedProjects(): JSX.Element  {
 
             const requestData = {
                 responsibleId,
-                personId
+                personId,
             };
 
             const id = currentProjectId;
@@ -228,11 +260,22 @@ export default function ApprovedProjects(): JSX.Element  {
     return (
         <>
             <div className={styles.listProjects}>
-                <div className={styles.dataTableContainer} >
-                    <DataGrid disableColumnSelector={true} disableSelectionOnClick={true} rows={projectList} columns={columns} pageSize={15} />
+                <div className={styles.dataTableContainer}>
+                    <DataGrid
+                        disableColumnSelector={true}
+                        disableSelectionOnClick={true}
+                        rows={projectList}
+                        columns={columns}
+                        pageSize={15}
+                    />
                 </div>
             </div>
-            <Dialog className={styles.dialog} onClose={handleClose} aria-labelledby='selecao-responsavel' open={openDialog}>
+            <Dialog
+                className={styles.dialog}
+                onClose={handleClose}
+                aria-labelledby='selecao-responsavel'
+                open={openDialog}
+            >
                 <DialogTitle id='selecao-responsavel'>
                     Selecionar responsável pelo projeto
                 </DialogTitle>
@@ -245,7 +288,13 @@ export default function ApprovedProjects(): JSX.Element  {
                         onChange={(event, newValue: Person | null) => {
                             setResponsible(newValue);
                         }}
-                        renderInput={(params) => <TextField {...params} label='Responsável' variant='outlined' />}
+                        renderInput={(params) => (
+                            <TextField
+                                {...params}
+                                label='Responsável'
+                                variant='outlined'
+                            />
+                        )}
                     />
                 </div>
                 <div className={styles.buttonWrapper}>

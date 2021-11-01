@@ -1,7 +1,8 @@
-import {MigrationInterface, QueryRunner, Table} from 'typeorm';
+import { MigrationInterface, QueryRunner, Table } from 'typeorm';
 
-export class CreateStrategicObjectives1626218125541 implements MigrationInterface {
-
+export class CreateStrategicObjectives1626218125541
+    implements MigrationInterface
+{
     public async up(queryRunner: QueryRunner): Promise<void> {
         await queryRunner.createTable(
             new Table({
@@ -33,8 +34,8 @@ export class CreateStrategicObjectives1626218125541 implements MigrationInterfac
                         referencedTableName: 'strategic_planning',
                         referencedColumnNames: ['id_planning'],
                         columnNames: ['id_planning'],
-                    }
-                ]
+                    },
+                ],
             })
         );
     }
@@ -42,5 +43,4 @@ export class CreateStrategicObjectives1626218125541 implements MigrationInterfac
     public async down(queryRunner: QueryRunner): Promise<void> {
         await queryRunner.dropTable('strategic_objective');
     }
-
 }

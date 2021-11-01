@@ -1,4 +1,10 @@
-import {Entity, PrimaryGeneratedColumn, Column, JoinColumn, ManyToOne} from 'typeorm';
+import {
+    Entity,
+    PrimaryGeneratedColumn,
+    Column,
+    JoinColumn,
+    ManyToOne,
+} from 'typeorm';
 import { Status } from './Status';
 import { Portfolio } from './Portfolio';
 import { Person } from './Person';
@@ -8,7 +14,7 @@ class Project {
     @PrimaryGeneratedColumn()
     id_project: number;
 
-    @JoinColumn({ name: 'id_status'})
+    @JoinColumn({ name: 'id_status' })
     @ManyToOne(() => Status)
     status: Status;
 
@@ -18,7 +24,7 @@ class Project {
     @Column()
     id_category: number;
 
-    @JoinColumn({ name: 'id_portfolio'})
+    @JoinColumn({ name: 'id_portfolio' })
     @ManyToOne(() => Portfolio)
     portfolio: Portfolio;
 
@@ -32,15 +38,15 @@ class Project {
     name: string;
 
     @JoinColumn([
-        { name: 'responsible', referencedColumnName: 'id_person'},
-        { name: 'submitter', referencedColumnName: 'id_person'},
+        { name: 'responsible', referencedColumnName: 'id_person' },
+        { name: 'submitter', referencedColumnName: 'id_person' },
     ])
     @ManyToOne(() => Person)
     person: Person;
 
     @Column()
     responsible: number;
-    
+
     @Column()
     submitter: number;
 

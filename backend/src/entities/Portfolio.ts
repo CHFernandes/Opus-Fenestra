@@ -1,4 +1,10 @@
-import { Entity, PrimaryGeneratedColumn, Column, JoinColumn, ManyToOne } from 'typeorm';
+import {
+    Entity,
+    PrimaryGeneratedColumn,
+    Column,
+    JoinColumn,
+    ManyToOne,
+} from 'typeorm';
 import { Organization } from './Organization';
 import { Person } from './Person';
 
@@ -7,14 +13,14 @@ class Portfolio {
     @PrimaryGeneratedColumn()
     id_portfolio: number;
 
-    @JoinColumn({ name: 'id_person'})
+    @JoinColumn({ name: 'id_person' })
     @ManyToOne(() => Person)
     person: Person;
 
     @Column()
     id_person: number;
 
-    @JoinColumn({ name: 'id_organization'})
+    @JoinColumn({ name: 'id_organization' })
     @ManyToOne(() => Organization)
     organization: Organization;
 

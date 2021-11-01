@@ -1,8 +1,7 @@
 import Swal from 'sweetalert2';
 import withReactContent from 'sweetalert2-react-content';
 
-export async function DeleteConfirmation (): Promise<boolean> {
-
+export async function DeleteConfirmation(): Promise<boolean> {
     const SwalDelete = withReactContent(Swal);
 
     return SwalDelete.fire({
@@ -13,13 +12,12 @@ export async function DeleteConfirmation (): Promise<boolean> {
         confirmButtonColor: '#3085d6',
         cancelButtonColor: '#d33',
         confirmButtonText: 'Confirmar',
-        cancelButtonText: 'Cancelar'
-      }).then((result) => {
+        cancelButtonText: 'Cancelar',
+    }).then((result) => {
         if (result.isConfirmed) {
             return true;
         } else {
             return false;
         }
-      });
-
+    });
 }

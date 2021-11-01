@@ -2,7 +2,7 @@ import React, { useState, useEffect, useContext } from 'react';
 import { useRouter } from 'next/router';
 
 import { Button, IconButton } from '@material-ui/core';
-import { DataGrid, GridColDef} from '@material-ui/data-grid';
+import { DataGrid, GridColDef } from '@material-ui/data-grid';
 import * as MI from '@material-ui/icons';
 
 import { format } from 'date-fns';
@@ -21,19 +21,22 @@ type Project = {
     description: string;
     plannedStartDateAsString: string;
     plannedEndDateAsString: string;
-}
+};
 
-
-export default function ListProjects(): JSX.Element  {
+export default function ListProjects(): JSX.Element {
     const { isAuthenticated, user } = useContext(AuthContext);
     const [project, setProjects] = useState<Project[]>([]);
 
     useEffect(() => {
         async function getProjects() {
             try {
-                const { data:portfolioData } = await api.get(`/portfolios/${user.idOrganization}`);
+                const { data: portfolioData } = await api.get(
+                    `/portfolios/${user.idOrganization}`
+                );
                 const portfolioId = portfolioData.id_portfolio;
-                const { data } = await api.get(`/registeredProjects/${portfolioId}`);
+                const { data } = await api.get(
+                    `/registeredProjects/${portfolioId}`
+                );
 
                 if (data.length < 1) {
                     setProjects([]);
@@ -47,18 +50,24 @@ export default function ListProjects(): JSX.Element  {
                         idPortfolio: project.id_portfolio,
                         name: project.name,
                         description: project.description,
-                        plannedStartDateAsString: format(new Date(project.planned_start_date), 'dd/MM/yyyy', {
-                            locale: ptBR,
-                        }),
-                        plannedEndDateAsString: format(new Date(project.planned_end_date), 'dd/MM/yyyy', {
-                            locale: ptBR,
-                        }),
-
+                        plannedStartDateAsString: format(
+                            new Date(project.planned_start_date),
+                            'dd/MM/yyyy',
+                            {
+                                locale: ptBR,
+                            }
+                        ),
+                        plannedEndDateAsString: format(
+                            new Date(project.planned_end_date),
+                            'dd/MM/yyyy',
+                            {
+                                locale: ptBR,
+                            }
+                        ),
                     };
                 });
 
                 setProjects(projects);
-
             } catch (error) {
                 toast.error(error.response.data.message);
             }
@@ -110,27 +119,30 @@ export default function ListProjects(): JSX.Element  {
             align: 'center',
             flex: 1,
             disableClickEventBubbling: true,
-            renderCell: function getCell (params) {
+            renderCell: function getCell(params) {
                 const onClickEvaluate = () => {
                     return handleEvaluateOne(params.row.id);
                 };
-        
+
                 return (
                     <>
-                        <IconButton onClick={onClickEvaluate} aria-label='Avaliar este projeto' >
+                        <IconButton
+                            onClick={onClickEvaluate}
+                            aria-label='Avaliar este projeto'
+                        >
                             <MI.ListAlt />
                         </IconButton>
                     </>
                 );
-            }
+            },
         },
     ];
 
-    function handleEvaluateAll () {
+    function handleEvaluateAll() {
         router.push('/EvaluateProjects/-1');
     }
 
-    function handleEvaluateOne (id: number) {
+    function handleEvaluateOne(id: number) {
         const idCriteria = String(id);
         router.push(`/EvaluateProjects/${idCriteria}`);
     }
@@ -147,8 +159,14 @@ export default function ListProjects(): JSX.Element  {
                     Avaliar todos os projetos
                 </Button>
             </div>
-            <div className={styles.dataTableContainer} >
-                <DataGrid disableColumnSelector={true} disableSelectionOnClick={true} rows={projectList} columns={columns} pageSize={15} />
+            <div className={styles.dataTableContainer}>
+                <DataGrid
+                    disableColumnSelector={true}
+                    disableSelectionOnClick={true}
+                    rows={projectList}
+                    columns={columns}
+                    pageSize={15}
+                />
             </div>
         </div>
     );

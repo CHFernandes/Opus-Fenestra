@@ -1,6 +1,15 @@
 import React, { useState, useEffect, useContext } from 'react';
 
-import { Card, CardContent, Table, TableBody, TableCell, TableContainer, TableRow, Typography } from '@material-ui/core';
+import {
+    Card,
+    CardContent,
+    Table,
+    TableBody,
+    TableCell,
+    TableContainer,
+    TableRow,
+    Typography,
+} from '@material-ui/core';
 
 import { format } from 'date-fns';
 import ptBR from 'date-fns/locale/pt-BR';
@@ -21,20 +30,26 @@ type ChangedProject = {
     status: string;
     changedDate: Date;
     changedDateAsString: string;
-}
+};
 
 export default function LastStatusChangedProjects(): JSX.Element {
     const { user } = useContext(AuthContext);
-    const [changedProjects, setChangedProjects] = useState<ChangedProject[]>([]);
+    const [changedProjects, setChangedProjects] = useState<ChangedProject[]>(
+        []
+    );
 
     useEffect(() => {
         async function getChangedProjects() {
             try {
-                const { data:portfolioData } = await api.get(`/portfolios/${user.idOrganization}`);
+                const { data: portfolioData } = await api.get(
+                    `/portfolios/${user.idOrganization}`
+                );
 
                 const portfolioId = portfolioData.id_portfolio;
 
-                const { data } = await api.get(`/lastProjectsChanged/${portfolioId}`);
+                const { data } = await api.get(
+                    `/lastProjectsChanged/${portfolioId}`
+                );
 
                 if (data.length < 1) {
                     toast.error('Nenhum projeto foi mudado de estado');
@@ -52,14 +67,17 @@ export default function LastStatusChangedProjects(): JSX.Element {
                         statusId: project.id_status,
                         status: project.status_name,
                         changedDate: new Date(project.changed_time),
-                        changedDateAsString: format(new Date(project.changed_time), 'dd/MM/yyyy', {
-                            locale: ptBR,
-                        }),
+                        changedDateAsString: format(
+                            new Date(project.changed_time),
+                            'dd/MM/yyyy',
+                            {
+                                locale: ptBR,
+                            }
+                        ),
                     };
                 });
 
                 setChangedProjects(changedProjectsArray);
-
             } catch (error) {
                 toast.error(error.response?.data.message);
             }
@@ -68,7 +86,7 @@ export default function LastStatusChangedProjects(): JSX.Element {
         getChangedProjects();
     }, []);
 
-    return(
+    return (
         <>
             <Card className={styles.cardRoot}>
                 <CardContent>
@@ -81,29 +99,32 @@ export default function LastStatusChangedProjects(): JSX.Element {
                         <TableContainer>
                             <Table size='small'>
                                 <TableBody>
-                                {
-                                    changedProjects.map((project, index) => {
-                                        return(
+                                    {changedProjects.map((project, index) => {
+                                        return (
                                             <TableRow key={index}>
                                                 <TableCell align='left'>
                                                     {project.project}
                                                 </TableCell>
                                                 <TableCell align='left'>
-                                                    Atualizado por - {project.person}
+                                                    Atualizado por -{' '}
+                                                    {project.person}
                                                 </TableCell>
                                                 <TableCell align='left'>
-                                                    No dia - {project.changedDateAsString}
+                                                    No dia -{' '}
+                                                    {
+                                                        project.changedDateAsString
+                                                    }
                                                 </TableCell>
                                                 <TableCell align='left'>
-                                                    Com o estado de: {project.status}
+                                                    Com o estado de:{' '}
+                                                    {project.status}
                                                 </TableCell>
                                             </TableRow>
                                         );
-                                    })
-                                }    
+                                    })}
                                 </TableBody>
                             </Table>
-                        </TableContainer> 
+                        </TableContainer>
                     </div>
                 </CardContent>
             </Card>

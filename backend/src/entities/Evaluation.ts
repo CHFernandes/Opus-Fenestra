@@ -1,4 +1,10 @@
-import { Entity, PrimaryGeneratedColumn, Column, JoinColumn, ManyToOne } from 'typeorm';
+import {
+    Entity,
+    PrimaryGeneratedColumn,
+    Column,
+    JoinColumn,
+    ManyToOne,
+} from 'typeorm';
 import { Project } from './Project';
 import { Criterion } from './Criterion';
 
@@ -7,14 +13,14 @@ class Evaluation {
     @PrimaryGeneratedColumn()
     id_evaluation: number;
 
-    @JoinColumn({ name: 'id_project'})
+    @JoinColumn({ name: 'id_project' })
     @ManyToOne(() => Project)
     project: Project;
 
     @Column()
     id_project: number;
 
-    @JoinColumn({ name: 'id_criteria'})
+    @JoinColumn({ name: 'id_criteria' })
     @ManyToOne(() => Criterion)
     criterion: Criterion;
 
@@ -26,7 +32,6 @@ class Evaluation {
 
     @Column()
     value: number;
-
 }
 
 export { Evaluation };

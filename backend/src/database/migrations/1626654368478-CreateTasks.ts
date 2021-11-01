@@ -1,7 +1,6 @@
-import {MigrationInterface, QueryRunner, Table} from 'typeorm';
+import { MigrationInterface, QueryRunner, Table } from 'typeorm';
 
 export class CreateTasks1626654368478 implements MigrationInterface {
-
     public async up(queryRunner: QueryRunner): Promise<void> {
         await queryRunner.createTable(
             new Table({
@@ -29,22 +28,22 @@ export class CreateTasks1626654368478 implements MigrationInterface {
                     {
                         name: 'planned_start_date',
                         type: 'timestamp',
-                        isNullable: true
+                        isNullable: true,
                     },
                     {
                         name: 'planned_end_date',
                         type: 'timestamp',
-                        isNullable: true
+                        isNullable: true,
                     },
                     {
                         name: 'actual_start_date',
                         type: 'timestamp',
-                        isNullable: true
+                        isNullable: true,
                     },
                     {
                         name: 'actual_end_date',
                         type: 'timestamp',
-                        isNullable: true
+                        isNullable: true,
                     },
                 ],
                 foreignKeys: [
@@ -54,7 +53,7 @@ export class CreateTasks1626654368478 implements MigrationInterface {
                         referencedColumnNames: ['id_project'],
                         columnNames: ['id_project'],
                     },
-                ]
+                ],
             })
         );
     }
@@ -62,5 +61,4 @@ export class CreateTasks1626654368478 implements MigrationInterface {
     public async down(queryRunner: QueryRunner): Promise<void> {
         await queryRunner.dropTable('task');
     }
-
 }

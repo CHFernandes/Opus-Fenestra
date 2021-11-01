@@ -13,26 +13,35 @@ class CustomizedGradesService {
 
     constructor() {
         this.unitiesRepository = getCustomRepository(UnitiesRepository);
-        this.customizedGradesRepository = getCustomRepository(CustomizedGradesRepository);
+        this.customizedGradesRepository = getCustomRepository(
+            CustomizedGradesRepository
+        );
         this.unityGradesRepository = getCustomRepository(UnityGradesRepository);
     }
 
-    async create(id_unities: number, description: string, numeric_value: number): Promise<CustomizedGrade> {
-
-        if(!id_unities || !description || (numeric_value !== 0 && numeric_value == undefined )) {
+    async create(
+        id_unities: number,
+        description: string,
+        numeric_value: number
+    ): Promise<CustomizedGrade> {
+        if (
+            !id_unities ||
+            !description ||
+            (numeric_value !== 0 && numeric_value == undefined)
+        ) {
             throw new Error('Campos obrigatórios não preenchidos');
         }
 
-        if(Number.isNaN(id_unities)) {
+        if (Number.isNaN(id_unities)) {
             throw new Error('Unidade inválida');
         }
 
-        if(Number.isNaN(numeric_value)) {
+        if (Number.isNaN(numeric_value)) {
             throw new Error('Valor numérico inválido');
         }
 
         const unit = await this.unitiesRepository.findOne({
-            where: {id_unities},
+            where: { id_unities },
         });
 
         if (!unit) {
@@ -44,11 +53,12 @@ class CustomizedGradesService {
             numeric_value,
         });
 
-        const customizedGradeResponse = await this.customizedGradesRepository.save(customizedGrade);
+        const customizedGradeResponse =
+            await this.customizedGradesRepository.save(customizedGrade);
 
         const unityGrade = this.unityGradesRepository.create({
             id_unities,
-            id_customized_grades: customizedGradeResponse.id_customized_grades
+            id_customized_grades: customizedGradeResponse.id_customized_grades,
         });
 
         await this.unityGradesRepository.save(unityGrade);
@@ -56,25 +66,35 @@ class CustomizedGradesService {
         return customizedGradeResponse;
     }
 
-    async updateById(id_customized_grades: number, id_unities: number, description: string, numeric_value: number): Promise<CustomizedGrade> {
-        if(!id_customized_grades || !id_unities || !description || (numeric_value !== 0 && numeric_value == undefined )) {
+    async updateById(
+        id_customized_grades: number,
+        id_unities: number,
+        description: string,
+        numeric_value: number
+    ): Promise<CustomizedGrade> {
+        if (
+            !id_customized_grades ||
+            !id_unities ||
+            !description ||
+            (numeric_value !== 0 && numeric_value == undefined)
+        ) {
             throw new Error('Campos obrigatórios não preenchidos');
         }
 
-        if(Number.isNaN(id_customized_grades)) {
+        if (Number.isNaN(id_customized_grades)) {
             throw new Error('Nota inválida');
         }
 
-        if(Number.isNaN(id_unities)) {
+        if (Number.isNaN(id_unities)) {
             throw new Error('Unidade inválida');
         }
 
-        if(Number.isNaN(numeric_value)) {
+        if (Number.isNaN(numeric_value)) {
             throw new Error('Valor numérico inválido');
         }
 
         const customGrade = await this.customizedGradesRepository.findOne({
-            where: {id_customized_grades}
+            where: { id_customized_grades },
         });
 
         if (!customGrade) {
@@ -82,7 +102,7 @@ class CustomizedGradesService {
         }
 
         const unit = await this.unitiesRepository.findOne({
-            where: {id_unities},
+            where: { id_unities },
         });
 
         if (!unit) {
@@ -90,7 +110,7 @@ class CustomizedGradesService {
         }
 
         const unitGrade = await this.unityGradesRepository.findOne({
-            where: {id_unities, id_customized_grades}
+            where: { id_unities, id_customized_grades },
         });
 
         if (!unitGrade) {
@@ -100,22 +120,24 @@ class CustomizedGradesService {
         customGrade.description = description;
         customGrade.numeric_value = numeric_value;
 
-        const updatedCustomGrade = await this.customizedGradesRepository.save(customGrade);
+        const updatedCustomGrade = await this.customizedGradesRepository.save(
+            customGrade
+        );
 
         return updatedCustomGrade;
     }
 
     async deleteById(id_customized_grades: number): Promise<boolean> {
-        if(!id_customized_grades) {
+        if (!id_customized_grades) {
             throw new Error('Campos obrigatórios não preenchidos');
         }
 
-        if(Number.isNaN(id_customized_grades)) {
+        if (Number.isNaN(id_customized_grades)) {
             throw new Error('Nota inválida');
         }
 
         const customGrade = await this.customizedGradesRepository.findOne({
-            where: {id_customized_grades}
+            where: { id_customized_grades },
         });
 
         if (!customGrade) {
@@ -123,16 +145,17 @@ class CustomizedGradesService {
         }
 
         const unityGradeToBeRemoved = await this.unityGradesRepository.findOne({
-            where: {id_customized_grades}
+            where: { id_customized_grades },
         });
 
-        await this.unityGradesRepository.delete(unityGradeToBeRemoved.id_unity_grade);
+        await this.unityGradesRepository.delete(
+            unityGradeToBeRemoved.id_unity_grade
+        );
 
         await this.customizedGradesRepository.delete(id_customized_grades);
 
         return true;
     }
-
 }
 
-export {CustomizedGradesService};
+export { CustomizedGradesService };

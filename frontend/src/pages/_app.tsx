@@ -28,7 +28,7 @@ function MyApp({ Component, pageProps }: AppProps): JSX.Element {
                         <main>
                             <Header />
                             <Component {...pageProps} />
-                            <Toaster 
+                            <Toaster
                                 position='bottom-center'
                                 toastOptions={{
                                     duration: 6000,

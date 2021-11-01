@@ -12,14 +12,14 @@ type UnitListing = {
     is_values_manual: boolean;
     best_value?: number | string;
     worst_value?: number | string;
-}
+};
 
 type UnitListingGrades = {
-  id_unities: number;
-  description: string;
-  is_values_manual: boolean;
-  grades_list?: CustomizedGrade[];
-}
+    id_unities: number;
+    description: string;
+    is_values_manual: boolean;
+    grades_list?: CustomizedGrade[];
+};
 
 class UnitiesService {
     private unitiesRepository: Repository<Unit>;
@@ -28,12 +28,17 @@ class UnitiesService {
 
     constructor() {
         this.unitiesRepository = getCustomRepository(UnitiesRepository);
-        this.customizedGradesRepository = getCustomRepository(CustomizedGradesRepository);
+        this.customizedGradesRepository = getCustomRepository(
+            CustomizedGradesRepository
+        );
         this.unityGradesRepository = getCustomRepository(UnityGradesRepository);
     }
 
-    async create(description: string, is_values_manual: boolean): Promise<Unit> {
-        if(!description || is_values_manual === undefined) {
+    async create(
+        description: string,
+        is_values_manual: boolean
+    ): Promise<Unit> {
+        if (!description || is_values_manual === undefined) {
             throw new Error('Campos obrigatórios não preenchidos');
         }
 
@@ -42,7 +47,7 @@ class UnitiesService {
             is_values_manual,
         });
 
-        if(is_values_manual) {
+        if (is_values_manual) {
             unit.best_manual_value = 10;
             unit.worst_manual_value = 0;
         }
@@ -52,8 +57,12 @@ class UnitiesService {
         return unitResponse;
     }
 
-    async setBestAndWorstValues(id_unities: number, best_values: number, worst_values: number): Promise<Unit> {
-        if(!id_unities || !best_values || !worst_values) {
+    async setBestAndWorstValues(
+        id_unities: number,
+        best_values: number,
+        worst_values: number
+    ): Promise<Unit> {
+        if (!id_unities || !best_values || !worst_values) {
             throw new Error('Campos obrigatórios não preenchidos');
         }
 
@@ -70,7 +79,7 @@ class UnitiesService {
         }
 
         const unit = await this.unitiesRepository.findOne({
-            where: {id_unities},
+            where: { id_unities },
         });
 
         if (!unit) {
@@ -80,7 +89,7 @@ class UnitiesService {
         const bestUnit = await this.customizedGradesRepository.findOne({
             where: {
                 id_customized_grades: best_values,
-            }
+            },
         });
 
         if (!bestUnit) {
@@ -90,7 +99,7 @@ class UnitiesService {
         const worstUnit = await this.customizedGradesRepository.findOne({
             where: {
                 id_customized_grades: worst_values,
-            }
+            },
         });
 
         if (!worstUnit) {
@@ -108,53 +117,57 @@ class UnitiesService {
     async showAll(): Promise<UnitListing[]> {
         const unities = await this.unitiesRepository.find();
 
-        const returnUnities = await Promise.all(unities.map(async (unit) => {
-            const { 
-                id_unities,
-                description,
-                best_values,
-                worst_values,
-                is_values_manual,
-                worst_manual_value,
-                best_manual_value
-            } = unit;
+        const returnUnities = await Promise.all(
+            unities.map(async (unit) => {
+                const {
+                    id_unities,
+                    description,
+                    best_values,
+                    worst_values,
+                    is_values_manual,
+                    worst_manual_value,
+                    best_manual_value,
+                } = unit;
 
-            const returnObject: UnitListing = {
-                id_unities,
-                description,
-                is_values_manual,
-            };
+                const returnObject: UnitListing = {
+                    id_unities,
+                    description,
+                    is_values_manual,
+                };
 
-            if(is_values_manual) {
-                returnObject.best_value = best_manual_value;
-                returnObject.worst_value = worst_manual_value;
+                if (is_values_manual) {
+                    returnObject.best_value = best_manual_value;
+                    returnObject.worst_value = worst_manual_value;
+
+                    return returnObject;
+                }
+
+                const bestUnit = await this.customizedGradesRepository.findOne({
+                    where: {
+                        id_customized_grades: best_values,
+                    },
+                });
+
+                const worstUnit = await this.customizedGradesRepository.findOne(
+                    {
+                        where: {
+                            id_customized_grades: worst_values,
+                        },
+                    }
+                );
+
+                returnObject.best_value = bestUnit.description;
+                returnObject.worst_value = worstUnit.description;
 
                 return returnObject;
-            }
-
-            const bestUnit = await this.customizedGradesRepository.findOne({
-                where: {
-                    id_customized_grades: best_values,
-                }
-            });
-
-            const worstUnit = await this.customizedGradesRepository.findOne({
-                where: {
-                    id_customized_grades: worst_values,
-                }
-            });
-
-            returnObject.best_value = bestUnit.description;
-            returnObject.worst_value = worstUnit.description;
-
-            return returnObject;
-        }));
+            })
+        );
 
         return returnUnities;
     }
 
     async showById(id_unities: number): Promise<UnitListingGrades> {
-        if(!id_unities) {
+        if (!id_unities) {
             throw new Error('Campos obrigatórios não preenchidos');
         }
 
@@ -163,10 +176,10 @@ class UnitiesService {
         }
 
         const unit = await this.unitiesRepository.findOne({
-            where: {id_unities},
+            where: { id_unities },
         });
 
-        if(unit.is_values_manual) {
+        if (unit.is_values_manual) {
             const returnUnitObject = {
                 id_unities: unit.id_unities,
                 description: unit.description,
@@ -178,14 +191,14 @@ class UnitiesService {
         }
 
         const gradeList = await getConnection()
-        .createQueryBuilder(CustomizedGrade, 'cg')
-        .select('cg.id_customized_grades', 'id_customized_grades')
-        .addSelect('cg.numeric_value', 'numeric_value')
-        .addSelect('cg.description', 'description')
-        .leftJoin(UnityGrade, 'ug')
-        .where('ug.id_customized_grades = cg.id_customized_grades')
-        .andWhere('ug.id_unities = :id_unities', { id_unities })
-        .getRawMany();
+            .createQueryBuilder(CustomizedGrade, 'cg')
+            .select('cg.id_customized_grades', 'id_customized_grades')
+            .addSelect('cg.numeric_value', 'numeric_value')
+            .addSelect('cg.description', 'description')
+            .leftJoin(UnityGrade, 'ug')
+            .where('ug.id_customized_grades = cg.id_customized_grades')
+            .andWhere('ug.id_unities = :id_unities', { id_unities })
+            .getRawMany();
 
         const returnUnitObject = {
             id_unities: unit.id_unities,
@@ -197,8 +210,12 @@ class UnitiesService {
         return returnUnitObject;
     }
 
-    async updateById(id_unities: number, description: string, is_values_manual: boolean): Promise<Unit> {
-        if(!id_unities || !description || is_values_manual === undefined) {
+    async updateById(
+        id_unities: number,
+        description: string,
+        is_values_manual: boolean
+    ): Promise<Unit> {
+        if (!id_unities || !description || is_values_manual === undefined) {
             throw new Error('Campos obrigatórios não preenchidos');
         }
 
@@ -207,7 +224,7 @@ class UnitiesService {
         }
 
         const unit = await this.unitiesRepository.findOne({
-            where: {id_unities},
+            where: { id_unities },
         });
 
         if (!unit) {
@@ -220,7 +237,7 @@ class UnitiesService {
         unit.best_values = null;
         unit.worst_values = null;
 
-        if(is_values_manual) {
+        if (is_values_manual) {
             unit.worst_manual_value = 0;
             unit.best_manual_value = 10;
         } else {
@@ -233,8 +250,8 @@ class UnitiesService {
         return updatedUnit;
     }
 
-    async deleteById(id_unities: number): Promise<boolean>{
-        if(!id_unities) {
+    async deleteById(id_unities: number): Promise<boolean> {
+        if (!id_unities) {
             throw new Error('Campos obrigatórios não preenchidos');
         }
 
@@ -243,7 +260,7 @@ class UnitiesService {
         }
 
         const unit = await this.unitiesRepository.findOne({
-            where: {id_unities},
+            where: { id_unities },
         });
 
         if (!unit) {
@@ -261,14 +278,16 @@ class UnitiesService {
         await this.unitiesRepository.save(unit);
 
         const listUnityGrades = await this.unityGradesRepository.find({
-            where: { id_unities }
+            where: { id_unities },
         });
 
         for (let i = 0; i < listUnityGrades.length; i++) {
             const unityGrade = listUnityGrades[i];
 
             await this.unityGradesRepository.delete(unityGrade.id_unity_grade);
-            await this.customizedGradesRepository.delete(unityGrade.id_customized_grades);
+            await this.customizedGradesRepository.delete(
+                unityGrade.id_customized_grades
+            );
         }
 
         await this.unitiesRepository.delete(id_unities);
@@ -276,4 +295,4 @@ class UnitiesService {
     }
 }
 
-export {UnitiesService};
+export { UnitiesService };

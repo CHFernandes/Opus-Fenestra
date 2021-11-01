@@ -4,4 +4,4 @@ import { Persona } from '../entities/Persona';
 @EntityRepository(Persona)
 class PersonasRepository extends Repository<Persona> {}
 
-export {PersonasRepository};
+export { PersonasRepository };

@@ -1,4 +1,4 @@
-.wizardWrapper{
+.wizardWrapper {
     display: flex;
     flex-direction: column;
     align-items: center;
@@ -6,31 +6,32 @@
     width: 100%;
     position: relative;
 
-    .stepperWrapper{
+    .stepperWrapper {
         width: 50%;
         border-radius: 5rem;
         margin-top: 2.5rem;
     }
 
-    .registerUnities{
+    .registerUnities {
         width: 50%;
 
-        .buttonHeadbar{
+        .buttonHeadbar {
             display: flex;
             justify-content: flex-end;
             margin-top: 1rem;
         }
 
-        form{
+        form {
             margin-top: 2rem;
             width: 100%;
-    
+
             fieldset {
                 display: flex;
                 flex-direction: column;
                 padding: 1rem;
 
-                h1, h2 {
+                h1,
+                h2 {
                     margin-bottom: 0.8rem;
                     margin-top: 0.8rem;
                 }
@@ -38,25 +39,25 @@
                 h1 {
                     margin-left: 0.3rem;
                 }
-                    
+
                 .field {
                     margin-bottom: 1rem;
                     display: block;
                     width: 100%;
-    
+
                     label {
                         margin-left: 0.3rem;
                     }
                 }
-                
+
                 .total {
                     display: flex;
                     flex-direction: row;
                     justify-content: flex-end;
                 }
             }
-    
-            .buttonWrapper{
+
+            .buttonWrapper {
                 display: flex;
                 flex-direction: row;
                 justify-content: flex-end;
@@ -64,7 +65,7 @@
                 margin-bottom: 1rem;
             }
 
-            .buttonWrapperSecondary{
+            .buttonWrapperSecondary {
                 display: flex;
                 flex-direction: row;
                 justify-content: space-between;
@@ -72,10 +73,9 @@
                 margin-bottom: 1rem;
             }
         }
-
     }
 }
 
-.fieldSets{
+.fieldSets {
     margin-bottom: 1rem;
 }

@@ -22,7 +22,7 @@ export function Header(): JSX.Element {
 
     return (
         <>
-            { user && (
+            {user && (
                 <header className={styles.headerContainer}>
                     <IconButton onClick={toggleSidebar}>
                         <img src='/logo.svg' alt='Opus fenestra' />
@@ -33,13 +33,16 @@ export function Header(): JSX.Element {
                     <span>{currentDate}</span>
                     <div className={styles.user}>
                         <span> Olá {user.userName}</span>
-                        <Button color='primary' endIcon={<MI.ExitToApp />} onClick={logout}>
+                        <Button
+                            color='primary'
+                            endIcon={<MI.ExitToApp />}
+                            onClick={logout}
+                        >
                             <span>Sair</span>
                         </Button>
                     </div>
-                    
                 </header>
-            ) }
+            )}
         </>
     );
 }

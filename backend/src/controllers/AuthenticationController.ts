@@ -3,39 +3,36 @@ import { AuthenticationService } from '../services/AuthenticationService';
 
 const singletonAuthentication = (function () {
     let instance: AuthenticationService;
- 
+
     function createInstance() {
         const authenticationService = new AuthenticationService();
         return authenticationService;
     }
- 
+
     return {
         getInstance: function () {
             if (!instance) {
                 instance = createInstance();
             }
             return instance;
-        }
+        },
     };
 })();
 
 class AuthenticationController {
-
     async login(request: Request, response: Response): Promise<Response> {
-        const { 
-            user,
-            password,
-        } = request.body;
+        const { user, password } = request.body;
 
         try {
-            const authentication = await singletonAuthentication.getInstance().login(user, password);
+            const authentication = await singletonAuthentication
+                .getInstance()
+                .login(user, password);
             return response.json(authentication);
-
         } catch (err) {
             return response.status(400).json({
                 message: err.message,
             });
-    }
+        }
     }
 
     async getUser(request: Request, response: Response): Promise<Response> {
@@ -46,7 +43,6 @@ class AuthenticationController {
 
         return response.json(user);
     }
-
 }
 
 export { AuthenticationController };

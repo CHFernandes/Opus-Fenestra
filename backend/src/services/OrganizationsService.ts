@@ -6,11 +6,18 @@ class OrganizationsService {
     private organizationsRepository: Repository<Organization>;
 
     constructor() {
-        this.organizationsRepository = getCustomRepository(OrganizationsRepository);
+        this.organizationsRepository = getCustomRepository(
+            OrganizationsRepository
+        );
     }
 
-    async create(name: string, mission: string, values: string, vision: string ): Promise<Organization> {
-        if(!name || !mission || !values || !vision) {
+    async create(
+        name: string,
+        mission: string,
+        values: string,
+        vision: string
+    ): Promise<Organization> {
+        if (!name || !mission || !values || !vision) {
             throw new Error('Campos obrigatórios não preenchidos');
         }
 
@@ -21,7 +28,9 @@ class OrganizationsService {
             vision,
         });
 
-        const organizationResponse = await this.organizationsRepository.save(organization);
+        const organizationResponse = await this.organizationsRepository.save(
+            organization
+        );
 
         return organizationResponse;
     }
@@ -41,10 +50,10 @@ class OrganizationsService {
         }
 
         const organization = await this.organizationsRepository.findOne({
-            where: {id_organization},
+            where: { id_organization },
         });
 
-        if(!organization) {
+        if (!organization) {
             throw new Error('Organização não exite');
         }
 

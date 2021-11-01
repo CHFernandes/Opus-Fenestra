@@ -1,8 +1,14 @@
 import React, { useState, useEffect, useContext } from 'react';
 import { useRouter } from 'next/router';
 
-import { Button, Step, Stepper, StepLabel, TextField, } from '@material-ui/core';
-import { useForm, Controller, useFieldArray, useWatch, Control } from 'react-hook-form';
+import { Button, Step, Stepper, StepLabel, TextField } from '@material-ui/core';
+import {
+    useForm,
+    Controller,
+    useFieldArray,
+    useWatch,
+    Control,
+} from 'react-hook-form';
 import * as MI from '@material-ui/icons/';
 
 import { format } from 'date-fns';
@@ -18,7 +24,7 @@ type Grade = {
     id_customized_grades: number;
     numeric_value: number;
     description: string;
-}
+};
 
 type Criterion = {
     criterionId: number;
@@ -29,7 +35,7 @@ type Criterion = {
     bestValue: number;
     worstValue: number;
     gradeList: Grade[];
-}
+};
 
 type Project = {
     projectId: number;
@@ -37,7 +43,7 @@ type Project = {
     description: string;
     plannedStartDate: string;
     plannedEndDate: string;
-}
+};
 
 type EvaluationForm = {
     id: number;
@@ -51,16 +57,21 @@ type EvaluationForm = {
     weight: number;
     isValuesManual: boolean;
     gradeList: Grade[];
-}
+};
 
 type EvaluationFormArray = {
     evaluation: EvaluationForm[];
-}
+};
 
-function Total ({control}: { control: Control<EvaluationFormArray>}): JSX.Element {
-    const fields = useWatch({ control, name: 'evaluation', defaultValue: []});
+function Total({
+    control,
+}: {
+    control: Control<EvaluationFormArray>;
+}): JSX.Element {
+    const fields = useWatch({ control, name: 'evaluation', defaultValue: [] });
     const total = fields?.reduce((sum, field) => {
-        const amount = Number(field.insertedValue) * Number(field.weight) / 10;
+        const amount =
+            (Number(field.insertedValue) * Number(field.weight)) / 10;
         if (!Number.isNaN(amount)) {
             sum += amount;
         }
@@ -75,25 +86,27 @@ export default function RegisterOrganizationWizard(): JSX.Element {
     const { isAuthenticated, user } = useContext(AuthContext);
     const router = useRouter();
     const { slug } = router.query;
-    const [criteriaArray, setCriteriaArray] = useState<Criterion[] | null >([]);
-    const [projectsArray, setProjectsArray] = useState<Project[] | null >([]);
+    const [criteriaArray, setCriteriaArray] = useState<Criterion[] | null>([]);
+    const [projectsArray, setProjectsArray] = useState<Project[] | null>([]);
     const [activeStep, setActiveStep] = useState(0);
     const [isRendered, setIsRendered] = useState(false);
-    const { handleSubmit, control} = useForm<EvaluationFormArray>({
+    const { handleSubmit, control } = useForm<EvaluationFormArray>({
         mode: 'all',
     });
     const { fields, append, remove } = useFieldArray({
         control,
-        name: 'evaluation'
+        name: 'evaluation',
     });
 
     useEffect(() => {
         async function getPortfolio() {
             try {
-                const { data } = await api.get(`/portfolios/${user.idOrganization}`);
+                const { data } = await api.get(
+                    `/portfolios/${user.idOrganization}`
+                );
                 const portfolioId = data.id_portfolio;
                 return portfolioId;
-            } catch(error) {
+            } catch (error) {
                 toast.error(error.response.data.message);
             }
         }
@@ -101,7 +114,9 @@ export default function RegisterOrganizationWizard(): JSX.Element {
         async function getAllProjects() {
             try {
                 const portfolioId = await getPortfolio();
-                const { data } = await api.get(`/registeredProjects/${portfolioId}`);
+                const { data } = await api.get(
+                    `/registeredProjects/${portfolioId}`
+                );
 
                 if (data.length < 1) {
                     setProjectsArray([]);
@@ -114,12 +129,20 @@ export default function RegisterOrganizationWizard(): JSX.Element {
                         projectId: project.id_project,
                         name: project.name,
                         description: project.description,
-                        plannedStartDate: format(new Date(project.planned_start_date), 'dd/MM/yyyy', {
-                            locale: ptBR,
-                        }),
-                        plannedEndDate: format(new Date(project.planned_end_date), 'dd/MM/yyyy', {
-                            locale: ptBR,
-                        }),
+                        plannedStartDate: format(
+                            new Date(project.planned_start_date),
+                            'dd/MM/yyyy',
+                            {
+                                locale: ptBR,
+                            }
+                        ),
+                        plannedEndDate: format(
+                            new Date(project.planned_end_date),
+                            'dd/MM/yyyy',
+                            {
+                                locale: ptBR,
+                            }
+                        ),
                     };
                 });
                 setProjectsArray(projects);
@@ -135,12 +158,20 @@ export default function RegisterOrganizationWizard(): JSX.Element {
                     projectId: data.id_project,
                     name: data.name,
                     description: data.description,
-                    plannedStartDate: format(new Date(data.planned_start_date), 'dd/MM/yyyy', {
-                        locale: ptBR,
-                    }),
-                    plannedEndDate: format(new Date(data.planned_end_date), 'dd/MM/yyyy', {
-                        locale: ptBR,
-                    }),
+                    plannedStartDate: format(
+                        new Date(data.planned_start_date),
+                        'dd/MM/yyyy',
+                        {
+                            locale: ptBR,
+                        }
+                    ),
+                    plannedEndDate: format(
+                        new Date(data.planned_end_date),
+                        'dd/MM/yyyy',
+                        {
+                            locale: ptBR,
+                        }
+                    ),
                 };
                 setProjectsArray([project]);
             } catch (error) {
@@ -151,8 +182,10 @@ export default function RegisterOrganizationWizard(): JSX.Element {
         async function getCriteria() {
             try {
                 const portfolioId = await getPortfolio();
-                const { data } = await api.get(`criteriaPortfolio/${portfolioId}`);
-                if(data.length < 1) {
+                const { data } = await api.get(
+                    `criteriaPortfolio/${portfolioId}`
+                );
+                if (data.length < 1) {
                     toast.error('Nenhum critério está cadastrado');
                     toast.error('Por favor cadastre critérios');
                     router.push('/ListCriteria');
@@ -165,8 +198,12 @@ export default function RegisterOrganizationWizard(): JSX.Element {
                         weight: criterion.weight,
                         unitDescription: criterion.unit_description,
                         isValuesManual: criterion.is_values_manual,
-                        bestValue: criterion.is_values_manual ? criterion.best_value : 10,
-                        worstValue: criterion.is_values_manual ? criterion.worst_value : 0,
+                        bestValue: criterion.is_values_manual
+                            ? criterion.best_value
+                            : 10,
+                        worstValue: criterion.is_values_manual
+                            ? criterion.worst_value
+                            : 0,
                         gradeList: criterion.grade_list,
                     };
                 });
@@ -180,7 +217,9 @@ export default function RegisterOrganizationWizard(): JSX.Element {
                 }, 0);
 
                 if (weightSum !== 10) {
-                    toast.error('Soma dos pesos está diferente de 10, não será possível prosseguir com a avaliação');
+                    toast.error(
+                        'Soma dos pesos está diferente de 10, não será possível prosseguir com a avaliação'
+                    );
                     toast.error('Por favor atualize o peso de seus critérios');
                     router.push('/ListCriteria');
                     return;
@@ -206,11 +245,10 @@ export default function RegisterOrganizationWizard(): JSX.Element {
         }
 
         getCriteria();
-
     }, []);
 
     useEffect(() => {
-        if(isRendered) {
+        if (isRendered) {
             criteriaArray.map((criterion) => {
                 const criteriaField = {
                     criterionId: criterion.criterionId,
@@ -224,7 +262,9 @@ export default function RegisterOrganizationWizard(): JSX.Element {
                     gradeList: criterion.gradeList,
                     id: criterion.criterionId,
                 };
-                const fieldFound = fields.find(field => field.criterionId === criterion.criterionId);
+                const fieldFound = fields.find(
+                    (field) => field.criterionId === criterion.criterionId
+                );
 
                 if (!fieldFound) {
                     append(criteriaField);
@@ -237,9 +277,13 @@ export default function RegisterOrganizationWizard(): JSX.Element {
         try {
             const evaluations = data.evaluation.map(calculate);
 
-            const evaluationDate = format(new Date(), 'yyyy-MM-dd HH:mm:ss:SSS', {
-                locale: ptBR,
-            });
+            const evaluationDate = format(
+                new Date(),
+                'yyyy-MM-dd HH:mm:ss:SSS',
+                {
+                    locale: ptBR,
+                }
+            );
 
             evaluations.forEach(async (evaluation) => {
                 const evaluationObject = {
@@ -259,11 +303,13 @@ export default function RegisterOrganizationWizard(): JSX.Element {
 
             await api.post('updateEvaluation', updateEvaluation);
 
-            if (projectsArray.length -1 > activeStep) {
+            if (projectsArray.length - 1 > activeStep) {
                 remove();
                 handleNext();
             } else {
-                toast.success('Avaliação finalizada, redirecionando para a aprovação de projetos');
+                toast.success(
+                    'Avaliação finalizada, redirecionando para a aprovação de projetos'
+                );
                 router.push('/AcceptProjects');
             }
         } catch (error) {
@@ -271,8 +317,9 @@ export default function RegisterOrganizationWizard(): JSX.Element {
         }
     }
 
-    function calculate(evaluation: EvaluationForm ) {
-        evaluation.realValue = Number(evaluation.insertedValue) * Number(evaluation.weight) / 10;
+    function calculate(evaluation: EvaluationForm) {
+        evaluation.realValue =
+            (Number(evaluation.insertedValue) * Number(evaluation.weight)) / 10;
         return evaluation;
     }
 
@@ -280,22 +327,29 @@ export default function RegisterOrganizationWizard(): JSX.Element {
         setActiveStep((previousActiveStep) => previousActiveStep + 1);
     }
 
-    return(
+    return (
         <div className={styles.wizardWrapper}>
-            <Stepper className={styles.stepperWrapper} activeStep={activeStep} alternativeLabel>
+            <Stepper
+                className={styles.stepperWrapper}
+                activeStep={activeStep}
+                alternativeLabel
+            >
                 {projectsArray.map((project) => (
                     <Step key={project.projectId}>
                         <StepLabel>{project.name}</StepLabel>
                     </Step>
                 ))}
             </Stepper>
-            <form className={styles.formWrapper} onSubmit={handleSubmit(onSubmit)}>
+            <form
+                className={styles.formWrapper}
+                onSubmit={handleSubmit(onSubmit)}
+            >
                 <fieldset>
                     <legend>
                         <h2>Avaliação</h2>
                     </legend>
 
-                    { fields.map((field, index) => (
+                    {fields.map((field, index) => (
                         <div key={field.criterionId}>
                             <div className={styles.criterionWrapper}>
                                 <div className={styles.criterionTitle}>
@@ -309,79 +363,123 @@ export default function RegisterOrganizationWizard(): JSX.Element {
                                 </div>
                                 <div className={styles.formFields}>
                                     <div className={styles.field}>
-                                        {
-                                            field.isValuesManual ? (
-                                                /* 
+                                        {field.isValuesManual ? (
+                                            /* 
                                                 Este componente tem um problema de ir de estado não controlado para 
                                                 controlado o fix seria assinalar um valor padrão, porém o defaultValue 
                                                 espera um valor do tipo never, ainda é desconhecido o que causa isso e como 
                                                 corrigir
                                                 */
-                                                <Controller 
-                                                    name={`evaluation.${index}.insertedValue` as `evaluation.${number}.insertedValue`}
-                                                    control={control}
-                                                    rules={{ 
-                                                        required: 'Campo obrigatório',
-                                                        validate: {
-                                                            isBiggerThanWorstValue: (value) => {
-                                                                return field.worstValue <= value || `Valor minimo para este critério é: ${field.worstValue}`;
+                                            <Controller
+                                                name={
+                                                    `evaluation.${index}.insertedValue` as `evaluation.${number}.insertedValue`
+                                                }
+                                                control={control}
+                                                rules={{
+                                                    required:
+                                                        'Campo obrigatório',
+                                                    validate: {
+                                                        isBiggerThanWorstValue:
+                                                            (value) => {
+                                                                return (
+                                                                    field.worstValue <=
+                                                                        value ||
+                                                                    `Valor minimo para este critério é: ${field.worstValue}`
+                                                                );
                                                             },
-                                                            isSmallerThanBestValue: (value) => {
-                                                                return field.bestValue >= value || `Valor máximo para este critério é: ${field.bestValue}`;
-                                                            }
+                                                        isSmallerThanBestValue:
+                                                            (value) => {
+                                                                return (
+                                                                    field.bestValue >=
+                                                                        value ||
+                                                                    `Valor máximo para este critério é: ${field.bestValue}`
+                                                                );
+                                                            },
+                                                    },
+                                                }}
+                                                render={({
+                                                    field: {
+                                                        onChange,
+                                                        onBlur,
+                                                        value,
+                                                    },
+                                                    fieldState: { error },
+                                                }) => (
+                                                    <TextField
+                                                        type='number'
+                                                        label='Avaliação do critério'
+                                                        variant='outlined'
+                                                        onBlur={onBlur}
+                                                        onChange={onChange}
+                                                        fullWidth
+                                                        value={value}
+                                                        error={!!error}
+                                                        helperText={
+                                                            error &&
+                                                            error.message
                                                         }
-                                                    }}
-                                                    render={ ({ field: { onChange, onBlur, value}, fieldState: { error } }) => (
-                                                        <TextField
-                                                            type='number'
-                                                            label='Avaliação do critério'
-                                                            variant='outlined'
-                                                            onBlur={onBlur}
-                                                            onChange={onChange}
-                                                            fullWidth
-                                                            value={value}
-                                                            error={!!error}
-                                                            helperText={error && error.message}
+                                                    />
+                                                )}
+                                            />
+                                        ) : (
+                                            <Controller
+                                                name={
+                                                    `evaluation.${index}.insertedValue` as `evaluation.${number}.insertedValue`
+                                                }
+                                                control={control}
+                                                rules={{
+                                                    required:
+                                                        'Campo obrigatório',
+                                                }}
+                                                render={({
+                                                    field: {
+                                                        onChange,
+                                                        onBlur,
+                                                        value,
+                                                    },
+                                                    fieldState: { error },
+                                                }) => (
+                                                    <TextField
+                                                        select
+                                                        label='Avaliação do critério'
+                                                        variant='outlined'
+                                                        onBlur={onBlur}
+                                                        onChange={onChange}
+                                                        fullWidth
+                                                        value={value}
+                                                        error={!!error}
+                                                        helperText={
+                                                            !!error &&
+                                                            error.message
+                                                        }
+                                                        SelectProps={{
+                                                            native: true,
+                                                        }}
+                                                    >
+                                                        <option
+                                                            aria-label='None'
+                                                            value=''
                                                         />
-                                                    ) }
-                                                />
-                                            ) : (
-                                                <Controller
-                                                    name={`evaluation.${index}.insertedValue` as `evaluation.${number}.insertedValue`}
-                                                    control={control}
-                                                    rules={{ required: 'Campo obrigatório' }}
-                                                    render={ ({ field: { onChange, onBlur, value}, fieldState: { error } }) => (
-                                                        <TextField
-                                                            select
-                                                            label='Avaliação do critério'
-                                                            variant='outlined'
-                                                            onBlur={onBlur}
-                                                            onChange={onChange}
-                                                            fullWidth
-                                                            value={value}
-                                                            error={!!error}
-                                                            helperText={!!error && error.message}
-                                                            SelectProps={{
-                                                                native: true,
-                                                            }}
-                                                        >
-                                                            <option aria-label='None' value='' />
-                                                            {
-                                                                field.gradeList.map((grade) => (
-                                                                    <option 
-                                                                        key={grade.id_customized_grades} 
-                                                                        value={grade.numeric_value}
-                                                                    >
-                                                                        {grade.description}
-                                                                    </option>
-                                                                ))
-                                                            }
-                                                        </TextField>
-                                                    ) }
-                                                />
-                                            )
-                                        }
-                                        
+                                                        {field.gradeList.map(
+                                                            (grade) => (
+                                                                <option
+                                                                    key={
+                                                                        grade.id_customized_grades
+                                                                    }
+                                                                    value={
+                                                                        grade.numeric_value
+                                                                    }
+                                                                >
+                                                                    {
+                                                                        grade.description
+                                                                    }
+                                                                </option>
+                                                            )
+                                                        )}
+                                                    </TextField>
+                                                )}
+                                            />
+                                        )}
                                     </div>
                                 </div>
                             </div>
@@ -399,13 +497,11 @@ export default function RegisterOrganizationWizard(): JSX.Element {
                         type='submit'
                         endIcon={<MI.ChevronRight />}
                     >
-                        {
-                            projectsArray.length -1 > activeStep ? (
-                                <span>Próximo</span>
-                            ) : (
-                                <span>Finalizar</span>
-                            )
-                        }
+                        {projectsArray.length - 1 > activeStep ? (
+                            <span>Próximo</span>
+                        ) : (
+                            <span>Finalizar</span>
+                        )}
                     </Button>
                 </div>
             </form>

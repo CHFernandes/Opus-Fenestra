@@ -11,6 +11,7 @@ import ProjectsInRisk from './projectsInRisk';
 import OverdueProjects from './overdueProjects';
 import StoppedProjects from './stoppedProjects';
 import LastStatusChangedProjects from './lastStatusChangedProjects';
+import ProjectsChart from './projectsChart';
 
 export default function Dashboard(): JSX.Element {
     const { isAuthenticated, user } = useContext(AuthContext);
@@ -23,20 +24,16 @@ export default function Dashboard(): JSX.Element {
         }
     }, []);
 
-    return(
+    return (
         <div className={styles.dashboardWrapper}>
             <div className={styles.dashboardHeader}>
-                <h1>
-                    Seja muito bem-vindo {user && user.name + '!'}
-                </h1>
-                <h2>
-                    Abaixo estão as informações da sua organização
-                </h2>
+                <h1>Seja muito bem-vindo {user && user.name + '!'}</h1>
+                <h2>Abaixo estão as informações da sua organização</h2>
             </div>
             <div className={styles.dashboardGrid}>
                 <div className={styles.dashboards}>
                     <LastEvaluations />
-                    <Main />
+                    {/* <Main /> */}
                     <LastStatusChangedProjects />
                 </div>
                 <div className={styles.dashboards}>
@@ -46,6 +43,9 @@ export default function Dashboard(): JSX.Element {
                 <div className={styles.dashboards}>
                     <ProjectsInRisk />
                     <OverdueProjects />
+                </div>
+                <div className={styles.dashboardChart}>
+                    <ProjectsChart />
                 </div>
             </div>
         </div>

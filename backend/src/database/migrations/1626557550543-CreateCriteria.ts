@@ -1,7 +1,6 @@
-import {MigrationInterface, QueryRunner, Table} from 'typeorm';
+import { MigrationInterface, QueryRunner, Table } from 'typeorm';
 
 export class CreateCriteria1626557550543 implements MigrationInterface {
-
     public async up(queryRunner: QueryRunner): Promise<void> {
         await queryRunner.createTable(
             new Table({
@@ -43,8 +42,8 @@ export class CreateCriteria1626557550543 implements MigrationInterface {
                         referencedTableName: 'unities',
                         referencedColumnNames: ['id_unities'],
                         columnNames: ['id_unities'],
-                    }
-                ]
+                    },
+                ],
             })
         );
     }
@@ -52,5 +51,4 @@ export class CreateCriteria1626557550543 implements MigrationInterface {
     public async down(queryRunner: QueryRunner): Promise<void> {
         await queryRunner.dropTable('criteria');
     }
-
 }

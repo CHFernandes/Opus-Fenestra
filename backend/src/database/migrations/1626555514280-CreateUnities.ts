@@ -1,7 +1,6 @@
-import {MigrationInterface, QueryRunner, Table} from 'typeorm';
+import { MigrationInterface, QueryRunner, Table } from 'typeorm';
 
 export class CreateUnities1626555514280 implements MigrationInterface {
-
     public async up(queryRunner: QueryRunner): Promise<void> {
         await queryRunner.createTable(
             new Table({
@@ -21,12 +20,12 @@ export class CreateUnities1626555514280 implements MigrationInterface {
                     {
                         name: 'best_values',
                         type: 'integer',
-                        isNullable: true
+                        isNullable: true,
                     },
                     {
                         name: 'worst_values',
                         type: 'integer',
-                        isNullable: true
+                        isNullable: true,
                     },
                     {
                         name: 'is_values_manual',
@@ -35,12 +34,12 @@ export class CreateUnities1626555514280 implements MigrationInterface {
                     {
                         name: 'best_manual_value',
                         type: 'real',
-                        isNullable: true
+                        isNullable: true,
                     },
                     {
                         name: 'worst_manual_value',
                         type: 'real',
-                        isNullable: true
+                        isNullable: true,
                     },
                 ],
                 foreignKeys: [
@@ -55,8 +54,8 @@ export class CreateUnities1626555514280 implements MigrationInterface {
                         referencedTableName: 'customized_grades',
                         referencedColumnNames: ['id_customized_grades'],
                         columnNames: ['worst_values'],
-                    }
-                ]
+                    },
+                ],
             })
         );
     }
@@ -64,5 +63,4 @@ export class CreateUnities1626555514280 implements MigrationInterface {
     public async down(queryRunner: QueryRunner): Promise<void> {
         await queryRunner.dropTable('unities');
     }
-
 }

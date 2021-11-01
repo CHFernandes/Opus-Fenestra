@@ -18,7 +18,7 @@ type UserForm = {
     confirmPassword: string;
     persona: number;
     oldPassword?: string;
-}
+};
 
 type RequestData = {
     organizationId: number;
@@ -28,9 +28,9 @@ type RequestData = {
     user: string;
     password: string;
     oldPassword?: string;
-}
+};
 
-export default function RegisterPersons(): JSX.Element{
+export default function RegisterPersons(): JSX.Element {
     const { isAuthenticated, user } = useContext(AuthContext);
     const router = useRouter();
     const { slug } = router.query;
@@ -65,7 +65,7 @@ export default function RegisterPersons(): JSX.Element{
 
     const [form, setForm] = useState<UserForm>(startingForm);
 
-    const { handleSubmit, control, getValues, setValue} = useForm<UserForm>({
+    const { handleSubmit, control, getValues, setValue } = useForm<UserForm>({
         mode: 'all',
         defaultValues: startingForm,
     });
@@ -104,17 +104,23 @@ export default function RegisterPersons(): JSX.Element{
         setValue('name', name);
         setValue('email', email);
         setValue('persona', persona);
-
     }, [form]);
 
     async function onSubmit(data: UserForm) {
         const { idOrganization } = user;
-        const { email, password, name, user: userName, persona, oldPassword } = data;
+        const {
+            email,
+            password,
+            name,
+            user: userName,
+            persona,
+            oldPassword,
+        } = data;
 
         setForm({
             email,
             name,
-            user:userName,
+            user: userName,
             persona,
             password: '',
             confirmPassword: '',
@@ -126,7 +132,7 @@ export default function RegisterPersons(): JSX.Element{
             email,
             name,
             password,
-            user: userName
+            user: userName,
         };
 
         try {
@@ -141,14 +147,12 @@ export default function RegisterPersons(): JSX.Element{
             }
             router.push('/ListPersons');
             return;
-
         } catch (error) {
             toast.error(error.response.data.message);
         }
     }
-    
 
-    return(
+    return (
         <div className={styles.registerPerson}>
             <form onSubmit={handleSubmit(onSubmit)}>
                 <fieldset>
@@ -157,12 +161,15 @@ export default function RegisterPersons(): JSX.Element{
                     </legend>
                     <div className={styles.formFields}>
                         <div className={styles.field}>
-                            <Controller 
+                            <Controller
                                 name='name'
                                 control={control}
                                 defaultValue=''
                                 rules={{ required: 'Campo obrigatório' }}
-                                render={ ({ field: { onChange, onBlur, value}, fieldState: { error } }) => (
+                                render={({
+                                    field: { onChange, onBlur, value },
+                                    fieldState: { error },
+                                }) => (
                                     <TextField
                                         type='text'
                                         label='Nome Completo'
@@ -174,16 +181,19 @@ export default function RegisterPersons(): JSX.Element{
                                         error={!!error}
                                         helperText={error && error.message}
                                     />
-                                ) }
+                                )}
                             />
                         </div>
                         <div className={styles.field}>
-                            <Controller 
+                            <Controller
                                 name='user'
                                 control={control}
                                 defaultValue=''
                                 rules={{ required: 'Campo obrigatório' }}
-                                render={ ({ field: { onChange, onBlur, value}, fieldState: { error } }) => (
+                                render={({
+                                    field: { onChange, onBlur, value },
+                                    fieldState: { error },
+                                }) => (
                                     <TextField
                                         type='text'
                                         label='Nome de usuário'
@@ -195,24 +205,33 @@ export default function RegisterPersons(): JSX.Element{
                                         error={!!error}
                                         helperText={error && error.message}
                                     />
-                                ) }
+                                )}
                             />
                         </div>
                         <div className={styles.field}>
-                            <Controller 
+                            <Controller
                                 name='email'
                                 control={control}
                                 defaultValue=''
                                 rules={{
                                     required: 'Campo obrigatório',
-                                    validate: { isEmailValid: (value) => {
-                                        // validação de email por regex
-                                        // eslint-disable-next-line no-useless-escape
-                                        const regex = /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
-                                        return regex.test(value) || 'Insira um e-mail valido';
-                                    } }
+                                    validate: {
+                                        isEmailValid: (value) => {
+                                            // validação de email por regex
+                                            // eslint-disable-next-line no-useless-escape
+                                            const regex =
+                                                /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
+                                            return (
+                                                regex.test(value) ||
+                                                'Insira um e-mail valido'
+                                            );
+                                        },
+                                    },
                                 }}
-                                render={ ({ field: { onChange, onBlur, value}, fieldState: { error } }) => (
+                                render={({
+                                    field: { onChange, onBlur, value },
+                                    fieldState: { error },
+                                }) => (
                                     <TextField
                                         type='email'
                                         label='Email'
@@ -224,7 +243,7 @@ export default function RegisterPersons(): JSX.Element{
                                         error={!!error}
                                         helperText={error && error.message}
                                     />
-                                ) }
+                                )}
                             />
                         </div>
                         <div className={styles.field}>
@@ -233,7 +252,10 @@ export default function RegisterPersons(): JSX.Element{
                                 control={control}
                                 defaultValue={3}
                                 rules={{ required: 'Campo obrigatório' }}
-                                render={ ({ field: { onChange, onBlur, value}, fieldState: { error } }) => (
+                                render={({
+                                    field: { onChange, onBlur, value },
+                                    fieldState: { error },
+                                }) => (
                                     <TextField
                                         select
                                         label='Tipo de usuário'
@@ -250,75 +272,90 @@ export default function RegisterPersons(): JSX.Element{
                                     >
                                         <option aria-label='None' value='' />
                                         {personaTypes.map((option) => (
-                                            <option key={option.value} value={option.value}>
+                                            <option
+                                                key={option.value}
+                                                value={option.value}
+                                            >
                                                 {option.label}
                                             </option>
                                         ))}
                                     </TextField>
-                                ) }
+                                )}
                             />
                         </div>
-                        {
-                        Number(slug) > -1 && (
+                        {Number(slug) > -1 && (
                             <div className={styles.field}>
-                                <Controller 
-                                name='oldPassword'
+                                <Controller
+                                    name='oldPassword'
+                                    control={control}
+                                    defaultValue=''
+                                    rules={{
+                                        validate: {
+                                            required: (value) => {
+                                                return (
+                                                    (Number(slug) > -1 &&
+                                                        !!value) ||
+                                                    'Campo Obrigatório'
+                                                );
+                                            },
+                                        },
+                                    }}
+                                    render={({
+                                        field: { onChange, onBlur, value },
+                                        fieldState: { error },
+                                    }) => (
+                                        <TextField
+                                            type='password'
+                                            label='Senha atual do usuário'
+                                            variant='outlined'
+                                            onBlur={onBlur}
+                                            onChange={onChange}
+                                            fullWidth
+                                            value={value}
+                                            error={!!error}
+                                            helperText={error && error.message}
+                                        />
+                                    )}
+                                />
+                            </div>
+                        )}
+                        <div className={styles.field}>
+                            <Controller
+                                name='password'
                                 control={control}
                                 defaultValue=''
                                 rules={{
                                     validate: {
-                                        required: value => {
-                                            return (Number(slug) > -1 && !!value) || 'Campo Obrigatório';
-                                        },
-                                    }
-                                }}
-                                render={ ({ field: { onChange, onBlur, value}, fieldState: { error } }) => (
-                                    <TextField
-                                        type='password'
-                                        label='Senha atual do usuário'
-                                        variant='outlined'
-                                        onBlur={onBlur}
-                                        onChange={onChange}
-                                        fullWidth
-                                        value={value}
-                                        error={!!error}
-                                        helperText={error && error.message}
-                                    />
-                                ) }
-                            />
-                            </div>
-                        )
-                    }
-                        <div className={styles.field}>
-                            <Controller 
-                                name='password'
-                                control={control}
-                                defaultValue=''
-                                rules={{ 
-                                    validate: {
-                                        required: value => {
-                                            if(Number(slug) === -1) {
-                                                if(!value) {
+                                        required: (value) => {
+                                            if (Number(slug) === -1) {
+                                                if (!value) {
                                                     return 'Campo Obrigatório';
                                                 }
                                             }
                                             return true;
                                         },
-                                        requireOldPassword: value => {
+                                        requireOldPassword: (value) => {
                                             const { oldPassword } = getValues();
                                             if (Number(slug) > -1) {
-                                                if (!!value && !oldPassword){
+                                                if (!!value && !oldPassword) {
                                                     return 'Insira a senha antiga do usuário antes de mudar para uma nova';
                                                 }
                                             }
                                             return true;
                                         },
-                                    }
+                                    },
                                 }}
-                                render={ ({ field: { onChange, onBlur, value}, fieldState: { error } }) => (
+                                render={({
+                                    field: { onChange, onBlur, value },
+                                    fieldState: { error },
+                                }) => (
                                     <TextField
                                         type='password'
-                                        label={ Number(slug) > -1 ? 'Nova Senha' : 'Senha'}
+                                        label={
+                                            Number(slug) > -1
+                                                ? 'Nova Senha'
+                                                : 'Senha'
+                                        }
                                         variant='outlined'
                                         onBlur={onBlur}
                                         onChange={onChange}
@@ -327,17 +364,17 @@ export default function RegisterPersons(): JSX.Element{
                                         error={!!error}
                                         helperText={error && error.message}
                                     />
-                                ) }
+                                )}
                             />
                         </div>
                         <div className={styles.field}>
-                            <Controller 
+                            <Controller
                                 name='confirmPassword'
                                 control={control}
                                 defaultValue=''
                                 rules={{
-                                    validate: { 
-                                        isPasswordFilled: (value) => { 
+                                    validate: {
+                                        isPasswordFilled: (value) => {
                                             const { password } = getValues();
                                             if (password) {
                                                 if (!value) {
@@ -345,14 +382,20 @@ export default function RegisterPersons(): JSX.Element{
                                                 }
                                             }
                                             return true;
-                                        }, 
-                                        isPasswordsMatches: (value) => { 
-                                        const { password } = getValues();
-                                        return password === value || 'Senhas devem ser iguais';
-                                        }, 
-                                    }
+                                        },
+                                        isPasswordsMatches: (value) => {
+                                            const { password } = getValues();
+                                            return (
+                                                password === value ||
+                                                'Senhas devem ser iguais'
+                                            );
+                                        },
+                                    },
                                 }}
-                                render={ ({ field: { onChange, onBlur, value}, fieldState: { error } }) => (
+                                render={({
+                                    field: { onChange, onBlur, value },
+                                    fieldState: { error },
+                                }) => (
                                     <TextField
                                         type='password'
                                         label='Confirmar Senha'
@@ -364,26 +407,24 @@ export default function RegisterPersons(): JSX.Element{
                                         error={!!error}
                                         helperText={error && error.message}
                                     />
-                                ) }
+                                )}
                             />
                         </div>
                     </div>
-                </fieldset> 
+                </fieldset>
                 <div className={styles.buttonWrapper}>
-                        <Button
-                            variant='contained'
-                            size='large'
-                            color='primary'
-                            type='submit'
-                        >
-                            { 
-                                Number(slug) > -1 ? (
-                                    <span>Atualizar Usuário</span>
-                                ) : (
-                                    <span>Cadastrar Usuário</span>
-                                )
-                            }   
-                        </Button>
+                    <Button
+                        variant='contained'
+                        size='large'
+                        color='primary'
+                        type='submit'
+                    >
+                        {Number(slug) > -1 ? (
+                            <span>Atualizar Usuário</span>
+                        ) : (
+                            <span>Cadastrar Usuário</span>
+                        )}
+                    </Button>
                 </div>
             </form>
         </div>

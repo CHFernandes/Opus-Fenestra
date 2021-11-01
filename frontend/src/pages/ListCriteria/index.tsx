@@ -2,7 +2,7 @@ import React, { useState, useEffect, useContext } from 'react';
 import { useRouter } from 'next/router';
 
 import { Button, IconButton } from '@material-ui/core';
-import { DataGrid, GridColDef} from '@material-ui/data-grid';
+import { DataGrid, GridColDef } from '@material-ui/data-grid';
 
 import * as MI from '@material-ui/icons';
 
@@ -13,19 +13,17 @@ import styles from './styles.module.scss';
 import { AuthContext } from '../../contexts/AuthContext';
 import toast from 'react-hot-toast';
 
-
 type Criterion = {
     id: number;
-    idCriteria ?: number;
+    idCriteria?: number;
     description: string;
     weight: number;
     unityType: string;
     bestValue: string;
     worstValue: string;
-}
+};
 
-
-export default function ListCriteria(): JSX.Element  {
+export default function ListCriteria(): JSX.Element {
     const { isAuthenticated, user } = useContext(AuthContext);
     const [criteria, setCriteria] = useState<Criterion[]>([]);
     const [criteriaSum, setCriteriaSum] = useState<number>(0);
@@ -33,11 +31,15 @@ export default function ListCriteria(): JSX.Element  {
     useEffect(() => {
         async function getCriteria() {
             try {
-                const { data:portfolioData } = await api.get(`/portfolios/${user.idOrganization}`);
+                const { data: portfolioData } = await api.get(
+                    `/portfolios/${user.idOrganization}`
+                );
                 const portfolioId = portfolioData.id_portfolio;
-                const { data } = await api.get(`criteriaPortfolio/${portfolioId}`);
+                const { data } = await api.get(
+                    `criteriaPortfolio/${portfolioId}`
+                );
 
-                if(data.length < 1) {
+                if (data.length < 1) {
                     toast.error('Nenhum critério está cadastrado');
                     setCriteriaSum(0);
                     setCriteria([]);
@@ -50,8 +52,12 @@ export default function ListCriteria(): JSX.Element  {
                         description: criterion.description,
                         weight: criterion.weight,
                         unityType: criterion.unit_description,
-                        bestValue: criterion.is_values_manual ? `${criterion.best_value}` : criterion.best_value,
-                        worstValue: criterion.is_values_manual ? `${criterion.worst_value}` : criterion.worst_value,
+                        bestValue: criterion.is_values_manual
+                            ? `${criterion.best_value}`
+                            : criterion.best_value,
+                        worstValue: criterion.is_values_manual
+                            ? `${criterion.worst_value}`
+                            : criterion.worst_value,
                     };
                 });
 
@@ -60,7 +66,7 @@ export default function ListCriteria(): JSX.Element  {
                     if (!Number.isNaN(weightSum)) {
                         sum += weightSum;
                     }
-            
+
                     return sum;
                 }, 0);
 
@@ -123,48 +129,56 @@ export default function ListCriteria(): JSX.Element  {
             align: 'center',
             flex: 1,
             disableClickEventBubbling: true,
-            renderCell: function getCell (params) {
-              const onClickEdit = () => {
-                return handleEdit(params.row.id);
-              };
+            renderCell: function getCell(params) {
+                const onClickEdit = () => {
+                    return handleEdit(params.row.id);
+                };
 
-              const onClickDelete = () => {
-                return handleDelete(params.row.id);
-              };
-        
+                const onClickDelete = () => {
+                    return handleDelete(params.row.id);
+                };
+
                 return (
                     <>
-                        <IconButton onClick={onClickEdit} aria-label='Editar Critério' >
+                        <IconButton
+                            onClick={onClickEdit}
+                            aria-label='Editar Critério'
+                        >
                             <MI.Edit />
                         </IconButton>
-                        <IconButton onClick={onClickDelete} aria-label='Excluir Critério' >
+                        <IconButton
+                            onClick={onClickDelete}
+                            aria-label='Excluir Critério'
+                        >
                             <MI.Delete />
                         </IconButton>
                     </>
                 );
-            }
-          },
-      ];
+            },
+        },
+    ];
 
-    function handleNewCriteria () {
+    function handleNewCriteria() {
         router.push('/RegisterCriteria/-1');
     }
 
-    function handleEdit (id: number) {
+    function handleEdit(id: number) {
         const idCriteria = String(id);
         router.push(`/RegisterCriteria/${idCriteria}`);
     }
 
-    async function handleDelete (id: number) {
+    async function handleDelete(id: number) {
         try {
             const response = await DeleteConfirmation();
 
-            if(!response){
+            if (!response) {
                 return;
             }
 
             const idCriteria = String(id);
-            const responseDeletion = await api.delete(`/criteria/${idCriteria}`);
+            const responseDeletion = await api.delete(
+                `/criteria/${idCriteria}`
+            );
 
             if (!responseDeletion.data) {
                 toast.error('Erro durante a exclusão');
@@ -173,11 +187,13 @@ export default function ListCriteria(): JSX.Element  {
 
             toast.success('Critério Excluído');
 
-            const { data:portfolioData } = await api.get(`/portfolios/${user.idOrganization}`);
+            const { data: portfolioData } = await api.get(
+                `/portfolios/${user.idOrganization}`
+            );
             const portfolioId = portfolioData.id_portfolio;
             const { data } = await api.get(`criteriaPortfolio/${portfolioId}`);
 
-            if(data.length < 1) {
+            if (data.length < 1) {
                 toast.error('Nenhum critério está cadastrado');
                 setCriteria([]);
                 return;
@@ -190,22 +206,29 @@ export default function ListCriteria(): JSX.Element  {
                         description: criterion.description,
                         weight: criterion.weight,
                         unityType: criterion.unit_description,
-                        bestValue: criterion.is_values_manual ? `${criterion.best_value}` : criterion.best_value,
-                        worstValue: criterion.is_values_manual ? `${criterion.worst_value}` : criterion.worst_value,
+                        bestValue: criterion.is_values_manual
+                            ? `${criterion.best_value}`
+                            : criterion.best_value,
+                        worstValue: criterion.is_values_manual
+                            ? `${criterion.worst_value}`
+                            : criterion.worst_value,
                     };
                 });
                 setCriteria(criteria);
             }
         } catch (error) {
             toast.error(error.response.data.message);
-        } 
+        }
     }
 
     return (
         <div className={styles.listCriteria}>
             <div className={styles.buttonHeadbar}>
                 <div className={styles.weightInformation}>
-                    <h3>Somente será possível realizar avaliações quando a soma dos pesos dos critérios for 10</h3>
+                    <h3>
+                        Somente será possível realizar avaliações quando a soma
+                        dos pesos dos critérios for 10
+                    </h3>
                     <p>No momento a soma total dos pesos é: {criteriaSum}</p>
                 </div>
                 <Button
@@ -217,8 +240,14 @@ export default function ListCriteria(): JSX.Element  {
                     Adicionar novo critério
                 </Button>
             </div>
-            <div className={styles.dataTableContainer} >
-                <DataGrid disableColumnSelector={true} disableSelectionOnClick={true} rows={criteriaList} columns={columns} pageSize={15} />
+            <div className={styles.dataTableContainer}>
+                <DataGrid
+                    disableColumnSelector={true}
+                    disableSelectionOnClick={true}
+                    rows={criteriaList}
+                    columns={columns}
+                    pageSize={15}
+                />
             </div>
         </div>
     );

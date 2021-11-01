@@ -4,4 +4,4 @@ import { UnityGrade } from '../entities/UnityGrade';
 @EntityRepository(UnityGrade)
 class UnityGradesRepository extends Repository<UnityGrade> {}
 
-export {UnityGradesRepository};
+export { UnityGradesRepository };

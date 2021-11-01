@@ -14,12 +14,18 @@ class PortfoliosService {
     constructor() {
         this.portfoliosRepository = getCustomRepository(PortfoliosRepository);
         this.personsRepository = getCustomRepository(PersonsRepository);
-        this.organizationsRepository = getCustomRepository(OrganizationsRepository);
+        this.organizationsRepository = getCustomRepository(
+            OrganizationsRepository
+        );
     }
 
-    async create(id_organization: number, id_person: number, description: string, objective: string ): Promise<Portfolio> {
-        
-        if(!id_organization || !id_person || !description || !objective) {
+    async create(
+        id_organization: number,
+        id_person: number,
+        description: string,
+        objective: string
+    ): Promise<Portfolio> {
+        if (!id_organization || !id_person || !description || !objective) {
             throw new Error('Valores obrigatórios não preenchidos');
         }
 
@@ -32,7 +38,7 @@ class PortfoliosService {
         }
 
         const organization = await this.organizationsRepository.findOne({
-            where: { id_organization},
+            where: { id_organization },
         });
 
         if (!organization) {
@@ -40,7 +46,7 @@ class PortfoliosService {
         }
 
         const person = await this.personsRepository.findOne({
-            where: { id_person},
+            where: { id_person },
         });
 
         if (!person) {
@@ -54,18 +60,19 @@ class PortfoliosService {
             objective,
         });
 
-        const portfolioResponse = await this.portfoliosRepository.save(portfolio);
+        const portfolioResponse = await this.portfoliosRepository.save(
+            portfolio
+        );
 
         return portfolioResponse;
     }
 
     async list(): Promise<Portfolio[]> {
         const list = await this.portfoliosRepository.find();
-        
+
         return list;
     }
     async findById(id_organization: number): Promise<Portfolio> {
-
         if (!id_organization) {
             throw new Error('Campos obrigatórios não preenchidos');
         }
@@ -75,10 +82,10 @@ class PortfoliosService {
         }
 
         const portfolio = await this.portfoliosRepository.findOne({
-            where: {id_organization},
+            where: { id_organization },
         });
 
-        if(!portfolio) {
+        if (!portfolio) {
             throw new Error('Portfólio não existe');
         }
 

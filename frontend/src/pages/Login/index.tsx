@@ -13,11 +13,11 @@ import toast from 'react-hot-toast';
 type LoginForm = {
     username: string;
     password: string;
-}
+};
 
 export default function Login(): JSX.Element {
     const router = useRouter();
-    const { handleSubmit, control } = useForm<LoginForm>({mode: 'all'});
+    const { handleSubmit, control } = useForm<LoginForm>({ mode: 'all' });
     const { signIn, isAuthenticated } = useContext(AuthContext);
 
     async function onSubmit(data: LoginForm) {
@@ -26,7 +26,7 @@ export default function Login(): JSX.Element {
             router.push('/Dashboard');
         } catch (error) {
             toast.error(error.response.data.message);
-        } 
+        }
     }
 
     useEffect(() => {
@@ -36,13 +36,13 @@ export default function Login(): JSX.Element {
         }
     }, []);
 
-    return(
+    return (
         <div className={styles.loginWrapper}>
             <div className={styles.headerWrapper}>
                 <div className={styles.logoImage}>
                     <Image
-                        width={250} 
-                        height={250} 
+                        width={250}
+                        height={250}
                         src='/logo.svg'
                         alt='Opus fenestra'
                     />
@@ -55,12 +55,15 @@ export default function Login(): JSX.Element {
             <div className={styles.formWrapper}>
                 <form onSubmit={handleSubmit(onSubmit)}>
                     <div className={styles.field}>
-                        <Controller 
+                        <Controller
                             name='username'
                             control={control}
                             defaultValue=''
                             rules={{ required: 'Campo obrigatório' }}
-                            render={ ({ field: { onChange, onBlur, value}, fieldState: { error } }) => (
+                            render={({
+                                field: { onChange, onBlur, value },
+                                fieldState: { error },
+                            }) => (
                                 <TextField
                                     type='text'
                                     label='Usuário'
@@ -72,16 +75,19 @@ export default function Login(): JSX.Element {
                                     error={!!error}
                                     helperText={error && error.message}
                                 />
-                            ) }
+                            )}
                         />
                     </div>
                     <div className={styles.field}>
-                        <Controller 
+                        <Controller
                             name='password'
                             control={control}
                             defaultValue=''
                             rules={{ required: 'Campo obrigatório' }}
-                            render={ ({ field: { onChange, onBlur, value}, fieldState: { error } }) => (
+                            render={({
+                                field: { onChange, onBlur, value },
+                                fieldState: { error },
+                            }) => (
                                 <TextField
                                     type='password'
                                     label='Senha'
@@ -93,7 +99,7 @@ export default function Login(): JSX.Element {
                                     error={!!error}
                                     helperText={error && error.message}
                                 />
-                            ) }
+                            )}
                         />
                     </div>
 
@@ -103,7 +109,7 @@ export default function Login(): JSX.Element {
                         size='large'
                         type='submit'
                     >
-                        { <span>Entrar</span> }   
+                        {<span>Entrar</span>}
                     </Button>
                 </form>
             </div>

@@ -7,7 +7,7 @@ import { PersonsRepository } from '../repositories/PersonsRepository';
 type ReturnToken = {
     accessToken: string;
     returnPerson: Person;
-}
+};
 
 class AuthenticationService {
     private personsRepository: Repository<Person>;
@@ -16,13 +16,13 @@ class AuthenticationService {
         this.personsRepository = getCustomRepository(PersonsRepository);
     }
 
-    async login( user: string, password: string ): Promise<ReturnToken> {
-        if(!password || !user) {
+    async login(user: string, password: string): Promise<ReturnToken> {
+        if (!password || !user) {
             throw new Error('Campos obrigatórios não preenchidos');
         }
 
         const person = await this.personsRepository.findOne({
-            user
+            user,
         });
 
         if (!person) {
@@ -39,12 +39,15 @@ class AuthenticationService {
         //     throw new Error('Usuário não encontrado ou senha incorreta');
         // }
 
-        const accessToken = jwt.sign(JSON.stringify(person), process.env.ACCESS_TOKEN_SECRET);
+        const accessToken = jwt.sign(
+            JSON.stringify(person),
+            process.env.ACCESS_TOKEN_SECRET
+        );
 
         const returnPerson = person;
         returnPerson.password = '';
 
-        return ({accessToken, returnPerson});
+        return { accessToken, returnPerson };
     }
 
     async getUser(token: string): Promise<void> {
@@ -53,16 +56,20 @@ class AuthenticationService {
         }
 
         try {
-            const tokenResponse = jwt.verify(token, process.env.ACCESS_TOKEN_SECRET, (err, user) => {
-                if(err){
-                    throw new Error('Token inválido');
+            const tokenResponse = jwt.verify(
+                token,
+                process.env.ACCESS_TOKEN_SECRET,
+                (err, user) => {
+                    if (err) {
+                        throw new Error('Token inválido');
+                    }
+                    user.password = '';
+                    return user;
                 }
-                user.password = '';
-                return user;
-            });
+            );
 
             return tokenResponse;
-        } catch(err) {
+        } catch (err) {
             throw new Error('Token inválido');
         }
     }

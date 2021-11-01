@@ -1,4 +1,4 @@
-.wizardWrapper{
+.wizardWrapper {
     display: flex;
     flex-direction: column;
     align-items: center;
@@ -6,7 +6,7 @@
     width: 100%;
     position: relative;
 
-    .stepperWrapper{
+    .stepperWrapper {
         width: 100%;
     }
 
@@ -21,11 +21,11 @@
             align-self: center;
         }
 
-        .formFields{
+        .formFields {
             width: 75%;
             align-self: center;
 
-            .field{
+            .field {
                 margin-top: 1.5rem;
             }
         }
@@ -33,7 +33,7 @@
         .dataList {
             align-self: center;
             color: #000;
-            
+
             margin-top: 1rem;
             margin-bottom: 1rem;
 
@@ -43,7 +43,7 @@
             }
         }
 
-        .buttonWrapper{
+        .buttonWrapper {
             display: flex;
             flex-direction: row;
             justify-content: space-around;

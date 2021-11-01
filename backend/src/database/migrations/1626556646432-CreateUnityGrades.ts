@@ -1,7 +1,6 @@
-import {MigrationInterface, QueryRunner, Table} from 'typeorm';
+import { MigrationInterface, QueryRunner, Table } from 'typeorm';
 
 export class CreateUnityGrades1626556646432 implements MigrationInterface {
-
     public async up(queryRunner: QueryRunner): Promise<void> {
         await queryRunner.createTable(
             new Table({
@@ -35,8 +34,8 @@ export class CreateUnityGrades1626556646432 implements MigrationInterface {
                         referencedTableName: 'customized_grades',
                         referencedColumnNames: ['id_customized_grades'],
                         columnNames: ['id_customized_grades'],
-                    }
-                ]
+                    },
+                ],
             })
         );
     }
@@ -44,5 +43,4 @@ export class CreateUnityGrades1626556646432 implements MigrationInterface {
     public async down(queryRunner: QueryRunner): Promise<void> {
         await queryRunner.dropTable('unity_grades');
     }
-
 }

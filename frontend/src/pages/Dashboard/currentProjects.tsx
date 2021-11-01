@@ -1,6 +1,15 @@
 import React, { useState, useEffect, useContext } from 'react';
 
-import { Card, CardContent, Table, TableBody, TableCell, TableContainer, TableRow, Typography } from '@material-ui/core';
+import {
+    Card,
+    CardContent,
+    Table,
+    TableBody,
+    TableCell,
+    TableContainer,
+    TableRow,
+    Typography,
+} from '@material-ui/core';
 
 import { format } from 'date-fns';
 import ptBR from 'date-fns/locale/pt-BR';
@@ -23,19 +32,25 @@ type RunningProject = {
     actualStartDate: Date;
     actualStartDateString: string;
     responsible: string;
-}
+};
 
 export default function CurrentProjects(): JSX.Element {
     const { user } = useContext(AuthContext);
-    const [runningProjects, setRunningProjects] = useState<RunningProject[]>([]);
+    const [runningProjects, setRunningProjects] = useState<RunningProject[]>(
+        []
+    );
 
     useEffect(() => {
         async function getRunningProjects() {
             try {
-                const { data:portfolioData } = await api.get(`/portfolios/${user.idOrganization}`);
+                const { data: portfolioData } = await api.get(
+                    `/portfolios/${user.idOrganization}`
+                );
                 const portfolioId = portfolioData.id_portfolio;
 
-                const { data } = await api.get(`/runningProjects/${portfolioId}`);
+                const { data } = await api.get(
+                    `/runningProjects/${portfolioId}`
+                );
 
                 if (data.length < 1) {
                     setRunningProjects([]);
@@ -50,17 +65,29 @@ export default function CurrentProjects(): JSX.Element {
                         description: project.description,
                         completion: project.completion,
                         plannedStartDate: new Date(project.planned_start_date),
-                        plannedStartDateString: format(new Date(project.planned_start_date), 'dd/MM/yyyy', {
-                            locale: ptBR,
-                        }),
+                        plannedStartDateString: format(
+                            new Date(project.planned_start_date),
+                            'dd/MM/yyyy',
+                            {
+                                locale: ptBR,
+                            }
+                        ),
                         plannedEndDate: new Date(project.planned_end_date),
-                        plannedEndDateString: format(new Date(project.planned_end_date), 'dd/MM/yyyy', {
-                            locale: ptBR,
-                        }),
+                        plannedEndDateString: format(
+                            new Date(project.planned_end_date),
+                            'dd/MM/yyyy',
+                            {
+                                locale: ptBR,
+                            }
+                        ),
                         actualStartDate: new Date(project.actual_start_date),
-                        actualStartDateString: format(new Date(project.actual_start_date), 'dd/MM/yyyy', {
-                            locale: ptBR,
-                        }),
+                        actualStartDateString: format(
+                            new Date(project.actual_start_date),
+                            'dd/MM/yyyy',
+                            {
+                                locale: ptBR,
+                            }
+                        ),
                         responsible: project.responsible,
                     };
 
@@ -76,7 +103,7 @@ export default function CurrentProjects(): JSX.Element {
         getRunningProjects();
     }, []);
 
-    return(
+    return (
         <>
             <Card className={styles.cardRoot}>
                 <CardContent>
@@ -89,32 +116,40 @@ export default function CurrentProjects(): JSX.Element {
                         <TableContainer>
                             <Table size='small'>
                                 <TableBody>
-                                {
-                                    runningProjects.map((project, index) => {
-                                        return(
+                                    {runningProjects.map((project, index) => {
+                                        return (
                                             <TableRow key={index}>
                                                 <TableCell align='left'>
                                                     {project.name}
                                                 </TableCell>
                                                 <TableCell align='left'>
-                                                    Início previsto - {project.plannedEndDateString}
+                                                    Início previsto -{' '}
+                                                    {
+                                                        project.plannedEndDateString
+                                                    }
                                                 </TableCell>
                                                 <TableCell align='left'>
-                                                    Início real - {project.actualStartDateString}
+                                                    Início real -{' '}
+                                                    {
+                                                        project.actualStartDateString
+                                                    }
                                                 </TableCell>
                                                 <TableCell align='left'>
-                                                    Finalização prevista - {project.plannedEndDateString}
+                                                    Finalização prevista -{' '}
+                                                    {
+                                                        project.plannedEndDateString
+                                                    }
                                                 </TableCell>
                                                 <TableCell align='left'>
-                                                    Progresso - {project.completion}%
+                                                    Progresso -{' '}
+                                                    {project.completion}%
                                                 </TableCell>
                                             </TableRow>
                                         );
-                                    })
-                                }    
+                                    })}
                                 </TableBody>
                             </Table>
-                        </TableContainer> 
+                        </TableContainer>
                     </div>
                 </CardContent>
             </Card>

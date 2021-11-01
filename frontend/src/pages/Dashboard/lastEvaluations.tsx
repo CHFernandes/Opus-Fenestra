@@ -1,6 +1,15 @@
 import React, { useState, useEffect, useContext } from 'react';
 
-import { Card, CardContent, Table, TableBody, TableCell, TableContainer, TableRow, Typography } from '@material-ui/core';
+import {
+    Card,
+    CardContent,
+    Table,
+    TableBody,
+    TableCell,
+    TableContainer,
+    TableRow,
+    Typography,
+} from '@material-ui/core';
 
 import { format } from 'date-fns';
 import ptBR from 'date-fns/locale/pt-BR';
@@ -17,7 +26,7 @@ type Evaluation = {
     name: string;
     grade: string;
     evaluationDate: string;
-}
+};
 
 export default function LastEvaluations(): JSX.Element {
     const { user } = useContext(AuthContext);
@@ -26,11 +35,15 @@ export default function LastEvaluations(): JSX.Element {
     useEffect(() => {
         async function getEvaluations() {
             try {
-                const { data:portfolioData } = await api.get(`/portfolios/${user.idOrganization}`);
+                const { data: portfolioData } = await api.get(
+                    `/portfolios/${user.idOrganization}`
+                );
 
                 const portfolioId = portfolioData.id_portfolio;
 
-                const { data } = await api.get(`/showLastEvaluations/${portfolioId}`);
+                const { data } = await api.get(
+                    `/showLastEvaluations/${portfolioId}`
+                );
 
                 if (data.length < 1) {
                     toast.error('Nenhum projeto foi avaliado');
@@ -44,14 +57,17 @@ export default function LastEvaluations(): JSX.Element {
                         portfolioId: evaluation.id_portfolio,
                         name: evaluation.name,
                         grade: `${evaluation.grade}`.replace('.', ','),
-                        evaluationDate: format(new Date(evaluation.evaluation_date), 'dd/MM/yyyy', {
-                            locale: ptBR,
-                        }),
+                        evaluationDate: format(
+                            new Date(evaluation.evaluation_date),
+                            'dd/MM/yyyy',
+                            {
+                                locale: ptBR,
+                            }
+                        ),
                     };
                 });
 
                 setEvaluations(evaluations);
-
             } catch (error) {
                 toast.error(error.response?.data.message);
             }
@@ -60,7 +76,7 @@ export default function LastEvaluations(): JSX.Element {
         getEvaluations();
     }, []);
 
-    return(
+    return (
         <>
             <Card className={styles.cardRoot}>
                 <CardContent>
@@ -73,26 +89,26 @@ export default function LastEvaluations(): JSX.Element {
                         <TableContainer>
                             <Table size='small'>
                                 <TableBody>
-                                {
-                                    evaluations.map((evaluation, index) => {
-                                        return(
+                                    {evaluations.map((evaluation, index) => {
+                                        return (
                                             <TableRow key={index}>
                                                 <TableCell align='left'>
                                                     {evaluation.name}
                                                 </TableCell>
                                                 <TableCell align='right'>
-                                                    Avaliado em - {evaluation.evaluationDate}
+                                                    Avaliado em -{' '}
+                                                    {evaluation.evaluationDate}
                                                 </TableCell>
                                                 <TableCell align='right'>
-                                                    Nota final - {evaluation.grade}
+                                                    Nota final -{' '}
+                                                    {evaluation.grade}
                                                 </TableCell>
                                             </TableRow>
                                         );
-                                    })
-                                }    
+                                    })}
                                 </TableBody>
                             </Table>
-                        </TableContainer> 
+                        </TableContainer>
                     </div>
                 </CardContent>
             </Card>

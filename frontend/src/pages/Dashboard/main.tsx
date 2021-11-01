@@ -14,7 +14,7 @@ type DashboardForm = {
     mission: string;
     values: string;
     vision: string;
-}
+};
 
 export default function Main(): JSX.Element {
     const { user } = useContext(AuthContext);
@@ -26,12 +26,15 @@ export default function Main(): JSX.Element {
         vision: '',
     };
 
-    const [dashboardForm, setDashboardForm] = useState<DashboardForm>(startingform);
+    const [dashboardForm, setDashboardForm] =
+        useState<DashboardForm>(startingform);
 
     useEffect(() => {
         async function getOrganization() {
             try {
-                const { data } = await api.get(`/organizations/${user.idOrganization}`);
+                const { data } = await api.get(
+                    `/organizations/${user.idOrganization}`
+                );
 
                 const dashboardObject = {
                     organizationName: data.name,
@@ -39,11 +42,11 @@ export default function Main(): JSX.Element {
                     values: data.values,
                     vision: data.vision,
                 };
-        
+
                 setDashboardForm(dashboardObject);
             } catch (error) {
                 toast.error(error.response?.data.message);
-            } 
+            }
         }
 
         getOrganization();
@@ -60,7 +63,7 @@ export default function Main(): JSX.Element {
                                 Nome da Organização
                             </Typography>
                         </div>
-                        
+
                         <Typography variant='body2' component='p'>
                             {dashboardForm.organizationName}
                         </Typography>

@@ -2,7 +2,7 @@ import React, { useState, useEffect, useContext } from 'react';
 import { useRouter } from 'next/router';
 
 import { Button, IconButton } from '@material-ui/core';
-import { DataGrid, GridColDef} from '@material-ui/data-grid';
+import { DataGrid, GridColDef } from '@material-ui/data-grid';
 
 import * as MI from '@material-ui/icons';
 
@@ -19,7 +19,7 @@ type Person = {
     user: string;
     email: string;
     persona: string;
-}
+};
 
 export default function ListPersons(): JSX.Element {
     const { isAuthenticated, user } = useContext(AuthContext);
@@ -30,15 +30,17 @@ export default function ListPersons(): JSX.Element {
             try {
                 const { idOrganization } = user;
 
-                const { data } = await api.get(`personsOrganization/${idOrganization}`);
+                const { data } = await api.get(
+                    `personsOrganization/${idOrganization}`
+                );
 
-                if(data.length < 1) {
+                if (data.length < 1) {
                     toast.error('Nenhuma pessoa está cadastrada');
                     setPersons([]);
                     return;
                 }
 
-                const persons = data.map((person => {
+                const persons = data.map((person) => {
                     return {
                         id: person.id_person,
                         name: person.name,
@@ -46,10 +48,9 @@ export default function ListPersons(): JSX.Element {
                         email: person.email,
                         persona: person.type_persona,
                     };
-                }));
+                });
 
                 setPersons(persons);
-
             } catch (error) {
                 toast.error(error.response.data.message);
             }
@@ -99,43 +100,49 @@ export default function ListPersons(): JSX.Element {
             align: 'center',
             flex: 1,
             disableClickEventBubbling: true,
-            renderCell: function getCell (params) {
-              const onClickEdit = () => {
-                return handleEdit(params.row.id);
-              };
+            renderCell: function getCell(params) {
+                const onClickEdit = () => {
+                    return handleEdit(params.row.id);
+                };
 
-              const onClickDelete = () => {
-                return handleDelete(params.row.id);
-              };
-        
+                const onClickDelete = () => {
+                    return handleDelete(params.row.id);
+                };
+
                 return (
                     <>
-                        <IconButton onClick={onClickEdit} aria-label='Editar Usuário' >
+                        <IconButton
+                            onClick={onClickEdit}
+                            aria-label='Editar Usuário'
+                        >
                             <MI.Edit />
                         </IconButton>
-                        <IconButton onClick={onClickDelete} aria-label='Excluir Usuário' >
+                        <IconButton
+                            onClick={onClickDelete}
+                            aria-label='Excluir Usuário'
+                        >
                             <MI.Delete />
                         </IconButton>
                     </>
                 );
-            }
+            },
         },
     ];
 
-    function handleNewPerson () {
+    function handleNewPerson() {
         router.push('/RegisterPersons/-1');
     }
 
-    function handleEdit (id: number) {
+    function handleEdit(id: number) {
         const idPerson = String(id);
         router.push(`/RegisterPersons/${idPerson}`);
     }
 
-    async function handleDelete (id: number) {
+    async function handleDelete(id: number) {
         try {
             const response = await DeleteConfirmation();
 
-            if(!response){
+            if (!response) {
                 return;
             }
 
@@ -150,16 +157,18 @@ export default function ListPersons(): JSX.Element {
             toast.success('Pessoa Excluída');
 
             const { idOrganization } = user;
-            const { data } = await api.get(`personsOrganization/${idOrganization}`);
+            const { data } = await api.get(
+                `personsOrganization/${idOrganization}`
+            );
 
-            if(data.length < 1) {
+            if (data.length < 1) {
                 toast.error('Nenhuma pessoa está cadastrada');
                 setPersons([]);
                 return;
             }
 
             if (data) {
-                const persons = data.map((person => {
+                const persons = data.map((person) => {
                     return {
                         id: person.id_person,
                         name: person.name,
@@ -167,14 +176,13 @@ export default function ListPersons(): JSX.Element {
                         email: person.email,
                         persona: person.type_persona,
                     };
-                }));
+                });
 
                 setPersons(persons);
             }
-
         } catch (error) {
             toast.error(error.response.data.message);
-        } 
+        }
     }
 
     return (
@@ -189,8 +197,14 @@ export default function ListPersons(): JSX.Element {
                     Adicionar novo usuário
                 </Button>
             </div>
-            <div className={styles.dataTableContainer} >
-                <DataGrid disableColumnSelector={true} disableSelectionOnClick={true} rows={personList} columns={columns} pageSize={15} />
+            <div className={styles.dataTableContainer}>
+                <DataGrid
+                    disableColumnSelector={true}
+                    disableSelectionOnClick={true}
+                    rows={personList}
+                    columns={columns}
+                    pageSize={15}
+                />
             </div>
         </div>
     );

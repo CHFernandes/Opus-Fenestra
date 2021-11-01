@@ -2,7 +2,7 @@ import React, { useState, useEffect, useContext } from 'react';
 import { useRouter } from 'next/router';
 
 import { Button, IconButton } from '@material-ui/core';
-import { DataGrid, GridColDef} from '@material-ui/data-grid';
+import { DataGrid, GridColDef } from '@material-ui/data-grid';
 import * as MI from '@material-ui/icons';
 
 import { format } from 'date-fns';
@@ -28,21 +28,24 @@ type Project = {
     plannedEndDate: Date;
     plannedStartDateAsString: string;
     plannedEndDateAsString: string;
-}
+};
 
-
-export default function ListProjects(): JSX.Element  {
+export default function ListProjects(): JSX.Element {
     const { isAuthenticated, user } = useContext(AuthContext);
     const [project, setProjects] = useState<Project[]>([]);
 
     useEffect(() => {
         async function getProjects() {
             try {
-                const { data:portfolioData } = await api.get(`/portfolios/${user.idOrganization}`);
+                const { data: portfolioData } = await api.get(
+                    `/portfolios/${user.idOrganization}`
+                );
                 const portfolioId = portfolioData.id_portfolio;
-                const { data } = await api.get(`/projectsPortfolio/${portfolioId}`);
+                const { data } = await api.get(
+                    `/projectsPortfolio/${portfolioId}`
+                );
 
-                if(data.length < 1) {
+                if (data.length < 1) {
                     setProjects([]);
                     toast.error('Nenhum projeto está cadastrado');
                     return;
@@ -59,18 +62,24 @@ export default function ListProjects(): JSX.Element  {
                         status: project.id_status,
                         plannedStartDate: new Date(project.planned_start_date),
                         plannedEndDate: new Date(project.planned_end_date),
-                        plannedStartDateAsString: format(new Date(project.planned_start_date), 'dd/MM/yyyy', {
-                            locale: ptBR,
-                        }),
-                        plannedEndDateAsString: format(new Date(project.planned_end_date), 'dd/MM/yyyy', {
-                            locale: ptBR,
-                        }),
-
+                        plannedStartDateAsString: format(
+                            new Date(project.planned_start_date),
+                            'dd/MM/yyyy',
+                            {
+                                locale: ptBR,
+                            }
+                        ),
+                        plannedEndDateAsString: format(
+                            new Date(project.planned_end_date),
+                            'dd/MM/yyyy',
+                            {
+                                locale: ptBR,
+                            }
+                        ),
                     };
                 });
 
                 setProjects(projects);
-
             } catch (error) {
                 toast.error(error.response.data.message);
             }
@@ -113,17 +122,17 @@ export default function ListProjects(): JSX.Element  {
             field: 'completion',
             headerName: 'Completude',
             flex: 1.5,
-            renderCell: function getCell (params) {
-                return(
+            renderCell: function getCell(params) {
+                return (
                     <>
                         {params.row.completion ? (
                             <span>{`${params.row.completion}%`}</span>
-                        ): (
+                        ) : (
                             <span>0%</span>
                         )}
                     </>
                 );
-            }
+            },
         },
         {
             field: 'plannedStartDateAsString',
@@ -143,43 +152,49 @@ export default function ListProjects(): JSX.Element  {
             align: 'center',
             flex: 1,
             disableClickEventBubbling: true,
-            renderCell: function getCell (params) {
-              const onClickEdit = () => {
-                return handleEdit(params.row.id);
-              };
+            renderCell: function getCell(params) {
+                const onClickEdit = () => {
+                    return handleEdit(params.row.id);
+                };
 
-              const onClickDelete = () => {
-                return handleDelete(params.row.id);
-              };
-        
+                const onClickDelete = () => {
+                    return handleDelete(params.row.id);
+                };
+
                 return (
                     <>
-                        <IconButton onClick={onClickEdit} aria-label='Editar Projeto' >
+                        <IconButton
+                            onClick={onClickEdit}
+                            aria-label='Editar Projeto'
+                        >
                             <MI.Edit />
                         </IconButton>
-                        <IconButton onClick={onClickDelete} aria-label='Excluir Projeto' >
+                        <IconButton
+                            onClick={onClickDelete}
+                            aria-label='Excluir Projeto'
+                        >
                             <MI.Delete />
                         </IconButton>
                     </>
                 );
-            }
-          },
-      ];
+            },
+        },
+    ];
 
-    function handleNewProject () {
+    function handleNewProject() {
         router.push('/RegisterProjects/-1');
     }
 
-    function handleEdit (id: number) {
+    function handleEdit(id: number) {
         const idCriteria = String(id);
         router.push(`/RegisterProjects/${idCriteria}`);
     }
 
-    async function handleDelete (id: number) {
+    async function handleDelete(id: number) {
         try {
             const response = await DeleteConfirmation();
 
-            if(!response){
+            if (!response) {
                 return;
             }
 
@@ -191,17 +206,19 @@ export default function ListProjects(): JSX.Element  {
                 return;
             }
 
-            const { data:portfolioData } = await api.get(`/portfolios/${user.idOrganization}`);
+            const { data: portfolioData } = await api.get(
+                `/portfolios/${user.idOrganization}`
+            );
             const portfolioId = portfolioData.id_portfolio;
             const { data } = await api.get(`/projectsPortfolio/${portfolioId}`);
 
-            if(data.length < 1) {
+            if (data.length < 1) {
                 setProjects([]);
                 toast.success('Projeto Excluído');
                 toast.error('Nenhum projeto está cadastrado');
                 return;
             }
-            
+
             if (data) {
                 const projects = data.map((project) => {
                     return {
@@ -214,12 +231,20 @@ export default function ListProjects(): JSX.Element  {
                         status: project.id_status,
                         plannedStartDate: new Date(project.planned_start_date),
                         plannedEndDate: new Date(project.planned_end_date),
-                        plannedStartDateAsString: format(new Date(project.planned_start_date), 'dd/MM/yyyy', {
-                            locale: ptBR,
-                        }),
-                        plannedEndDateAsString: format(new Date(project.planned_end_date), 'dd/MM/yyyy', {
-                            locale: ptBR,
-                        }),
+                        plannedStartDateAsString: format(
+                            new Date(project.planned_start_date),
+                            'dd/MM/yyyy',
+                            {
+                                locale: ptBR,
+                            }
+                        ),
+                        plannedEndDateAsString: format(
+                            new Date(project.planned_end_date),
+                            'dd/MM/yyyy',
+                            {
+                                locale: ptBR,
+                            }
+                        ),
                     };
                 });
 
@@ -229,7 +254,7 @@ export default function ListProjects(): JSX.Element  {
             }
         } catch (error) {
             toast.error(error.response.data.message);
-        } 
+        }
     }
 
     return (
@@ -244,8 +269,14 @@ export default function ListProjects(): JSX.Element  {
                     Adicionar novo Projeto
                 </Button>
             </div>
-            <div className={styles.dataTableContainer} >
-                <DataGrid disableColumnSelector={true} disableSelectionOnClick={true} rows={projectList} columns={columns} pageSize={15} />
+            <div className={styles.dataTableContainer}>
+                <DataGrid
+                    disableColumnSelector={true}
+                    disableSelectionOnClick={true}
+                    rows={projectList}
+                    columns={columns}
+                    pageSize={15}
+                />
             </div>
         </div>
     );

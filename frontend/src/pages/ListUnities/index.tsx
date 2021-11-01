@@ -2,7 +2,7 @@ import React, { useState, useEffect, useContext } from 'react';
 import { useRouter } from 'next/router';
 
 import { Button, IconButton } from '@material-ui/core';
-import { DataGrid, GridColDef} from '@material-ui/data-grid';
+import { DataGrid, GridColDef } from '@material-ui/data-grid';
 
 import * as MI from '@material-ui/icons';
 
@@ -13,7 +13,6 @@ import styles from './styles.module.scss';
 import { AuthContext } from '../../contexts/AuthContext';
 import toast from 'react-hot-toast';
 
-
 type Unit = {
     id: number;
     description: string;
@@ -21,10 +20,9 @@ type Unit = {
     isManualString: string;
     bestValue: string;
     worstValue: string;
-}
+};
 
-
-export default function ListCriteria(): JSX.Element  {
+export default function ListCriteria(): JSX.Element {
     const { isAuthenticated } = useContext(AuthContext);
     const [unities, setUnities] = useState<Unit[]>([]);
 
@@ -33,7 +31,7 @@ export default function ListCriteria(): JSX.Element  {
             try {
                 const { data } = await api.get('unitiesList');
 
-                if(data.length < 1) {
+                if (data.length < 1) {
                     toast.error('Nenhuma unidade está cadastrada');
                     setUnities([]);
                     return;
@@ -43,8 +41,12 @@ export default function ListCriteria(): JSX.Element  {
                     return {
                         id: unit.id_unities,
                         description: unit.description,
-                        isManual: Number(unit.is_values_manual) === 1 ? true : false,
-                        isManualString: Number(unit.is_values_manual) === 1 ? 'Manual' : 'Customizado',
+                        isManual:
+                            Number(unit.is_values_manual) === 1 ? true : false,
+                        isManualString:
+                            Number(unit.is_values_manual) === 1
+                                ? 'Manual'
+                                : 'Customizado',
                         bestValue: `${unit.best_value}`,
                         worstValue: `${unit.worst_value}`,
                     };
@@ -102,43 +104,49 @@ export default function ListCriteria(): JSX.Element  {
             align: 'center',
             flex: 1,
             disableClickEventBubbling: true,
-            renderCell: function getCell (params) {
-              const onClickEdit = () => {
-                return handleEdit(params.row.id);
-              };
+            renderCell: function getCell(params) {
+                const onClickEdit = () => {
+                    return handleEdit(params.row.id);
+                };
 
-              const onClickDelete = () => {
-                return handleDelete(params.row.id);
-              };
-        
+                const onClickDelete = () => {
+                    return handleDelete(params.row.id);
+                };
+
                 return (
                     <>
-                        <IconButton onClick={onClickEdit} aria-label='Editar Unidade' >
+                        <IconButton
+                            onClick={onClickEdit}
+                            aria-label='Editar Unidade'
+                        >
                             <MI.Edit />
                         </IconButton>
-                        <IconButton onClick={onClickDelete} aria-label='Excluir Unidade' >
+                        <IconButton
+                            onClick={onClickDelete}
+                            aria-label='Excluir Unidade'
+                        >
                             <MI.Delete />
                         </IconButton>
                     </>
                 );
-            }
-          },
-      ];
+            },
+        },
+    ];
 
-    function handleNewCriteria () {
+    function handleNewCriteria() {
         router.push('/RegisterUnities/-1');
     }
 
-    function handleEdit (id: number) {
+    function handleEdit(id: number) {
         const idCriteria = String(id);
         router.push(`/RegisterUnities/${idCriteria}`);
     }
 
-    async function handleDelete (id: number) {
+    async function handleDelete(id: number) {
         try {
             const response = await DeleteConfirmation();
 
-            if(!response){
+            if (!response) {
                 return;
             }
 
@@ -154,7 +162,7 @@ export default function ListCriteria(): JSX.Element  {
 
             const { data } = await api.get('unitiesList');
 
-            if(data.length < 1) {
+            if (data.length < 1) {
                 toast.error('Nenhuma unidade está cadastrada');
                 setUnities([]);
                 return;
@@ -166,7 +174,10 @@ export default function ListCriteria(): JSX.Element  {
                         id: unit.id_unities,
                         description: unit.description,
                         isManual: unit.is_values_manual === 1 ? true : false,
-                        isManualString: unit.is_values_manual === 1 ? 'Manual' : 'Customizado',
+                        isManualString:
+                            unit.is_values_manual === 1
+                                ? 'Manual'
+                                : 'Customizado',
                         bestValue: `${unit.best_value}`,
                         worstValue: `${unit.worst_value}`,
                     };
@@ -176,7 +187,7 @@ export default function ListCriteria(): JSX.Element  {
             }
         } catch (error) {
             toast.error(error.response.data.message);
-        } 
+        }
     }
 
     return (
@@ -191,8 +202,14 @@ export default function ListCriteria(): JSX.Element  {
                     Adicionar nova unidade
                 </Button>
             </div>
-            <div className={styles.dataTableContainer} >
-                <DataGrid disableColumnSelector={true} disableSelectionOnClick={true} rows={unitList} columns={columns} pageSize={15} />
+            <div className={styles.dataTableContainer}>
+                <DataGrid
+                    disableColumnSelector={true}
+                    disableSelectionOnClick={true}
+                    rows={unitList}
+                    columns={columns}
+                    pageSize={15}
+                />
             </div>
         </div>
     );

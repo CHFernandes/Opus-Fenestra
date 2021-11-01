@@ -14,7 +14,7 @@ type CriteriaType = {
     id: number;
     label: string;
     value: number;
-}
+};
 
 type FormData = {
     id?: number;
@@ -24,7 +24,7 @@ type FormData = {
     unityType: number;
     bestValue: number;
     worstValue: number;
-}
+};
 
 export default function RegisterCriteria(): JSX.Element {
     const { isAuthenticated, user } = useContext(AuthContext);
@@ -41,7 +41,7 @@ export default function RegisterCriteria(): JSX.Element {
 
     const [formData, setFormData] = useState<FormData>(startingForm);
     const [criteriaTypes, setCriteriaTypes] = useState<CriteriaType[]>([]);
-    const { handleSubmit, control, setValue} = useForm<FormData>({
+    const { handleSubmit, control, setValue } = useForm<FormData>({
         mode: 'all',
         defaultValues: startingForm,
     });
@@ -51,7 +51,7 @@ export default function RegisterCriteria(): JSX.Element {
             try {
                 const { data } = await api.get('unitiesList');
 
-                if(data.length < 1) {
+                if (data.length < 1) {
                     toast.error('Nenhuma unidade está cadastrada');
                     setCriteriaTypes([]);
                     return;
@@ -68,7 +68,7 @@ export default function RegisterCriteria(): JSX.Element {
                 setCriteriaTypes(unitArray);
             } catch (error) {
                 toast.error(error.response.data.message);
-            }  
+            }
         }
 
         async function getCriterion() {
@@ -87,7 +87,7 @@ export default function RegisterCriteria(): JSX.Element {
                 setFormData(criterion);
             } catch (error) {
                 toast.error(error.response.data.message);
-            }  
+            }
         }
 
         if (!isAuthenticated) {
@@ -103,16 +103,17 @@ export default function RegisterCriteria(): JSX.Element {
     }, []);
 
     useEffect(() => {
-        const { description, weight, unityType} = formData;
+        const { description, weight, unityType } = formData;
 
         setValue('description', description);
         setValue('weight', weight);
         setValue('unityType', unityType);
-
     }, [formData]);
 
     async function onSubmit(data: FormData) {
-        const { data:portfolioData } = await api.get(`/portfolios/${user.idOrganization}`);
+        const { data: portfolioData } = await api.get(
+            `/portfolios/${user.idOrganization}`
+        );
 
         const portfolioId = portfolioData.id_portfolio;
 
@@ -145,26 +146,27 @@ export default function RegisterCriteria(): JSX.Element {
     return (
         <div className={styles.registerCriteria}>
             <form onSubmit={handleSubmit(onSubmit)}>
-                { 
-                    Number(slug) > -1 ? (
-                        <h1>Atualização do critério de avaliação</h1>
-                    ) : (
-                        <h1>Cadastro dos critérios de avaliação</h1>
-                    )
-                }           
+                {Number(slug) > -1 ? (
+                    <h1>Atualização do critério de avaliação</h1>
+                ) : (
+                    <h1>Cadastro dos critérios de avaliação</h1>
+                )}
 
                 <fieldset>
                     <legend>
                         <h2>Critério</h2>
                     </legend>
-                    
+
                     <div className={styles.field}>
-                        <Controller 
+                        <Controller
                             name='description'
                             control={control}
                             defaultValue=''
                             rules={{ required: 'Campo obrigatório' }}
-                            render={ ({ field: { onChange, onBlur, value}, fieldState: { error } }) => (
+                            render={({
+                                field: { onChange, onBlur, value },
+                                fieldState: { error },
+                            }) => (
                                 <TextField
                                     type='text'
                                     label='Descrição do critério'
@@ -176,22 +178,30 @@ export default function RegisterCriteria(): JSX.Element {
                                     error={!!error}
                                     helperText={!!error && error.message}
                                 />
-                            ) }
+                            )}
                         />
                     </div>
 
                     <div className={styles.field}>
-                        <Controller 
+                        <Controller
                             name='weight'
                             control={control}
                             defaultValue={1}
-                            rules={{ 
+                            rules={{
                                 required: 'Campo obrigatório',
-                                validate: { isValuePositive: (value) => {
-                                    return 0 < value || 'Insira um peso acima de 0';
-                                } }
+                                validate: {
+                                    isValuePositive: (value) => {
+                                        return (
+                                            0 < value ||
+                                            'Insira um peso acima de 0'
+                                        );
+                                    },
+                                },
                             }}
-                            render={ ({ field: { onChange, onBlur, value}, fieldState: { error } }) => (
+                            render={({
+                                field: { onChange, onBlur, value },
+                                fieldState: { error },
+                            }) => (
                                 <TextField
                                     type='number'
                                     label='Peso do critério na avaliação'
@@ -203,7 +213,7 @@ export default function RegisterCriteria(): JSX.Element {
                                     error={!!error}
                                     helperText={!!error && error.message}
                                 />
-                            ) }
+                            )}
                         />
                     </div>
 
@@ -213,7 +223,10 @@ export default function RegisterCriteria(): JSX.Element {
                             control={control}
                             defaultValue={1}
                             rules={{ required: 'Campo obrigatório' }}
-                            render={ ({ field: { onChange, onBlur, value}, fieldState: { error } }) => (
+                            render={({
+                                field: { onChange, onBlur, value },
+                                fieldState: { error },
+                            }) => (
                                 <TextField
                                     select
                                     label='Tipo de unidade'
@@ -229,18 +242,18 @@ export default function RegisterCriteria(): JSX.Element {
                                     }}
                                 >
                                     <option aria-label='None' value='' />
-                                    {
-                                        criteriaTypes.map((unit) => (
-                                            <option key={unit.id} value={unit.value}>
-                                                {unit.label}
-                                            </option>
-                                        ))
-                                    }
+                                    {criteriaTypes.map((unit) => (
+                                        <option
+                                            key={unit.id}
+                                            value={unit.value}
+                                        >
+                                            {unit.label}
+                                        </option>
+                                    ))}
                                 </TextField>
-                            ) }
+                            )}
                         />
                     </div>
-
                 </fieldset>
 
                 <Button
@@ -250,13 +263,11 @@ export default function RegisterCriteria(): JSX.Element {
                     startIcon={<MI.Save />}
                     type='submit'
                 >
-                    { 
-                        Number(slug) > -1 ? (
-                            <span>Atualizar Critério</span>
-                        ) : (
-                            <span>Cadastrar Critério</span>
-                        )
-                    }   
+                    {Number(slug) > -1 ? (
+                        <span>Atualizar Critério</span>
+                    ) : (
+                        <span>Cadastrar Critério</span>
+                    )}
                 </Button>
             </form>
         </div>

@@ -1,7 +1,6 @@
-import {MigrationInterface, QueryRunner, Table} from 'typeorm';
+import { MigrationInterface, QueryRunner, Table } from 'typeorm';
 
 export class CreateProjects1626648936004 implements MigrationInterface {
-
     public async up(queryRunner: QueryRunner): Promise<void> {
         await queryRunner.createTable(
             new Table({
@@ -21,7 +20,7 @@ export class CreateProjects1626648936004 implements MigrationInterface {
                     {
                         name: 'id_category',
                         type: 'integer',
-                        isNullable: true
+                        isNullable: true,
                     },
                     {
                         name: 'id_portfolio',
@@ -39,7 +38,7 @@ export class CreateProjects1626648936004 implements MigrationInterface {
                     {
                         name: 'responsible',
                         type: 'integer',
-                        isNullable: true
+                        isNullable: true,
                     },
                     {
                         name: 'submitter',
@@ -48,7 +47,7 @@ export class CreateProjects1626648936004 implements MigrationInterface {
                     {
                         name: 'document',
                         type: 'blob',
-                        isNullable: true
+                        isNullable: true,
                     },
                     {
                         name: 'completion',
@@ -57,22 +56,22 @@ export class CreateProjects1626648936004 implements MigrationInterface {
                     {
                         name: 'planned_start_date',
                         type: 'timestamp',
-                        isNullable: true
+                        isNullable: true,
                     },
                     {
                         name: 'planned_end_date',
                         type: 'timestamp',
-                        isNullable: true
+                        isNullable: true,
                     },
                     {
                         name: 'actual_start_date',
                         type: 'timestamp',
-                        isNullable: true
+                        isNullable: true,
                     },
                     {
                         name: 'actual_end_date',
                         type: 'timestamp',
-                        isNullable: true
+                        isNullable: true,
                     },
                 ],
                 foreignKeys: [
@@ -105,8 +104,8 @@ export class CreateProjects1626648936004 implements MigrationInterface {
                         referencedTableName: 'person',
                         referencedColumnNames: ['id_person'],
                         columnNames: ['submitter'],
-                    }
-                ]
+                    },
+                ],
             })
         );
     }
@@ -114,5 +113,4 @@ export class CreateProjects1626648936004 implements MigrationInterface {
     public async down(queryRunner: QueryRunner): Promise<void> {
         await queryRunner.dropTable('project');
     }
-
 }

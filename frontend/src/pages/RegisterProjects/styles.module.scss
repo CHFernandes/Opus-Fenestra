@@ -1,4 +1,4 @@
-.registerProject{
+.registerProject {
     padding: 0 4rem;
     height: calc(100vh - 15rem);
     display: flex;
@@ -10,7 +10,7 @@
         width: 100%;
         margin-top: 0.5rem;
         margin-right: auto;
-        
+
         display: flex;
         flex-direction: row;
         justify-content: flex-end;
@@ -20,8 +20,7 @@
         }
     }
 
-    form{
-
+    form {
         width: 40%;
 
         h1 {
@@ -46,18 +45,18 @@
                 flex-direction: row;
                 margin-bottom: 1rem;
 
-                .textField{
+                .textField {
                     div {
                         div {
                             top: 0;
                         }
-                    }        
+                    }
                 }
 
                 label {
                     margin-left: 0.25rem;
                 }
-            
+
                 button {
                     margin-bottom: 1rem;
                 }
@@ -84,12 +83,12 @@
     .dataList {
         align-self: center;
         color: #000;
-        
+
         margin-bottom: 1rem;
         margin-top: 1.25rem;
         margin-left: 3rem;
         margin-right: 3rem;
-    
+
         div {
             margin-bottom: 1rem;
         }

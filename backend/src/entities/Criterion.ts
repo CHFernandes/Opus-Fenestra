@@ -1,4 +1,10 @@
-import { Entity, PrimaryGeneratedColumn, Column, JoinColumn, ManyToOne } from 'typeorm';
+import {
+    Entity,
+    PrimaryGeneratedColumn,
+    Column,
+    JoinColumn,
+    ManyToOne,
+} from 'typeorm';
 import { Portfolio } from './Portfolio';
 import { Unit } from './Unit';
 
@@ -7,7 +13,7 @@ class Criterion {
     @PrimaryGeneratedColumn()
     id_criteria: number;
 
-    @JoinColumn({ name: 'id_portfolio'})
+    @JoinColumn({ name: 'id_portfolio' })
     @ManyToOne(() => Portfolio)
     portfolio: Portfolio;
 
@@ -20,7 +26,7 @@ class Criterion {
     @Column()
     weight: number;
 
-    @JoinColumn({ name: 'id_unities'})
+    @JoinColumn({ name: 'id_unities' })
     @ManyToOne(() => Unit)
     unit: Unit;
 

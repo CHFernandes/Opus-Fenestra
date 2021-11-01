@@ -20,7 +20,7 @@ type CriteriaListing = {
     grade_list?: CustomizedGrade[];
     best_value?: number | string;
     worst_value?: number | string;
-}
+};
 
 class CriteriaService {
     private criteriaRepository: Repository<Criterion>;
@@ -32,11 +32,18 @@ class CriteriaService {
         this.criteriaRepository = getCustomRepository(CriteriaRepository);
         this.portfoliosRepository = getCustomRepository(PortfoliosRepository);
         this.unitiesRepository = getCustomRepository(UnitiesRepository);
-        this.customizedGradesRepository = getCustomRepository(CustomizedGradesRepository);
+        this.customizedGradesRepository = getCustomRepository(
+            CustomizedGradesRepository
+        );
     }
 
-    async create(description: string, weight: number, id_portfolio: number, id_unities: number): Promise<Criterion> {
-        if(!description || !weight || !id_portfolio || !id_unities) {
+    async create(
+        description: string,
+        weight: number,
+        id_portfolio: number,
+        id_unities: number
+    ): Promise<Criterion> {
+        if (!description || !weight || !id_portfolio || !id_unities) {
             throw new Error('Campos obrigatórios não preenchidos');
         }
 
@@ -53,7 +60,7 @@ class CriteriaService {
         }
 
         const portfolio = await this.portfoliosRepository.findOne({
-            where: { id_portfolio},
+            where: { id_portfolio },
         });
 
         if (!portfolio) {
@@ -61,7 +68,7 @@ class CriteriaService {
         }
 
         const unit = await this.unitiesRepository.findOne({
-            where: { id_unities},
+            where: { id_unities },
         });
 
         if (!unit) {
@@ -70,8 +77,8 @@ class CriteriaService {
 
         const criteriaArray = await this.criteriaRepository.find({
             where: {
-                id_portfolio
-            }
+                id_portfolio,
+            },
         });
 
         const totalWeight = criteriaArray.reduce((sum, criterion) => {
@@ -82,8 +89,10 @@ class CriteriaService {
             return sum;
         }, 0);
 
-        if(Number(totalWeight) + Number(weight) > 10) {
-            throw new Error('Soma dos pesos dos critérios maior que 10, operação será abortada');
+        if (Number(totalWeight) + Number(weight) > 10) {
+            throw new Error(
+                'Soma dos pesos dos critérios maior que 10, operação será abortada'
+            );
         }
 
         const criterion = this.criteriaRepository.create({
@@ -99,8 +108,7 @@ class CriteriaService {
     }
 
     async list(id_portfolio: number): Promise<CriteriaListing[]> {
-
-        if(!id_portfolio) {
+        if (!id_portfolio) {
             throw new Error('Campos obrigatórios não preenchidos');
         }
 
@@ -109,7 +117,7 @@ class CriteriaService {
         }
 
         const portfolio = await this.portfoliosRepository.findOne({
-            where: { id_portfolio},
+            where: { id_portfolio },
         });
 
         if (!portfolio) {
@@ -117,90 +125,98 @@ class CriteriaService {
         }
 
         const list = await getConnection()
-        .createQueryBuilder(Criterion, 'criteria')
-        .select('criteria.id_criteria', 'id_criteria')
-        .addSelect('criteria.id_portfolio', 'id_portfolio')
-        .addSelect('criteria.description', 'description')
-        .addSelect('criteria.weight', 'weight')
-        .addSelect('criteria.id_unities', 'id_unities')
-        .addSelect('unities.description', 'unit_description')
-        .addSelect('unities.is_values_manual', 'is_values_manual')
-        .addSelect('unities.best_manual_value', 'best_manual_value')
-        .addSelect('unities.worst_manual_value', 'worst_manual_value')
-        .addSelect('unities.best_values', 'best_values_id')
-        .addSelect('unities.worst_values', 'worst_values_id')
-        .leftJoin(Unit, 'unities', 'criteria.id_unities = unities.id_unities')
-        .where('criteria.id_portfolio = :id_portfolio', { id_portfolio })
-        .getRawMany();
-
-        const parsedList = Promise.all(list.map(async (criterion) => {
-            const {
-                id_criteria,
-                id_portfolio,
-                description,
-                weight,
-                id_unities,
-                unit_description,
-                is_values_manual,
-                best_manual_value,
-                worst_manual_value,
-                best_values_id,
-                worst_values_id
-            } = criterion;
-
-            const returnObject: CriteriaListing = {
-                id_criteria,
-                id_portfolio,
-                description,
-                weight,
-                id_unities,
-                unit_description,
-                is_values_manual,
-            };
-
-            if(is_values_manual) {
-                returnObject.best_value = best_manual_value;
-                returnObject.worst_value = worst_manual_value;
-                returnObject.grade_list = [];
-                return returnObject;
-            }
-
-            const bestUnit = await this.customizedGradesRepository.findOne({
-                where: {
-                    id_customized_grades: best_values_id,
-                }
-            });
-
-            const worstUnit = await this.customizedGradesRepository.findOne({
-                where: {
-                    id_customized_grades: worst_values_id,
-                }
-            });
-
-            returnObject.best_value = bestUnit.description;
-            returnObject.worst_value = worstUnit.description;
-
-            const gradeList = await getConnection()
-            .createQueryBuilder(CustomizedGrade, 'cg')
-            .select('cg.id_customized_grades', 'id_customized_grades')
-            .addSelect('cg.numeric_value', 'numeric_value')
-            .addSelect('cg.description', 'description')
-            .leftJoin(UnityGrade, 'ug')
-            .where('ug.id_customized_grades = cg.id_customized_grades')
-            .andWhere('ug.id_unities = :id_unities', { id_unities })
-            .orderBy('cg.numeric_value', 'DESC')
+            .createQueryBuilder(Criterion, 'criteria')
+            .select('criteria.id_criteria', 'id_criteria')
+            .addSelect('criteria.id_portfolio', 'id_portfolio')
+            .addSelect('criteria.description', 'description')
+            .addSelect('criteria.weight', 'weight')
+            .addSelect('criteria.id_unities', 'id_unities')
+            .addSelect('unities.description', 'unit_description')
+            .addSelect('unities.is_values_manual', 'is_values_manual')
+            .addSelect('unities.best_manual_value', 'best_manual_value')
+            .addSelect('unities.worst_manual_value', 'worst_manual_value')
+            .addSelect('unities.best_values', 'best_values_id')
+            .addSelect('unities.worst_values', 'worst_values_id')
+            .leftJoin(
+                Unit,
+                'unities',
+                'criteria.id_unities = unities.id_unities'
+            )
+            .where('criteria.id_portfolio = :id_portfolio', { id_portfolio })
             .getRawMany();
 
-            returnObject.grade_list = gradeList;
+        const parsedList = Promise.all(
+            list.map(async (criterion) => {
+                const {
+                    id_criteria,
+                    id_portfolio,
+                    description,
+                    weight,
+                    id_unities,
+                    unit_description,
+                    is_values_manual,
+                    best_manual_value,
+                    worst_manual_value,
+                    best_values_id,
+                    worst_values_id,
+                } = criterion;
 
-            return returnObject;
-        }));
+                const returnObject: CriteriaListing = {
+                    id_criteria,
+                    id_portfolio,
+                    description,
+                    weight,
+                    id_unities,
+                    unit_description,
+                    is_values_manual,
+                };
+
+                if (is_values_manual) {
+                    returnObject.best_value = best_manual_value;
+                    returnObject.worst_value = worst_manual_value;
+                    returnObject.grade_list = [];
+                    return returnObject;
+                }
+
+                const bestUnit = await this.customizedGradesRepository.findOne({
+                    where: {
+                        id_customized_grades: best_values_id,
+                    },
+                });
+
+                const worstUnit = await this.customizedGradesRepository.findOne(
+                    {
+                        where: {
+                            id_customized_grades: worst_values_id,
+                        },
+                    }
+                );
+
+                returnObject.best_value = bestUnit.description;
+                returnObject.worst_value = worstUnit.description;
+
+                const gradeList = await getConnection()
+                    .createQueryBuilder(CustomizedGrade, 'cg')
+                    .select('cg.id_customized_grades', 'id_customized_grades')
+                    .addSelect('cg.numeric_value', 'numeric_value')
+                    .addSelect('cg.description', 'description')
+                    .leftJoin(UnityGrade, 'ug')
+                    .where('ug.id_customized_grades = cg.id_customized_grades')
+                    .andWhere('ug.id_unities = :id_unities', { id_unities })
+                    .orderBy('cg.numeric_value', 'DESC')
+                    .getRawMany();
+
+                returnObject.grade_list = gradeList;
+
+                return returnObject;
+            })
+        );
 
         return parsedList;
     }
 
     async findById(id_criteria: number): Promise<Criterion> {
-        if(!id_criteria) {
+        if (!id_criteria) {
             throw new Error('Campos obrigatórios não preenchidos');
         }
 
@@ -209,29 +225,45 @@ class CriteriaService {
         }
 
         const criterion = await getConnection()
-        .createQueryBuilder(Criterion, 'criteria')
-        .select('criteria.id_criteria', 'id_criteria')
-        .addSelect('criteria.id_portfolio', 'id_portfolio')
-        .addSelect('criteria.description', 'description')
-        .addSelect('criteria.weight', 'weight')
-        .addSelect('criteria.id_unities', 'id_unities')
-        .addSelect('unities.description', 'unit_description')
-        .addSelect('unities.is_values_manual', 'is_values_manual')
-        .addSelect('unities.best_manual_value', 'best_value')
-        .addSelect('unities.worst_manual_value', 'worst_value')
-        .leftJoin(Unit, 'unities', 'criteria.id_unities = unities.id_unities')
-        .where('criteria.id_criteria = :id_criteria', { id_criteria })
-        .getRawOne();
+            .createQueryBuilder(Criterion, 'criteria')
+            .select('criteria.id_criteria', 'id_criteria')
+            .addSelect('criteria.id_portfolio', 'id_portfolio')
+            .addSelect('criteria.description', 'description')
+            .addSelect('criteria.weight', 'weight')
+            .addSelect('criteria.id_unities', 'id_unities')
+            .addSelect('unities.description', 'unit_description')
+            .addSelect('unities.is_values_manual', 'is_values_manual')
+            .addSelect('unities.best_manual_value', 'best_value')
+            .addSelect('unities.worst_manual_value', 'worst_value')
+            .leftJoin(
+                Unit,
+                'unities',
+                'criteria.id_unities = unities.id_unities'
+            )
+            .where('criteria.id_criteria = :id_criteria', { id_criteria })
+            .getRawOne();
 
-        if(!criterion) {
+        if (!criterion) {
             throw new Error('Critério não existe');
         }
 
         return criterion;
     }
 
-    async updateById (description: string, weight: number, id_portfolio: number, id_unities: number, id_criteria: number): Promise<Criterion> {
-        if(!description || !weight || !id_portfolio || !id_unities || !id_criteria) {
+    async updateById(
+        description: string,
+        weight: number,
+        id_portfolio: number,
+        id_unities: number,
+        id_criteria: number
+    ): Promise<Criterion> {
+        if (
+            !description ||
+            !weight ||
+            !id_portfolio ||
+            !id_unities ||
+            !id_criteria
+        ) {
             throw new Error('Campos obrigatórios não preenchidos');
         }
 
@@ -252,7 +284,7 @@ class CriteriaService {
         }
 
         const portfolio = await this.portfoliosRepository.findOne({
-            where: { id_portfolio},
+            where: { id_portfolio },
         });
 
         if (!portfolio) {
@@ -260,7 +292,7 @@ class CriteriaService {
         }
 
         const unit = await this.unitiesRepository.findOne({
-            where: { id_unities},
+            where: { id_unities },
         });
 
         if (!unit) {
@@ -268,7 +300,7 @@ class CriteriaService {
         }
 
         const criterion = await this.criteriaRepository.findOne({
-            where: {id_criteria, id_portfolio},
+            where: { id_criteria, id_portfolio },
         });
 
         if (!criterion) {
@@ -277,8 +309,8 @@ class CriteriaService {
 
         const criteriaArray = await this.criteriaRepository.find({
             where: {
-                id_portfolio
-            }
+                id_portfolio,
+            },
         });
 
         const totalWeight = criteriaArray.reduce((sum, criterion) => {
@@ -289,8 +321,13 @@ class CriteriaService {
             return sum;
         }, 0);
 
-        if(Number(totalWeight) + Number(weight) - Number(criterion.weight) > 10) {
-            throw new Error('Soma dos pesos dos critérios maior que 10, operação será abortada');
+        if (
+            Number(totalWeight) + Number(weight) - Number(criterion.weight) >
+            10
+        ) {
+            throw new Error(
+                'Soma dos pesos dos critérios maior que 10, operação será abortada'
+            );
         }
 
         criterion.description = description;
@@ -302,8 +339,7 @@ class CriteriaService {
         return updatedCriterion;
     }
 
-    async deleteById (id_criteria: number): Promise<boolean> {
-
+    async deleteById(id_criteria: number): Promise<boolean> {
         if (!id_criteria) {
             throw new Error('Valores obrigatórios não preenchidos');
         }
@@ -313,7 +349,7 @@ class CriteriaService {
         }
 
         const criterion = await this.criteriaRepository.findOne({
-            where: {id_criteria},
+            where: { id_criteria },
         });
 
         if (!criterion) {
