@@ -10,15 +10,19 @@
 
     border-bottom: 1px solid var(--gray-100);
 
-    img {
-        width: 5rem;
-        height: 5rem;
-    }
-
-    p {
-        margin-left: 2rem;
-        padding: 0.25rem 0 0.25rem 2rem;
+    .titleLogo{
+        display: flex;
+        align-items: center;
         border-left: 1px solid var(--gray-100);
+
+        img {
+            width: 4rem;
+            height: 4rem;
+        }
+
+        p {
+            padding: 0.25rem 0 0.5rem 2rem;
+        }
     }
 
     span {

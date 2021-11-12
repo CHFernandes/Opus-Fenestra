@@ -102,7 +102,7 @@ export default function StoppedProjects(): JSX.Element {
             <Card className={styles.cardRoot}>
                 <CardContent>
                     <div className={styles.contentWrapper}>
-                        <div className={styles.titleWrapper}>
+                        <div className={styles.headerWrapper}>
                             <Typography className={styles.title} component='h1'>
                                 Projetos Paralisados
                             </Typography>

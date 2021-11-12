@@ -482,6 +482,14 @@ export default function RegisterProjects(): JSX.Element {
                             </Button>
                             <Button
                                 variant='contained'
+                                color='secondary'
+                                size='large'
+                                onClick={cancelProject}
+                            >
+                                Cancelar Projeto
+                            </Button>
+                            <Button
+                                variant='contained'
                                 color='primary'
                                 size='large'
                                 disabled={formData.completion !== 100}

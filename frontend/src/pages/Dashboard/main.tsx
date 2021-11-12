@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useContext } from 'react';
 
-import { Card, CardContent, Typography } from '@material-ui/core';
+import { Card, CardContent, CardHeader, Typography } from '@material-ui/core';
 import * as MI from '@material-ui/icons/';
 
 import { AuthContext } from '../../contexts/AuthContext';
@@ -56,7 +56,13 @@ export default function Main(): JSX.Element {
         <>
             <Card className={styles.cardRoot}>
                 <CardContent>
-                    <div className={styles.contentWrapper}>
+                    <div className={styles.contentDirectiveWrapper}>
+                        <div className={styles.headerWrapper}>
+                            <Typography className={styles.title} component='h1'>
+                                Diretrizes da Organização
+                            </Typography>
+                        </div>
+
                         <div className={styles.titleWrapper}>
                             <MI.Business />
                             <Typography className={styles.title} component='h2'>
@@ -68,7 +74,7 @@ export default function Main(): JSX.Element {
                             {dashboardForm.organizationName}
                         </Typography>
                     </div>
-                    <div className={styles.contentWrapper}>
+                    <div className={styles.contentDirectiveWrapper}>
                         <div className={styles.titleWrapper}>
                             <MI.AssignmentTurnedIn />
                             <Typography className={styles.title} component='h2'>
@@ -79,7 +85,7 @@ export default function Main(): JSX.Element {
                             {dashboardForm.mission}
                         </Typography>
                     </div>
-                    <div className={styles.contentWrapper}>
+                    <div className={styles.contentDirectiveWrapper}>
                         <div className={styles.titleWrapper}>
                             <MI.Visibility />
                             <Typography className={styles.title} component='h2'>
@@ -90,7 +96,7 @@ export default function Main(): JSX.Element {
                             {dashboardForm.vision}
                         </Typography>
                     </div>
-                    <div className={styles.contentWrapper}>
+                    <div className={styles.contentDirectiveWrapper}>
                         <div className={styles.titleWrapper}>
                             <MI.PlaylistAddCheck />
                             <Typography className={styles.title} component='h2'>

@@ -56,7 +56,10 @@ export default function LastEvaluations(): JSX.Element {
                         projectId: evaluation.id_project,
                         portfolioId: evaluation.id_portfolio,
                         name: evaluation.name,
-                        grade: `${evaluation.grade}`.replace('.', ','),
+                        grade: `${Number(evaluation.grade).toFixed(2)}`.replace(
+                            '.',
+                            ','
+                        ),
                         evaluationDate: format(
                             new Date(evaluation.evaluation_date),
                             'dd/MM/yyyy',
@@ -81,7 +84,7 @@ export default function LastEvaluations(): JSX.Element {
             <Card className={styles.cardRoot}>
                 <CardContent>
                     <div className={styles.contentWrapper}>
-                        <div className={styles.titleWrapper}>
+                        <div className={styles.headerWrapper}>
                             <Typography className={styles.title} component='h1'>
                                 Últimas avaliações
                             </Typography>

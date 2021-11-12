@@ -25,10 +25,13 @@ export function Header(): JSX.Element {
             {user && (
                 <header className={styles.headerContainer}>
                     <IconButton onClick={toggleSidebar}>
-                        <img src='/logo.svg' alt='Opus fenestra' />
+                        <MI.Menu />
                     </IconButton>
 
-                    <p>Opus Fenestra</p>
+                    <div className={styles.titleLogo}>
+                        <img src='/logo.svg' alt='Opus fenestra' />
+                        <p>Opus Fenestra</p>
+                    </div>
 
                     <span>{currentDate}</span>
                     <div className={styles.user}>

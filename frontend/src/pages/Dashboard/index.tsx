@@ -32,8 +32,8 @@ export default function Dashboard(): JSX.Element {
             </div>
             <div className={styles.dashboardGrid}>
                 <div className={styles.dashboards}>
+                    <Main />
                     <LastEvaluations />
-                    {/* <Main /> */}
                     <LastStatusChangedProjects />
                 </div>
                 <div className={styles.dashboards}>

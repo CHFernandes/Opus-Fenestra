@@ -110,7 +110,7 @@ export default function ProjectsInRisk(): JSX.Element {
             <Card className={styles.cardRoot}>
                 <CardContent>
                     <div className={styles.contentWrapper}>
-                        <div className={styles.titleWrapper}>
+                        <div className={styles.headerWrapper}>
                             <Typography className={styles.title} component='h1'>
                                 Projetos em risco
                             </Typography>

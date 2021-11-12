@@ -91,7 +91,7 @@ export default function LastStatusChangedProjects(): JSX.Element {
             <Card className={styles.cardRoot}>
                 <CardContent>
                     <div className={styles.contentWrapper}>
-                        <div className={styles.titleWrapper}>
+                        <div className={styles.headerWrapper}>
                             <Typography className={styles.title} component='h1'>
                                 Últimas atualizações de estado de projeto
                             </Typography>
