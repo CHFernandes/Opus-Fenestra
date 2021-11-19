@@ -78,7 +78,9 @@ export default function RunningProjects(): JSX.Element {
 
                 setProjects(projects);
             } catch (error) {
-                toast.error(error.response.data.message);
+                if (error.response) {
+                    toast.error(error.response.data.message);
+                }
             }
         }
 

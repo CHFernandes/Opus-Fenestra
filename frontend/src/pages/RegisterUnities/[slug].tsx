@@ -144,7 +144,9 @@ export default function RegisterUnities(): JSX.Element {
                 handleNext();
             }
         } catch (error) {
-            toast.error(error.response.data.message);
+            if (error.response) {
+                toast.error(error.response.data.message);
+            }
         }
     }
 
@@ -359,7 +361,9 @@ export default function RegisterUnities(): JSX.Element {
 
             router.push('/ListUnities');
         } catch (error) {
-            toast.error(error.response.data.message);
+            if (error.response) {
+                toast.error(error.response.data.message);
+            }
         }
     }
 

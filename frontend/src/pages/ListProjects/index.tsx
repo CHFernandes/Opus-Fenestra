@@ -81,7 +81,9 @@ export default function ListProjects(): JSX.Element {
 
                 setProjects(projects);
             } catch (error) {
-                toast.error(error.response.data.message);
+                if (error.response) {
+                    toast.error(error.response.data.message);
+                }
             }
         }
 
@@ -253,7 +255,9 @@ export default function ListProjects(): JSX.Element {
                 toast.success('Projeto Excluído');
             }
         } catch (error) {
-            toast.error(error.response.data.message);
+            if (error.response) {
+                toast.error(error.response.data.message);
+            }
         }
     }
 

@@ -107,7 +107,9 @@ export default function RegisterOrganizationWizard(): JSX.Element {
                 const portfolioId = data.id_portfolio;
                 return portfolioId;
             } catch (error) {
-                toast.error(error.response.data.message);
+                if (error.response) {
+                    toast.error(error.response.data.message);
+                }
             }
         }
 
@@ -147,7 +149,9 @@ export default function RegisterOrganizationWizard(): JSX.Element {
                 });
                 setProjectsArray(projects);
             } catch (error) {
-                toast.error(error.response.data.message);
+                if (error.response) {
+                    toast.error(error.response.data.message);
+                }
             }
         }
 
@@ -175,7 +179,9 @@ export default function RegisterOrganizationWizard(): JSX.Element {
                 };
                 setProjectsArray([project]);
             } catch (error) {
-                toast.error(error.response.data.message);
+                if (error.response) {
+                    toast.error(error.response.data.message);
+                }
             }
         }
 
@@ -229,7 +235,9 @@ export default function RegisterOrganizationWizard(): JSX.Element {
                 setIsRendered(true);
                 remove();
             } catch (error) {
-                toast.error(error.response.data.message);
+                if (error.response) {
+                    toast.error(error.response.data.message);
+                }
             }
         }
 
@@ -313,7 +321,9 @@ export default function RegisterOrganizationWizard(): JSX.Element {
                 router.push('/AcceptProjects');
             }
         } catch (error) {
-            toast.error(error.response.data.message);
+            if (error.response) {
+                toast.error(error.response.data.message);
+            }
         }
     }
 

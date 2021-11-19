@@ -56,7 +56,9 @@ export function AuthContextProvider({
 
                 setUser(responseUser);
             } catch (error) {
-                toast.error(error.response.data.message);
+                if (error.response) {
+                    toast.error(error.response.data.message);
+                }
             }
         }
 
@@ -100,7 +102,9 @@ export function AuthContextProvider({
 
             router.push('/Dashboard');
         } catch (error) {
-            toast.error(error.response.data.message);
+            if (error.response) {
+                toast.error(error.response.data.message);
+            }
         }
     }
 

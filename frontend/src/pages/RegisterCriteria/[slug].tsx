@@ -67,7 +67,9 @@ export default function RegisterCriteria(): JSX.Element {
 
                 setCriteriaTypes(unitArray);
             } catch (error) {
-                toast.error(error.response.data.message);
+                if (error.response) {
+                    toast.error(error.response.data.message);
+                }
             }
         }
 
@@ -86,7 +88,9 @@ export default function RegisterCriteria(): JSX.Element {
                 };
                 setFormData(criterion);
             } catch (error) {
-                toast.error(error.response.data.message);
+                if (error.response) {
+                    toast.error(error.response.data.message);
+                }
             }
         }
 
@@ -139,7 +143,9 @@ export default function RegisterCriteria(): JSX.Element {
                 router.push('/ListCriteria');
             }
         } catch (error) {
-            toast.error(error.response.data.message);
+            if (error.response) {
+                toast.error(error.response.data.message);
+            }
         }
     }
 

@@ -1,0 +1,11 @@
+.listProjects {
+    padding: 0 4rem;
+    height: calc(100vh - 15rem);
+    display: flex;
+    flex-direction: column;
+
+    .dataTableContainer {
+        height: calc(100vh - 18rem);
+        width: 100%;
+    }
+}

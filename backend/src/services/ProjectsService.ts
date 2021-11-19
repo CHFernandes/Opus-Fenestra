@@ -964,8 +964,10 @@ class ProjectsService {
         if (!person) {
             throw new Error('Pessoa não existe');
         }
+        const currentTime = new Date();
 
         project.id_status = 9;
+        project.actual_end_date = currentTime;
 
         const updatedProject = await this.projectsRepository.save(project);
 
@@ -973,7 +975,7 @@ class ProjectsService {
             id_person,
             id_status: project.id_status,
             id_project: project.id_project,
-            changed_time: new Date(),
+            changed_time: currentTime,
         });
 
         await this.projectsStatusRepository.save(projectStatus);
@@ -1027,7 +1029,10 @@ class ProjectsService {
             throw new Error('Pessoa não existe');
         }
 
+        const currentTime = new Date();
+
         project.id_status = 5;
+        project.actual_end_date = currentTime;
 
         const updatedProject = await this.projectsRepository.save(project);
 
@@ -1035,7 +1040,7 @@ class ProjectsService {
             id_person,
             id_status: project.id_status,
             id_project: project.id_project,
-            changed_time: new Date(),
+            changed_time: currentTime,
         });
 
         await this.projectsStatusRepository.save(projectStatus);
@@ -1237,6 +1242,86 @@ class ProjectsService {
             .leftJoin(Status, 'status', 'project.id_status = status.id_status')
             .where('project.id_portfolio = :id_portfolio', { id_portfolio })
             .groupBy('project.id_status')
+            .getRawMany();
+
+        return list;
+    }
+
+    async findFinishedProjects(id_portfolio: number): Promise<Project[]> {
+        if (!id_portfolio) {
+            throw new Error('Campos obrigatórios não preenchidos');
+        }
+
+        if (Number.isNaN(id_portfolio)) {
+            throw new Error('Portfólio inválido');
+        }
+
+        const portfolio = await this.portfoliosRepository.findOne({
+            where: { id_portfolio },
+        });
+
+        if (!portfolio) {
+            throw new Error('Portfólio não existe');
+        }
+
+        const list = await getConnection()
+            .createQueryBuilder(Project, 'project')
+            .select('project.id_project', 'id_project')
+            .addSelect('project.id_category', 'id_category')
+            .addSelect('project.name', 'name')
+            .addSelect('project.responsible', 'responsible_id')
+            .addSelect('project.planned_start_date', 'planned_start_date')
+            .addSelect('project.planned_end_date', 'planned_end_date')
+            .addSelect('project.actual_start_date', 'actual_start_date')
+            .addSelect('project.actual_end_date', 'actual_end_date')
+            .addSelect('person.name', 'responsible')
+            .leftJoin(
+                Person,
+                'person',
+                'project.responsible = person.id_person'
+            )
+            .where('project.id_portfolio = :id_portfolio', { id_portfolio })
+            .andWhere('project.id_status = 5')
+            .getRawMany();
+
+        return list;
+    }
+
+    async findCancelledProjects(id_portfolio: number): Promise<Project[]> {
+        if (!id_portfolio) {
+            throw new Error('Campos obrigatórios não preenchidos');
+        }
+
+        if (Number.isNaN(id_portfolio)) {
+            throw new Error('Portfólio inválido');
+        }
+
+        const portfolio = await this.portfoliosRepository.findOne({
+            where: { id_portfolio },
+        });
+
+        if (!portfolio) {
+            throw new Error('Portfólio não existe');
+        }
+
+        const list = await getConnection()
+            .createQueryBuilder(Project, 'project')
+            .select('project.id_project', 'id_project')
+            .addSelect('project.id_category', 'id_category')
+            .addSelect('project.name', 'name')
+            .addSelect('project.responsible', 'responsible_id')
+            .addSelect('project.planned_start_date', 'planned_start_date')
+            .addSelect('project.planned_end_date', 'planned_end_date')
+            .addSelect('project.actual_start_date', 'actual_start_date')
+            .addSelect('project.actual_end_date', 'actual_end_date')
+            .addSelect('person.name', 'responsible')
+            .leftJoin(
+                Person,
+                'person',
+                'project.responsible = person.id_person'
+            )
+            .where('project.id_portfolio = :id_portfolio', { id_portfolio })
+            .andWhere('project.id_status = 9')
             .getRawMany();
 
         return list;

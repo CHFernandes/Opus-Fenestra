@@ -79,7 +79,9 @@ export default function LastStatusChangedProjects(): JSX.Element {
 
                 setChangedProjects(changedProjectsArray);
             } catch (error) {
-                toast.error(error.response?.data.message);
+                if (error.response) {
+                    toast.error(error.response.data.message);
+                }
             }
         }
 

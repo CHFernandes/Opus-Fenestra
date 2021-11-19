@@ -12,6 +12,7 @@ import { api } from '../../services/api';
 import styles from './styles.module.scss';
 import { AuthContext } from '../../contexts/AuthContext';
 import toast from 'react-hot-toast';
+import { RejectConfirmation } from '../../components/RejectConfirmation';
 
 type EvaluatedProject = {
     id: number;
@@ -70,7 +71,9 @@ export default function AcceptProjects(): JSX.Element {
 
                 setProjects(projects);
             } catch (error) {
-                toast.error(error.response.data.message);
+                if (error.response) {
+                    toast.error(error.response.data.message);
+                }
             }
         }
 
@@ -185,7 +188,9 @@ export default function AcceptProjects(): JSX.Element {
             toast.success('Projeto aprovado');
             reload();
         } catch (error) {
-            toast.error(error.response.data.message);
+            if (error.response) {
+                toast.error(error.response.data.message);
+            }
         }
     }
 
@@ -201,11 +206,19 @@ export default function AcceptProjects(): JSX.Element {
             toast.success('Projeto atualizado para pedir mais informações');
             reload();
         } catch (error) {
-            toast.error(error.response.data.message);
+            if (error.response) {
+                toast.error(error.response.data.message);
+            }
         }
     }
 
     async function handleReject(id: number) {
+        const response = await RejectConfirmation();
+
+        if (!response) {
+            return;
+        }
+
         const personId = user.id;
 
         const requestData = {
@@ -217,7 +230,9 @@ export default function AcceptProjects(): JSX.Element {
             toast.success('Projeto Rejeitado');
             reload();
         } catch (error) {
-            toast.error(error.response.data.message);
+            if (error.response) {
+                toast.error(error.response.data.message);
+            }
         }
     }
 
@@ -260,7 +275,9 @@ export default function AcceptProjects(): JSX.Element {
             });
             setProjects(projects);
         } catch (error) {
-            toast.error(error.response.data.message);
+            if (error.response) {
+                toast.error(error.response.data.message);
+            }
         }
     }
 

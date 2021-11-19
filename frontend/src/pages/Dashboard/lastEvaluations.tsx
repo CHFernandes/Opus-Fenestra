@@ -72,7 +72,9 @@ export default function LastEvaluations(): JSX.Element {
 
                 setEvaluations(evaluations);
             } catch (error) {
-                toast.error(error.response?.data.message);
+                if (error.response) {
+                    toast.error(error.response.data.message);
+                }
             }
         }
 

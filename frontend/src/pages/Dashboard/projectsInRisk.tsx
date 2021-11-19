@@ -93,7 +93,9 @@ export default function ProjectsInRisk(): JSX.Element {
 
                 setProjectsInRisk(projects);
             } catch (error) {
-                toast.error(error.response?.data.message);
+                if (error.response) {
+                    toast.error(error.response.data.message);
+                }
             }
         }
 

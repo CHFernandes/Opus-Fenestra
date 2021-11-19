@@ -117,8 +117,6 @@ export default function ProjectsChart(): JSX.Element {
                     );
                 });
 
-                console.log(dataArrayQuantity);
-
                 const dataSet: Dataset = {
                     label: 'Projetos por quantidade',
                     data: dataArrayQuantity,
@@ -132,8 +130,9 @@ export default function ProjectsChart(): JSX.Element {
 
                 setProjectStatus(projectStatusReturn);
             } catch (error) {
-                console.log(error);
-                toast.error(error.response?.data.message);
+                if (error.response) {
+                    toast.error(error.response.data.message);
+                }
             }
         }
 

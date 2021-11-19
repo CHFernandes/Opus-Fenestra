@@ -95,7 +95,9 @@ export default function OverdueProjects(): JSX.Element {
 
                 setOverdueProjects(projects);
             } catch (error) {
-                toast.error(error.response?.data.message);
+                if (error.response) {
+                    toast.error(error.response.data.message);
+                }
             }
         }
 

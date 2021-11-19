@@ -85,7 +85,9 @@ export default function ApprovedProjects(): JSX.Element {
 
                 setProjects(projects);
             } catch (error) {
-                toast.error(error.response.data.message);
+                if (error.response) {
+                    toast.error(error.response.data.message);
+                }
             }
         }
 
@@ -110,7 +112,9 @@ export default function ApprovedProjects(): JSX.Element {
 
                 setPersons(personData);
             } catch (error) {
-                toast.error(error.response.data.message);
+                if (error.response) {
+                    toast.error(error.response.data.message);
+                }
             }
         }
 
@@ -220,7 +224,9 @@ export default function ApprovedProjects(): JSX.Element {
             });
             setProjects(projects);
         } catch (error) {
-            toast.error(error.response.data.message);
+            if (error.response) {
+                toast.error(error.response.data.message);
+            }
         }
     }
 
@@ -253,7 +259,9 @@ export default function ApprovedProjects(): JSX.Element {
             toast.success('Projeto iniciado');
             reload();
         } catch (error) {
-            toast.error(error.response.data.message);
+            if (error.response) {
+                toast.error(error.response.data.message);
+            }
         }
     }
 

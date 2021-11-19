@@ -13,19 +13,19 @@ import styles from './styles.module.scss';
 import { AuthContext } from '../../contexts/AuthContext';
 import toast from 'react-hot-toast';
 
-type PendingProject = {
+type FinishedProject = {
     id: number;
-    idPortfolio: number;
     name: string;
-    description: string;
-    submitter: string;
+    responsible: string;
     plannedStartDateAsString: string;
     plannedEndDateAsString: string;
+    actualStartDateAsString: string;
+    actualEndDateAsString: string;
 };
 
-export default function AcceptProjects(): JSX.Element {
+export default function FinishedProjects(): JSX.Element {
     const { isAuthenticated, user } = useContext(AuthContext);
-    const [project, setProjects] = useState<PendingProject[]>([]);
+    const [project, setProjects] = useState<FinishedProject[]>([]);
 
     useEffect(() => {
         async function getProjects() {
@@ -35,22 +35,20 @@ export default function AcceptProjects(): JSX.Element {
                 );
                 const portfolioId = portfolioData.id_portfolio;
                 const { data } = await api.get(
-                    `/askForProjectInformation/${portfolioId}`
+                    `/finishedProjects/${portfolioId}`
                 );
 
                 if (data.length < 1) {
                     setProjects([]);
-                    toast.error('Nenhum projeto está pendente');
+                    toast.error('Nenhum projeto foi finalizado');
                     return;
                 }
 
                 const projects = data.map((project) => {
                     return {
                         id: project.id_project,
-                        idPortfolio: project.id_portfolio,
                         name: project.name,
-                        description: project.description,
-                        submitter: project.submitter,
+                        responsible: project.responsible,
                         plannedStartDateAsString: format(
                             new Date(project.planned_start_date),
                             'dd/MM/yyyy',
@@ -60,6 +58,20 @@ export default function AcceptProjects(): JSX.Element {
                         ),
                         plannedEndDateAsString: format(
                             new Date(project.planned_end_date),
+                            'dd/MM/yyyy',
+                            {
+                                locale: ptBR,
+                            }
+                        ),
+                        actualStartDateAsString: format(
+                            new Date(project.actual_start_date),
+                            'dd/MM/yyyy',
+                            {
+                                locale: ptBR,
+                            }
+                        ),
+                        actualEndDateAsString: format(
+                            new Date(project.actual_end_date),
                             'dd/MM/yyyy',
                             {
                                 locale: ptBR,
@@ -100,13 +112,8 @@ export default function AcceptProjects(): JSX.Element {
             flex: 2,
         },
         {
-            field: 'description',
-            headerName: 'Descrição',
-            flex: 2.5,
-        },
-        {
-            field: 'submitter',
-            headerName: 'Submissor',
+            field: 'responsible',
+            headerName: 'Responsável',
             flex: 1.5,
         },
         {
@@ -115,8 +122,18 @@ export default function AcceptProjects(): JSX.Element {
             flex: 1.8,
         },
         {
+            field: 'actualStartDateAsString',
+            headerName: 'Data de inicio real',
+            flex: 1.8,
+        },
+        {
             field: 'plannedEndDateAsString',
             headerName: 'Data de fim planejada',
+            flex: 1.8,
+        },
+        {
+            field: 'actualEndDateAsString',
+            headerName: 'Data de fim real',
             flex: 1.8,
         },
         {
@@ -134,12 +151,12 @@ export default function AcceptProjects(): JSX.Element {
 
                 return (
                     <>
-                        <Tooltip title='Editar Projeto'>
+                        <Tooltip title='Abrir Projeto'>
                             <IconButton
                                 onClick={onClickEdit}
-                                aria-label='Editar Projeto'
+                                aria-label='Abrir Projeto'
                             >
-                                <MI.Edit />
+                                <MI.Visibility />
                             </IconButton>
                         </Tooltip>
                     </>

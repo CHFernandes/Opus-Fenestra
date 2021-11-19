@@ -64,6 +64,16 @@ export const SidebarData = [
                 path: '/RunningProjects',
                 icon: <MI.RateReview />,
             },
+            {
+                title: 'Projetos finalizados',
+                path: '/FinishedProjects',
+                icon: <MI.List />,
+            },
+            {
+                title: 'Projetos cancelados',
+                path: '/CancelledProjects',
+                icon: <MI.List />,
+            },
         ],
     },
     {

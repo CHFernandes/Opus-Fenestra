@@ -45,7 +45,9 @@ export default function Main(): JSX.Element {
 
                 setDashboardForm(dashboardObject);
             } catch (error) {
-                toast.error(error.response?.data.message);
+                if (error.response) {
+                    toast.error(error.response.data.message);
+                }
             }
         }
 

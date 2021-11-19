@@ -68,6 +68,8 @@ routes.get('/runningProjects/:id', projectsController.showRunningProjects);
 routes.get('/projectsInRisk/:id', projectsController.showProjectsInRisk);
 routes.get('/overdueProjects/:id', projectsController.showOverdueProjects);
 routes.get('/stoppedProjects/:id', projectsController.showStoppedProjects);
+routes.get('/finishedProjects/:id', projectsController.showFinishedProjects);
+routes.get('/cancelledProjects/:id', projectsController.showCancelledProjects);
 routes.put(
     '/askForProjectInformation/:id',
     projectsController.updateProjectAskInformation

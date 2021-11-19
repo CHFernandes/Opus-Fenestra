@@ -175,7 +175,9 @@ export default function RegisterOrganizationWizard(): JSX.Element {
                 router.push('/Login');
             }
         } catch (error) {
-            toast.error(error.response.data.message);
+            if (error.response) {
+                toast.error(error.response.data.message);
+            }
         }
 
         return;

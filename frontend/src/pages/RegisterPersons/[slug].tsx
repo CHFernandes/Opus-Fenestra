@@ -148,7 +148,9 @@ export default function RegisterPersons(): JSX.Element {
             router.push('/ListPersons');
             return;
         } catch (error) {
-            toast.error(error.response.data.message);
+            if (error.response) {
+                toast.error(error.response.data.message);
+            }
         }
     }
 

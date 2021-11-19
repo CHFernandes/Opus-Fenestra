@@ -25,7 +25,9 @@ export default function Login(): JSX.Element {
             await signIn(data);
             router.push('/Dashboard');
         } catch (error) {
-            toast.error(error.response.data.message);
+            if (error.response) {
+                toast.error(error.response.data.message);
+            }
         }
     }
 

@@ -74,7 +74,9 @@ export default function ListCriteria(): JSX.Element {
 
                 setCriteria(criteria);
             } catch (error) {
-                toast.error(error.response.data.message);
+                if (error.response) {
+                    toast.error(error.response.data.message);
+                }
             }
         }
 
@@ -217,7 +219,9 @@ export default function ListCriteria(): JSX.Element {
                 setCriteria(criteria);
             }
         } catch (error) {
-            toast.error(error.response.data.message);
+            if (error.response) {
+                toast.error(error.response.data.message);
+            }
         }
     }
 

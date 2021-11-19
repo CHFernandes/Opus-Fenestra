@@ -184,7 +184,9 @@ export default function RegisterProjects(): JSX.Element {
 
                 setFormData(project);
             } catch (error) {
-                toast.error(error.response.data.message);
+                if (error.response) {
+                    toast.error(error.response.data.message);
+                }
             }
         }
 
@@ -243,7 +245,9 @@ export default function RegisterProjects(): JSX.Element {
                 });
                 setEvaluations(evaluations);
             } catch (error) {
-                toast.error(error.response.data.message);
+                if (error.response) {
+                    toast.error(error.response.data.message);
+                }
             }
         }
 
@@ -294,8 +298,9 @@ export default function RegisterProjects(): JSX.Element {
                 });
                 setHistory(entries);
             } catch (error) {
-                console.log(error);
-                toast.error(error.response?.data.message);
+                if (error.response) {
+                    toast.error(error.response.data.message);
+                }
             }
         }
 
@@ -357,7 +362,9 @@ export default function RegisterProjects(): JSX.Element {
                 router.push('/ListProjects');
             }
         } catch (error) {
-            toast.error(error.response.data.message);
+            if (error.response) {
+                toast.error(error.response.data.message);
+            }
         }
     }
 
@@ -374,7 +381,9 @@ export default function RegisterProjects(): JSX.Element {
             toast.success('Projeto paralisado com sucesso');
             router.push('/ListProjects');
         } catch (error) {
-            toast.error(error.response.data.message);
+            if (error.response) {
+                toast.error(error.response.data.message);
+            }
         }
     }
 
@@ -396,7 +405,9 @@ export default function RegisterProjects(): JSX.Element {
             toast.success('Projeto Finalizado com sucesso');
             router.push('/ListProjects');
         } catch (error) {
-            toast.error(error.response.data.message);
+            if (error.response) {
+                toast.error(error.response.data.message);
+            }
         }
     }
 
@@ -413,7 +424,9 @@ export default function RegisterProjects(): JSX.Element {
             toast.success('Projeto retomado com sucesso');
             router.push('/ListProjects');
         } catch (error) {
-            toast.error(error.response.data.message);
+            if (error.response) {
+                toast.error(error.response.data.message);
+            }
         }
     }
 
@@ -436,7 +449,9 @@ export default function RegisterProjects(): JSX.Element {
             toast.success('Projeto cancelado com sucesso');
             router.push('/ListProjects');
         } catch (error) {
-            toast.error(error.response.data.message);
+            if (error.response) {
+                toast.error(error.response.data.message);
+            }
         }
     }
 
